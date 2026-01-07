@@ -7,7 +7,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import react from 'eslint-plugin-react';
 import tseslint from 'typescript-eslint';
-import { reactRules, typescriptRules, baseRules } from './config/index.js';
+import { reactRules, typescriptRules, baseRules } from './config/index.mjs';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
