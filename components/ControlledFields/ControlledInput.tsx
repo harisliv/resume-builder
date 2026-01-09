@@ -28,7 +28,7 @@ export default function ControlledInput<TForm extends FieldValues>(props: {
             id={id}
             aria-invalid={fieldState.invalid}
             placeholder={props.placeholder}
-            autoComplete={props.autoComplete ?? 'off'}
+            autoComplete={props.autoComplete ?? 'on'}
           />
           {props.description && (
             <FieldDescription>{props.description}</FieldDescription>

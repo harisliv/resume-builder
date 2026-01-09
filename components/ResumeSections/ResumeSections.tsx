@@ -14,12 +14,14 @@ import { resumeDefaultValues, resumeSchema } from '@/types';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResumePreview } from '../ResumePreview';
+import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import type * as z from 'zod';
+import { mockResumeData } from '@/lib/ResumePDF/mockdata';
 
 export default function ResumeSections() {
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
-    defaultValues: resumeDefaultValues,
+    defaultValues: mockResumeData,
     mode: 'onChange'
   });
 
@@ -52,7 +54,10 @@ export default function ResumeSections() {
                 <HugeiconsIcon icon={FileText} strokeWidth={2} />
                 Preview
               </h3>
-              <Button className="gap-2">
+              <Button
+                className="gap-2"
+                onClick={() => generateResumePDF(form.watch())}
+              >
                 <HugeiconsIcon icon={Download} strokeWidth={2} />
                 Download
               </Button>

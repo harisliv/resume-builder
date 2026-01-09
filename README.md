@@ -9,3 +9,5 @@ pnpm add -D eslint @eslint/js globals eslint-plugin-react-hooks eslint-plugin-re
 pnpm add -D vitest jsdom msw @testing-library/dom @testing-library/jest-dom @testing-library/react @testing-library/user-event eslint-plugin-testing-library eslint-plugin-vitest
 
 pnpm add react-hook-form @hookform/resolvers zod@^4.0.0
+
+pnpm add @react-pdf/renderer
