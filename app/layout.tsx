@@ -32,11 +32,13 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="container mx-auto py-8 px-4 max-w-7xl">
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>
