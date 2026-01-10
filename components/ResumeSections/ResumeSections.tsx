@@ -16,12 +16,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ResumePreview } from '../ResumePreview';
 import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import type * as z from 'zod';
-import { mockResumeData } from '@/lib/ResumePDF/mockdata';
+import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
+import { PDFViewer } from '@react-pdf/renderer';
+import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
 
 export default function ResumeSections() {
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
-    defaultValues: mockResumeData,
+    defaultValues: extendedMockResumeData,
     mode: 'onChange'
   });
 

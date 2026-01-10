@@ -1,163 +1,229 @@
 'use client';
 
-import { Separator } from '@/components/ui/separator';
 import type { TResumeData } from '@/types';
 import { Linkedin02Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Mail, Phone, MapPin, Globe } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Briefcase,
+  GraduationCap,
+  Sparkles
+} from 'lucide-react';
 
 export default function ResumePreview({ data }: { data: TResumeData }) {
   const { personalInfo, experience, education, skills } = data;
-  console.log('🚀 ~ ResumePreview ~ data:', data);
+
+  const hasContent =
+    personalInfo?.fullName ||
+    (experience && experience.length > 0) ||
+    (education && education.length > 0) ||
+    (skills && skills.length > 0);
+
+  if (!hasContent) {
+    return (
+      <div className="bg-white text-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-200 min-h-[600px] flex items-center justify-center">
+        <div className="text-center p-12">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center shadow-lg">
+            <Sparkles className="w-10 h-10 text-white" />
+          </div>
+          <p className="text-xl text-slate-600 font-light">
+            Your resume preview will appear here
+          </p>
+          <p className="text-sm mt-3 text-slate-400">
+            Start filling out the form to see your resume come to life
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white text-black p-8 shadow-lg rounded-lg overflow-auto max-h-[800px]">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">
+    <div className="bg-white text-slate-900 rounded-xl overflow-auto max-h-[800px] shadow-lg border border-slate-200">
+      <div className="px-6 py-5 border-b border-slate-200">
+        <h1 className="text-2xl font-bold mb-3 text-slate-900 tracking-tight">
           {personalInfo?.fullName || 'Your Name'}
         </h1>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+        <div className="flex justify-between text-[9px]">
           {personalInfo?.email && (
-            <span className="flex items-center gap-1">
-              <Mail className="h-3 w-3" />
+            <a
+              href={`mailto:${personalInfo.email}`}
+              className="flex items-center gap-1 text-slate-600 hover:text-cyan-600 transition-colors group"
+            >
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-cyan-100 transition-colors">
+                <Mail className="h-3 w-3" />
+              </span>
               {personalInfo.email}
-            </span>
+            </a>
           )}
           {personalInfo?.phone && (
-            <span className="flex items-center gap-1">
-              <Phone className="h-3 w-3" />
+            <span className="flex items-center gap-1 text-slate-600">
+              <span className="p-1 rounded-md bg-slate-100">
+                <Phone className="h-3 w-3" />
+              </span>
               {personalInfo.phone}
             </span>
           )}
           {personalInfo?.location && (
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
+            <span className="flex items-center gap-1 text-slate-600">
+              <span className="p-1 rounded-md bg-slate-100">
+                <MapPin className="h-3 w-3" />
+              </span>
               {personalInfo.location}
             </span>
           )}
           {personalInfo?.linkedIn && (
-            <span className="flex items-center gap-1">
-              <HugeiconsIcon icon={Linkedin02Icon} />
+            <a
+              href={personalInfo.linkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-slate-600 hover:text-cyan-600 transition-colors group"
+            >
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-cyan-100 transition-colors">
+                <HugeiconsIcon icon={Linkedin02Icon} className="h-3 w-3" />
+              </span>
               LinkedIn
-            </span>
+            </a>
           )}
           {personalInfo?.website && (
-            <span className="flex items-center gap-1">
-              <Globe className="h-3 w-3" />
-              Website
-            </span>
+            <a
+              href={personalInfo.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-slate-600 hover:text-cyan-600 transition-colors group"
+            >
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-cyan-100 transition-colors">
+                <Globe className="h-3 w-3" />
+              </span>
+              Portfolio
+            </a>
           )}
         </div>
       </div>
 
-      {/* Summary */}
-      {personalInfo?.summary && (
-        <>
-          <Separator className="my-4 bg-gray-300" />
-          <div className="mb-6">
-            <h2 className="text-lg font-bold mb-2 text-gray-900">SUMMARY</h2>
-            <p className="text-sm text-gray-700 leading-relaxed">
+      <div className="px-6 py-5 space-y-5">
+        {personalInfo?.summary && (
+          <div className="relative pl-3 border-l-2 border-cyan-500">
+            <p className="text-slate-600 leading-relaxed text-[10px]">
               {personalInfo.summary}
             </p>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Experience */}
-      {experience && experience.length > 0 && (
-        <>
-          <Separator className="my-4 bg-gray-300" />
-          <div className="mb-6">
-            <h2 className="text-lg font-bold mb-3 text-gray-900">EXPERIENCE</h2>
-            <div className="space-y-4">
+        {experience && experience.length > 0 && (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-sm">
+                <Briefcase className="h-3.5 w-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold tracking-wide text-slate-900">
+                Experience
+              </h2>
+            </div>
+            <div className="space-y-2.5 relative pl-1.5">
               {experience.map((exp, index) => (
-                <div key={index}>
-                  <div className="flex justify-between items-start mb-1">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {exp.position}
-                      </h3>
-                      <p className="text-sm text-gray-700">{exp.company}</p>
+                <div key={index} className="relative pl-5">
+                  <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-white border-2 border-cyan-500 shadow-sm" />
+                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200 hover:border-cyan-300 transition-colors">
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-[11px]">
+                          {exp.position}
+                        </h3>
+                        <p className="text-cyan-600 text-[10px] font-semibold">
+                          {exp.company}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[8px] text-slate-500">
+                          {exp.location}
+                        </p>
+                        <p className="text-[8px] text-slate-400 font-mono">
+                          {exp.startDate} →{' '}
+                          {exp.current ? 'Present' : exp.endDate}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right text-sm text-gray-600">
-                      <p>{exp.location}</p>
-                      <p>
-                        {exp.startDate} -{' '}
-                        {exp.current ? 'Present' : exp.endDate}
-                      </p>
-                    </div>
+                    <p className="text-[9px] text-slate-500 leading-relaxed">
+                      {exp.description}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed mt-2">
-                    {exp.description}
-                  </p>
                 </div>
               ))}
             </div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Education */}
-      {education && education.length > 0 && (
-        <>
-          <Separator className="my-4 bg-gray-300" />
-          <div className="mb-6">
-            <h2 className="text-lg font-bold mb-3 text-gray-900">EDUCATION</h2>
-            <div className="space-y-3">
+        {education && education.length > 0 && (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 shadow-sm">
+                <GraduationCap className="h-3.5 w-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold tracking-wide text-slate-900">
+                Education
+              </h2>
+            </div>
+            <div className="space-y-2">
               {education.map((edu, index) => (
-                <div key={index}>
-                  <div className="flex justify-between items-start">
+                <div
+                  key={index}
+                  className="bg-slate-50 rounded-lg p-3 border border-slate-200 hover:border-violet-300 transition-colors"
+                >
+                  <div className="flex justify-between items-start flex-wrap gap-1">
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-slate-900 text-[11px]">
                         {edu.degree} in {edu.field}
                       </h3>
-                      <p className="text-sm text-gray-700">{edu.institution}</p>
+                      <p className="text-violet-600 text-[10px] font-semibold">
+                        {edu.institution}
+                      </p>
                     </div>
-                    <div className="text-right text-sm text-gray-600">
-                      <p>{edu.location}</p>
-                      <p>{edu.graduationDate}</p>
-                      {edu.gpa && <p>GPA: {edu.gpa}</p>}
+                    <div className="text-right">
+                      <p className="text-[8px] text-slate-500">
+                        {edu.location}
+                      </p>
+                      <p className="text-[8px] text-slate-400 font-mono">
+                        {edu.graduationDate}
+                      </p>
+                      {edu.gpa && (
+                        <p className="text-[8px] text-fuchsia-500 mt-0.5 font-medium">
+                          GPA: {edu.gpa}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Skills */}
-      {skills && skills.length > 0 && (
-        <>
-          <Separator className="my-4 bg-gray-300" />
+        {skills && skills.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold mb-3 text-gray-900">SKILLS</h2>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-fuchsia-500 to-fuchsia-600 shadow-sm">
+                <Sparkles className="h-3.5 w-3.5 text-white" />
+              </div>
+              <h2 className="text-sm font-semibold tracking-wide text-slate-900">
+                Skills
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
               {skills.map((skill, index) => (
                 <span
                   key={index}
-                  className="text-sm bg-gray-200 text-gray-800 px-3 py-1 rounded"
+                  className="text-[9px] px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 hover:border-cyan-400 hover:text-cyan-600 transition-all cursor-default"
                 >
                   {skill}
                 </span>
               ))}
             </div>
           </div>
-        </>
-      )}
-
-      {!personalInfo?.fullName &&
-        experience?.length === 0 &&
-        education?.length === 0 &&
-        skills?.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <p>Your resume preview will appear here</p>
-            <p className="text-sm mt-2">
-              Start filling out the form to see your resume
-            </p>
-          </div>
         )}
+      </div>
     </div>
   );
 }
