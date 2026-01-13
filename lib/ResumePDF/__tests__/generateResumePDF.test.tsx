@@ -21,6 +21,11 @@ vi.mock('@react-pdf/renderer', () => ({
   Circle: () => <circle />,
   Rect: () => <rect />,
   Path: () => <path />,
+  Defs: ({ children }: { children: React.ReactNode }) => <defs>{children}</defs>,
+  LinearGradient: ({ children }: { children: React.ReactNode }) => (
+    <linearGradient>{children}</linearGradient>
+  ),
+  Stop: () => <stop />,
   StyleSheet: {
     create: (styles: Record<string, object>) => styles
   }

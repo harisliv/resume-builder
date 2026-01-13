@@ -1,13 +1,36 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import {
+  Geist_Mono,
+  Inter,
+  Roboto,
+  Open_Sans,
+  Lato,
+  Playfair_Display,
+  Merriweather
+} from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-roboto'
+});
+const openSans = Open_Sans({ subsets: ['latin'], variable: '--font-opensans' });
+const lato = Lato({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-lato'
+});
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair'
+});
+const merriweather = Merriweather({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-merriweather'
 });
 
 const geistMono = Geist_Mono({
@@ -25,11 +48,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const fontVariables = [
+    inter.variable,
+    roboto.variable,
+    openSans.variable,
+    lato.variable,
+    playfair.variable,
+    merriweather.variable,
+    geistMono.variable
+  ].join(' ');
+
   return (
-    <html lang="en" className={inter.variable}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" className={fontVariables}>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

@@ -1,7 +1,8 @@
 import { StyleSheet } from '@react-pdf/renderer';
-import { FONT_FAMILY } from './fonts';
+import { PDF_FONTS, FONT_FAMILY } from './fonts';
+import { COLOR_PALETTES, type TPaletteId, type TFontId } from '@/types';
 
-export const COLORS = {
+export const BASE_COLORS = {
   background: '#ffffff',
   backgroundAlt: '#f8fafc',
   cardBg: '#f1f5f9',
@@ -12,38 +13,40 @@ export const COLORS = {
   textSecondary: '#334155',
   textMuted: '#64748b',
   textDark: '#94a3b8',
-  slate600: '#475569',
-  cyan300: '#67e8f9',
-  cyan400: '#22d3ee',
-  cyan: '#06b6d4',
-  cyan600: '#0891b2',
-  cyan700: '#0e7490',
-  violet300: '#c4b5fd',
-  violet400: '#a78bfa',
-  violet: '#8b5cf6',
-  violet600: '#7c3aed',
-  violet700: '#6d28d9',
-  fuchsia300: '#f0abfc',
-  fuchsia400: '#e879f9',
-  fuchsia: '#d946ef',
-  fuchsia600: '#c026d3',
-  fuchsia700: '#a21caf',
-  rose: '#f43f5e'
+  slate600: '#475569'
 };
 
-export const createStyles = () =>
-  StyleSheet.create({
+export const getColors = (paletteId: TPaletteId = 'ocean') => {
+  const palette = COLOR_PALETTES[paletteId];
+  return {
+    ...BASE_COLORS,
+    summary: palette.summary,
+    experience: palette.experience,
+    education: palette.education,
+    skills: palette.skills
+  };
+};
+
+export const COLORS = getColors('ocean');
+
+export const createStyles = (
+  paletteId: TPaletteId = 'ocean',
+  fontId: TFontId = 'inter'
+) => {
+  const colors = getColors(paletteId);
+  const fontFamily = PDF_FONTS[fontId] || FONT_FAMILY.sans;
+  return StyleSheet.create({
     page: {
       flexDirection: 'column',
-      backgroundColor: COLORS.background,
-      fontFamily: FONT_FAMILY.sans,
+      backgroundColor: colors.background,
+      fontFamily: fontFamily,
       paddingTop: 32,
       paddingBottom: 40,
       paddingHorizontal: 32
     },
     header: {
       paddingBottom: 20,
-      borderBottom: `1 solid ${COLORS.cardBorder}`,
+      borderBottom: `1 solid ${  colors.cardBorder}`,
       marginBottom: 0,
       marginHorizontal: 0,
       paddingHorizontal: 0
@@ -51,9 +54,9 @@ export const createStyles = () =>
     name: {
       fontSize: 24,
       fontWeight: 700,
-      color: COLORS.textPrimary,
+      color: colors.textPrimary,
       marginBottom: 12,
-      fontFamily: FONT_FAMILY.sans,
+      fontFamily: fontFamily,
       letterSpacing: -0.5
     },
     contactRow: {
@@ -70,17 +73,17 @@ export const createStyles = () =>
       width: 24,
       height: 24,
       borderRadius: 6,
-      backgroundColor: COLORS.cardBg,
+      backgroundColor: colors.cardBg,
       justifyContent: 'center',
       alignItems: 'center'
     },
     contactText: {
       fontSize: 9,
-      color: COLORS.textSecondary
+      color: colors.textSecondary
     },
     contactLink: {
       fontSize: 9,
-      color: COLORS.cyan,
+      color: colors.experience,
       textDecoration: 'none'
     },
     body: {
@@ -91,11 +94,11 @@ export const createStyles = () =>
       marginTop: 20,
       marginBottom: 20,
       paddingLeft: 12,
-      borderLeft: `2 solid ${COLORS.cyan}`
+      borderLeft: `2 solid ${  colors.summary}`
     },
     summaryText: {
       fontSize: 10,
-      color: COLORS.textSecondary,
+      color: colors.textSecondary,
       lineHeight: 1.6
     },
     section: {
@@ -115,20 +118,11 @@ export const createStyles = () =>
       justifyContent: 'center',
       alignItems: 'center'
     },
-    sectionIconBoxCyan: {
-      backgroundColor: COLORS.cyan
-    },
-    sectionIconBoxViolet: {
-      backgroundColor: COLORS.violet
-    },
-    sectionIconBoxFuchsia: {
-      backgroundColor: COLORS.fuchsia
-    },
     sectionTitle: {
       fontSize: 14,
       fontWeight: 600,
-      color: COLORS.textPrimary,
-      fontFamily: FONT_FAMILY.sans,
+      color: colors.textPrimary,
+      fontFamily: fontFamily,
       letterSpacing: 0.3
     },
     experienceContainer: {
@@ -144,19 +138,19 @@ export const createStyles = () =>
       width: 12,
       height: 12,
       borderRadius: 6,
-      backgroundColor: COLORS.background,
+      backgroundColor: colors.background,
       borderWidth: 2,
-      borderColor: COLORS.cyan,
+      borderColor: colors.experience,
       borderStyle: 'solid',
       marginTop: 6,
       flexShrink: 0
     },
     card: {
-      backgroundColor: COLORS.cardBg,
+      backgroundColor: colors.cardBg,
       borderRadius: 8,
       padding: 12,
       borderWidth: 1,
-      borderColor: COLORS.cardBorder,
+      borderColor: colors.cardBorder,
       borderStyle: 'solid'
     },
     cardHeader: {
@@ -173,19 +167,19 @@ export const createStyles = () =>
     position: {
       fontSize: 11,
       fontWeight: 600,
-      color: COLORS.textPrimary,
-      fontFamily: FONT_FAMILY.sans,
+      color: colors.textPrimary,
+      fontFamily: fontFamily,
       marginBottom: 3
     },
     company: {
       fontSize: 10,
       fontWeight: 600,
-      color: COLORS.cyan600,
-      fontFamily: FONT_FAMILY.sans
+      color: colors.experience,
+      fontFamily: fontFamily
     },
     location: {
       fontSize: 8,
-      color: COLORS.textMuted,
+      color: colors.textMuted,
       marginBottom: 2
     },
     dateRangeContainer: {
@@ -195,12 +189,12 @@ export const createStyles = () =>
     },
     dateRange: {
       fontSize: 8,
-      color: COLORS.textDark,
+      color: colors.textDark,
       fontFamily: FONT_FAMILY.mono
     },
     description: {
       fontSize: 9,
-      color: COLORS.textMuted,
+      color: colors.textMuted,
       lineHeight: 1.625
     },
     educationItem: {
@@ -209,19 +203,19 @@ export const createStyles = () =>
     degree: {
       fontSize: 11,
       fontWeight: 600,
-      color: COLORS.textPrimary,
-      fontFamily: FONT_FAMILY.sans,
+      color: colors.textPrimary,
+      fontFamily: fontFamily,
       marginBottom: 3
     },
     institution: {
       fontSize: 10,
       fontWeight: 600,
-      color: COLORS.violet,
-      fontFamily: FONT_FAMILY.sans
+      color: colors.education,
+      fontFamily: fontFamily
     },
     gpa: {
       fontSize: 8,
-      color: COLORS.fuchsia,
+      color: colors.skills,
       marginTop: 3
     },
     skillsContainer: {
@@ -231,13 +225,13 @@ export const createStyles = () =>
     },
     skillTag: {
       fontSize: 9,
-      color: COLORS.textSecondary,
-      backgroundColor: COLORS.cardBg,
+      color: colors.textSecondary,
+      backgroundColor: colors.cardBg,
       paddingVertical: 4,
       paddingHorizontal: 10,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: COLORS.cardBorder,
+      borderColor: colors.cardBorder,
       borderStyle: 'solid'
     },
     pageNumber: {
@@ -245,6 +239,7 @@ export const createStyles = () =>
       bottom: 20,
       right: 0,
       fontSize: 8,
-      color: COLORS.textDark
+      color: colors.textDark
     }
   });
+};

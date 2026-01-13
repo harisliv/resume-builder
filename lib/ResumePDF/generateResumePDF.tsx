@@ -1,9 +1,19 @@
 import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
-import type { TResumeData } from '@/types';
+import type { TResumeData, TDocumentStyle } from '@/types';
 import { pdf } from '@react-pdf/renderer';
 
-export const generateResumePDF = async (data: TResumeData): Promise<void> => {
-  const doc = <ResumeDocument data={data} />;
+export const generateResumePDF = async (
+  data: TResumeData,
+  style?: TDocumentStyle
+): Promise<void> => {
+  const doc = (
+    <ResumeDocument
+      data={data}
+      palette={style?.palette}
+      font={style?.font}
+      documentStyle={style?.style}
+    />
+  );
   const instance = pdf(doc);
   const blob = await instance.toBlob();
 

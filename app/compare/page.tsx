@@ -1,9 +1,17 @@
 'use client';
 
-import { PDFViewer } from '@react-pdf/renderer';
-import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
+import dynamic from 'next/dynamic';
 import ResumePreview from '@/components/ResumePreview/resume-preview';
 import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
+
+const PDFViewerSection = dynamic(() => import('./pdf-viewer-section'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full">
+      Loading PDF...
+    </div>
+  )
+});
 
 export default function ComparePage() {
   const data = extendedMockResumeData;
@@ -27,9 +35,7 @@ export default function ComparePage() {
             PDF Preview (PDFViewer)
           </h2>
           <div className="flex-1 rounded-lg shadow-lg overflow-hidden">
-            <PDFViewer width="100%" height="100%" showToolbar={false}>
-              <ResumeDocument data={data} />
-            </PDFViewer>
+            <PDFViewerSection data={data} />
           </div>
         </div>
       </div>

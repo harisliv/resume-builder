@@ -1,0 +1,9 @@
+export { MailIcon } from './MailIcon';
+export { PhoneIcon } from './PhoneIcon';
+export { MapPinIcon } from './MapPinIcon';
+export { LinkedInIcon } from './LinkedInIcon';
+export { GlobeIcon } from './GlobeIcon';
+export { BriefcaseIcon } from './BriefcaseIcon';
+export { GraduationCapIcon } from './GraduationCapIcon';
+export { SparklesIcon } from './SparklesIcon';
+export { ArrowRightIcon } from './ArrowRightIcon';

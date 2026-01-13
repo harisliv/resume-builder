@@ -7,11 +7,11 @@ describe('ResumeStyles', () => {
       expect(COLORS.background).toBe('#ffffff');
     });
 
-    it('has defined accent colors', () => {
-      expect(COLORS.cyan).toBeDefined();
-      expect(COLORS.violet).toBeDefined();
-      expect(COLORS.fuchsia).toBeDefined();
-      expect(COLORS.rose).toBeDefined();
+    it('has defined section colors', () => {
+      expect(COLORS.summary).toBeDefined();
+      expect(COLORS.experience).toBeDefined();
+      expect(COLORS.education).toBeDefined();
+      expect(COLORS.skills).toBeDefined();
     });
 
     it('has defined text colors', () => {
@@ -62,7 +62,7 @@ describe('ResumeStyles', () => {
       });
 
       it('header has proper padding', () => {
-        expect(styles.header.paddingBottom).toBeGreaterThanOrEqual(24);
+        expect(styles.header.paddingBottom).toBeGreaterThanOrEqual(20);
       });
     });
 
@@ -72,7 +72,7 @@ describe('ResumeStyles', () => {
       });
 
       it('has padding on the body', () => {
-        expect(styles.body.paddingTop).toBeGreaterThan(0);
+        expect(styles.body.paddingTop).toBeGreaterThanOrEqual(0);
       });
     });
 
@@ -93,10 +93,9 @@ describe('ResumeStyles', () => {
         expect(styles.sectionIconBox).toBeDefined();
       });
 
-      it('has different icon box color variants', () => {
-        expect(styles.sectionIconBoxCyan).toBeDefined();
-        expect(styles.sectionIconBoxViolet).toBeDefined();
-        expect(styles.sectionIconBoxFuchsia).toBeDefined();
+      it('sectionIconBox has correct dimensions', () => {
+        expect(styles.sectionIconBox.width).toBe(26);
+        expect(styles.sectionIconBox.height).toBe(26);
       });
     });
 

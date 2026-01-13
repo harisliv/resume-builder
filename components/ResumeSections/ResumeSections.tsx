@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,27 +8,34 @@ import {
   Download,
   FileText,
   MagicWand01Icon,
+  PaintBrush01Icon,
   Save
 } from '@hugeicons/core-free-icons';
 import ResumeSectionsTabs from './components/Tabs';
-import { resumeDefaultValues, resumeSchema } from '@/types';
+import {
+  resumeSchema,
+  documentStyleDefaultValues,
+  type TDocumentStyle
+} from '@/types';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ResumePreview } from '../ResumePreview';
 import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import type * as z from 'zod';
 import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
-import { PDFViewer } from '@react-pdf/renderer';
-import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
+import { DocumentStyleControls } from '../DocumentStyleFields';
 
 export default function ResumeSections() {
+  const [documentStyle, setDocumentStyle] = useState<TDocumentStyle>(
+    documentStyleDefaultValues
+  );
+
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
     defaultValues: extendedMockResumeData,
     mode: 'onChange'
   });
 
-  console.log(form.watch());
   return (
     <FormProvider {...form}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -53,18 +61,31 @@ export default function ResumeSections() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">
+                <HugeiconsIcon icon={PaintBrush01Icon} strokeWidth={2} />
+                Style
+              </h3>
+            </div>
+            <DocumentStyleControls
+              defaultValue={documentStyle}
+              onApply={setDocumentStyle}
+            />
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <HugeiconsIcon icon={FileText} strokeWidth={2} />
                 Preview
               </h3>
               <Button
                 className="gap-2"
-                onClick={() => generateResumePDF(form.watch())}
+                onClick={() => generateResumePDF(form.watch(), documentStyle)}
               >
                 <HugeiconsIcon icon={Download} strokeWidth={2} />
                 Download
               </Button>
             </div>
-            <ResumePreview data={form.watch()} />
+            <ResumePreview data={form.watch()} style={documentStyle} />
           </Card>
         </div>
       </div>
