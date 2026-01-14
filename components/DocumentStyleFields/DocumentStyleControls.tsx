@@ -1,45 +1,29 @@
 'use client';
 
-import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  documentStyleSchema,
-  documentStyleDefaultValues,
-  type TDocumentStyle
-} from '@/types';
-import { PaletteSelect, FontSelect, StyleSelect } from './';
-import { Button } from '@/components/ui/button';
+import { ResumeSectionsControlledSelect } from '../ControlledFields';
+import { paletteOptions, fontOptions, styleOptions } from '@/types';
 
-interface IDocumentStyleControlsProps {
-  defaultValue?: TDocumentStyle;
-  onApply: (style: TDocumentStyle) => void;
-}
-
-export default function DocumentStyleControls({
-  defaultValue,
-  onApply
-}: IDocumentStyleControlsProps) {
-  const form = useForm<TDocumentStyle>({
-    resolver: zodResolver(documentStyleSchema),
-    defaultValues: defaultValue ?? documentStyleDefaultValues
-  });
-
-  const handleApply = form.handleSubmit((data) => {
-    onApply(data);
-  });
-
+export default function DocumentStyleControls() {
   return (
-    <FormProvider {...form}>
-      <div className="flex gap-4 items-end">
-        <div className="grid grid-cols-3 gap-4 flex-1">
-          <PaletteSelect />
-          <FontSelect />
-          <StyleSelect />
-        </div>
-        <Button type="button" onClick={handleApply}>
-          Apply
-        </Button>
-      </div>
-    </FormProvider>
+    <div className="grid grid-cols-3 gap-4">
+      <ResumeSectionsControlledSelect
+        name="documentStyle.palette"
+        label="Color Palette"
+        placeholder="Select palette"
+        options={paletteOptions}
+      />
+      <ResumeSectionsControlledSelect
+        name="documentStyle.font"
+        label="Font"
+        placeholder="Select font"
+        options={fontOptions}
+      />
+      <ResumeSectionsControlledSelect
+        name="documentStyle.style"
+        label="Document Style"
+        placeholder="Select style"
+        options={styleOptions}
+      />
+    </div>
   );
 }

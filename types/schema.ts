@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { documentStyleSchema } from './documentStyle';
 
 export const personalInfoSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -32,6 +33,9 @@ export const educationSchema = z.object({
 });
 
 export const resumeSchema = z.object({
+  id: z.uuid().optional(),
+  userId: z.string().optional(),
+  title: z.string().min(1, 'Resume title is required'),
   personalInfo: personalInfoSchema,
   experience: z
     .array(experienceSchema)
@@ -39,7 +43,8 @@ export const resumeSchema = z.object({
   education: z
     .array(educationSchema)
     .min(1, 'At least one education entry is required'),
-  skills: z.array(z.string()).min(3, 'At least 3 skills are required')
+  skills: z.array(z.string()).min(3, 'At least 3 skills are required'),
+  documentStyle: documentStyleSchema
 });
 
 export const personalInfoDefaultValues = {
@@ -72,10 +77,16 @@ export const educationDefaultValues = {
 };
 
 export const resumeDefaultValues = {
+  title: '',
   personalInfo: personalInfoDefaultValues,
   experience: [],
   education: [],
-  skills: []
+  skills: [],
+  documentStyle: {
+    palette: 'ocean' as const,
+    font: 'inter' as const,
+    style: 'modern' as const
+  }
 };
 
 export type TResumeData = z.infer<typeof resumeSchema>;

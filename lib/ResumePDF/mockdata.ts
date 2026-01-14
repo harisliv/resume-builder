@@ -1,6 +1,7 @@
 import type { TResumeData } from '@/types';
 
 export const mockResumeData: TResumeData = {
+  title: 'Senior Software Engineer Resume',
   personalInfo: {
     fullName: 'Haris Livieratos',
     email: 'haris@example.com',
@@ -73,10 +74,16 @@ export const mockResumeData: TResumeData = {
     'Express.js',
     'Nest.js',
     'Git'
-  ]
+  ],
+  documentStyle: {
+    palette: 'ocean',
+    font: 'inter',
+    style: 'modern'
+  }
 };
 
 export const extendedMockResumeData: TResumeData = {
+  title: 'Full Stack Developer Resume',
   personalInfo: {
     fullName: 'Haris Livieratos',
     email: 'haris@example.com',
@@ -223,5 +230,10 @@ export const extendedMockResumeData: TResumeData = {
     'Agile/Scrum',
     'Figma',
     'Adobe XD'
-  ]
+  ],
+  documentStyle: {
+    palette: 'ocean',
+    font: 'inter',
+    style: 'modern'
+  }
 };

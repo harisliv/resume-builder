@@ -67,5 +67,3 @@ export default function ControlledSelect<TForm extends FieldValues>(props: {
 }
 
 export const ResumeSectionsControlledSelect = ControlledSelect<TResumeData>;
-
-export const DocumentStyleControlledSelect = ControlledSelect<TDocumentStyle>;

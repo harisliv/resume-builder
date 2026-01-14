@@ -10,6 +10,12 @@ import {
 } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
+import {
+  AuthKitProvider,
+  Impersonation
+} from '@workos-inc/authkit-nextjs/components';
+import { Topbar } from '@/components/Topbar';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -61,16 +67,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables}>
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="container mx-auto py-8 px-4 max-w-7xl">
-            {children}
-          </div>
-        </ThemeProvider>
+        <AuthKitProvider>
+          <Impersonation />
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Topbar />
+              <div className="container mx-auto py-8 px-4 max-w-7xl">
+                {children}
+              </div>
+            </ThemeProvider>
+          </QueryProvider>
+        </AuthKitProvider>
       </body>
     </html>
   );
