@@ -10,9 +10,12 @@ const convexClient = new ConvexHttpClient(
   process.env.NEXT_PUBLIC_CONVEX_URL as string
 );
 
-async function submitResume(data: TResumeData, user: User | null) {
+async function submitResume(
+  data: TResumeData,
+  user: User | null
+): Promise<{ success: boolean; id: Id<'resumes'> }> {
   if (!user) {
-    return { success: false, error: 'User not found' };
+    throw new Error('User not found');
   }
   const {
     id,
