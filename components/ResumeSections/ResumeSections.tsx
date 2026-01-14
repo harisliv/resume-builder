@@ -21,25 +21,27 @@ import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import type * as z from 'zod';
 import { DocumentStyleControls } from '../DocumentStyleFields';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
+import { useAuth } from '@workos-inc/authkit-nextjs/components';
+import { useGetUserResume } from '@/hooks/useGetUserResume';
+import { mockResumeData } from '@/lib/ResumePDF/mockdata';
 
 export default function ResumeSections() {
+  const { user } = useAuth();
+
+  const { data: resumes, isLoading: isLoadingResumes } = useGetUserResume(
+    user?.id
+  );
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
     defaultValues: resumeDefaultValues,
+    values: resumes?.[0],
     mode: 'onChange'
   });
 
   const { mutate: submitResume, isPending, isError, error } = useResumeSubmit();
 
   const onSubmit = (data: TResumeData) => {
-    submitResume(data, {
-      onSuccess: () => {
-        alert('Resume saved successfully!');
-      },
-      onError: (error) => {
-        alert(`Failed to save resume: ${error.message}`);
-      }
-    });
+    submitResume(data);
   };
 
   return (

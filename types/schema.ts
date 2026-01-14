@@ -33,7 +33,7 @@ export const educationSchema = z.object({
 });
 
 export const resumeSchema = z.object({
-  id: z.uuid().optional(),
+  id: z.string().optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required'),
   personalInfo: personalInfoSchema,

@@ -16,6 +16,7 @@ import {
 } from '@workos-inc/authkit-nextjs/components';
 import { Topbar } from '@/components/Topbar';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ConvexProvider } from '@/components/providers/ConvexProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -69,19 +70,21 @@ export default function RootLayout({
       <body className="antialiased">
         <AuthKitProvider>
           <Impersonation />
-          <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Topbar />
-              <div className="container mx-auto py-8 px-4 max-w-7xl">
-                {children}
-              </div>
-            </ThemeProvider>
-          </QueryProvider>
+          <ConvexProvider>
+            <QueryProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Topbar />
+                <div className="container mx-auto py-8 px-4 max-w-7xl">
+                  {children}
+                </div>
+              </ThemeProvider>
+            </QueryProvider>
+          </ConvexProvider>
         </AuthKitProvider>
       </body>
     </html>

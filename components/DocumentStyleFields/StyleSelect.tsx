@@ -1,12 +1,12 @@
 'use client';
 
-import { DocumentStyleControlledSelect } from '../ControlledFields';
+import { ResumeSectionsControlledSelect } from '../ControlledFields';
 import { styleOptions } from '@/types';
 
 export default function StyleSelect() {
   return (
-    <DocumentStyleControlledSelect
-      name="style"
+    <ResumeSectionsControlledSelect
+      name="documentStyle.style"
       label="Document Style"
       placeholder="Select style"
       options={styleOptions}

@@ -1,12 +1,12 @@
 'use client';
 
-import { DocumentStyleControlledSelect } from '../ControlledFields';
+import { ResumeSectionsControlledSelect } from '../ControlledFields';
 import { paletteOptions } from '@/types';
 
 export default function PaletteSelect() {
   return (
-    <DocumentStyleControlledSelect
-      name="palette"
+    <ResumeSectionsControlledSelect
+      name="documentStyle.palette"
       label="Color Palette"
       placeholder="Select palette"
       options={paletteOptions}
