@@ -1,59 +1,11 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
-
-const personalInfoValidator = v.object({
-  fullName: v.string(),
-  email: v.string(),
-  phone: v.string(),
-  location: v.string(),
-  linkedIn: v.optional(v.string()),
-  website: v.optional(v.string()),
-  summary: v.string()
-});
-
-const experienceValidator = v.object({
-  company: v.string(),
-  position: v.string(),
-  location: v.string(),
-  startDate: v.string(),
-  endDate: v.optional(v.string()),
-  current: v.optional(v.boolean()),
-  description: v.string()
-});
-
-const educationValidator = v.object({
-  institution: v.string(),
-  degree: v.string(),
-  field: v.string(),
-  location: v.string(),
-  graduationDate: v.string(),
-  gpa: v.optional(v.string())
-});
-
-const documentStyleValidator = v.object({
-  palette: v.union(
-    v.literal('ocean'),
-    v.literal('forest'),
-    v.literal('sunset'),
-    v.literal('midnight'),
-    v.literal('rose'),
-    v.literal('monochrome')
-  ),
-  font: v.union(
-    v.literal('inter'),
-    v.literal('roboto'),
-    v.literal('opensans'),
-    v.literal('lato'),
-    v.literal('playfair'),
-    v.literal('merriweather')
-  ),
-  style: v.union(
-    v.literal('modern'),
-    v.literal('classic'),
-    v.literal('minimal'),
-    v.literal('bold')
-  )
-});
+import {
+  documentStyleValidator,
+  educationValidator,
+  experienceValidator,
+  personalInfoValidator
+} from './validators';
 
 const resumeValidator = v.object({
   _id: v.id('resumes'),
@@ -153,4 +105,41 @@ export const getAllResumes = query({
   args: {},
   returns: v.array(resumeValidator),
   handler: async (ctx) => await ctx.db.query('resumes').order('desc').collect()
+});
+
+export const listResumeTitles = query({
+  args: {
+    userId: v.string()
+  },
+  returns: v.array(
+    v.object({
+      _id: v.id('resumes'),
+      title: v.string()
+    })
+  ),
+  handler: async (ctx, args) => {
+    const resumes = await ctx.db
+      .query('resumes')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .collect();
+    return resumes.map((resume) => ({
+      _id: resume._id,
+      title: resume.title
+    }));
+  }
+});
+
+export const getResumeById = query({
+  args: {
+    id: v.id('resumes'),
+    userId: v.string()
+  },
+  returns: v.union(resumeValidator, v.null()),
+  handler: async (ctx, args) => {
+    const resume = await ctx.db.get(args.id);
+    if (!resume || resume.userId !== args.userId) {
+      return null;
+    }
+    return resume;
+  }
 });

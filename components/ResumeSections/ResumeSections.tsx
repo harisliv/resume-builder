@@ -1,10 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Download,
   FileText,
@@ -12,6 +11,13 @@ import {
   PaintBrush01Icon,
   Save
 } from '@hugeicons/core-free-icons';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import ResumeSectionsTabs from './components/Tabs';
 import { resumeSchema, type TResumeData, resumeDefaultValues } from '@/types';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -22,19 +28,24 @@ import type * as z from 'zod';
 import { DocumentStyleControls } from '../DocumentStyleFields';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { useAuth } from '@workos-inc/authkit-nextjs/components';
-import { useGetUserResume } from '@/hooks/useGetUserResume';
-import { mockResumeData } from '@/lib/ResumePDF/mockdata';
+import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
+import { useGetResumeById } from '@/hooks/useGetResumeById';
+import type { Id } from '@/convex/_generated/dataModel';
 
 export default function ResumeSections() {
   const { user } = useAuth();
+  const [selectedResumeId, setSelectedResumeId] = useState<
+    Id<'resumes'> | undefined
+  >(undefined);
 
-  const { data: resumes, isLoading: isLoadingResumes } = useGetUserResume(
-    user?.id
-  );
+  const { data: resumeTitles, isLoading: isLoadingTitles } =
+    useGetUserResumeTitles(user?.id);
+  const { data: selectedResume } = useGetResumeById(selectedResumeId, user?.id);
+
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
     defaultValues: resumeDefaultValues,
-    values: resumes?.[0],
+    values: selectedResume ?? undefined,
     mode: 'onChange'
   });
 
@@ -44,17 +55,21 @@ export default function ResumeSections() {
     submitResume(data);
   };
 
+  const handleResumeSelect = (value: string) => {
+    setSelectedResumeId(value as Id<'resumes'>);
+  };
+
   return (
     <FormProvider {...form}>
       <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Form */}
-          <div className="space-y-6">
+        <div className="space-y-6 max-w-[2000px] mx-auto">
+          {/* Top Row - My Resumes & Styles */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <HugeiconsIcon icon={MagicWand01Icon} strokeWidth={2} />
-                  Resume Builder
+                  My Resumes
                 </h3>
                 <div className="flex items-center gap-2">
                   {isError && (
@@ -68,40 +83,35 @@ export default function ResumeSections() {
                   </Button>
                 </div>
               </div>
-              <div className="mb-6">
-                <Label htmlFor="title">Resume Title</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Software Engineer Resume"
-                  {...form.register('title')}
-                />
-                {form.formState.errors.title && (
-                  <p className="text-sm text-destructive mt-1">
-                    {form.formState.errors.title.message}
-                  </p>
-                )}
-              </div>
-              <ResumeSectionsTabs />
+              <Select
+                value={selectedResumeId}
+                onValueChange={handleResumeSelect}
+                disabled={isLoadingTitles}
+              >
+                <SelectTrigger id="resume-select" className="w-full">
+                  <SelectValue
+                    placeholder={
+                      isLoadingTitles ? 'Loading...' : 'Select a resume'
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {resumeTitles?.map(
+                    (resume: { id: string; title: string }) => (
+                      <SelectItem key={resume.id} value={resume.id}>
+                        {resume.title}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
             </Card>
-          </div>
 
-          {/* Right Column - Preview */}
-          <div className="space-y-6 lg:sticky lg:top-8 lg:self-start">
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <HugeiconsIcon icon={PaintBrush01Icon} strokeWidth={2} />
-                  Style
-                </h3>
-              </div>
-              <DocumentStyleControls />
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <HugeiconsIcon icon={FileText} strokeWidth={2} />
-                  Preview
+                  Styles
                 </h3>
                 <Button
                   className="gap-2"
@@ -114,6 +124,29 @@ export default function ResumeSections() {
                   <HugeiconsIcon icon={Download} strokeWidth={2} />
                   Download
                 </Button>
+              </div>
+              <DocumentStyleControls />
+            </Card>
+          </div>
+
+          {/* Bottom Row - Resume Form & Preview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <HugeiconsIcon icon={FileText} strokeWidth={2} />
+                  Resume Form
+                </h3>
+              </div>
+              <ResumeSectionsTabs />
+            </Card>
+
+            <Card className="p-6 lg:sticky lg:top-8 lg:self-start">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <HugeiconsIcon icon={FileText} strokeWidth={2} />
+                  Preview
+                </h3>
               </div>
               <ResumePreview
                 data={form.watch()}

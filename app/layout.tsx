@@ -66,7 +66,7 @@ export default function RootLayout({
   ].join(' ');
 
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
       <body className="antialiased">
         <AuthKitProvider>
           <Impersonation />
@@ -79,7 +79,7 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <Topbar />
-                <div className="container mx-auto py-8 px-4 max-w-7xl">
+                <div className="py-8 px-4">
                   {children}
                 </div>
               </ThemeProvider>
