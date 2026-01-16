@@ -67,6 +67,14 @@ export function useResumeSubmit() {
         queryClient.invalidateQueries({
           queryKey: ['resumes', variables.userId]
         });
+        queryClient.invalidateQueries({
+          queryKey: ['resumeTitles', variables.userId]
+        });
+      }
+      if (user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: ['resumeTitles', user.id]
+        });
       }
     }
   });

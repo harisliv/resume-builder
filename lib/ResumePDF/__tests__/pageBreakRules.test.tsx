@@ -75,6 +75,8 @@ const createTestData = (
   experienceCount: number,
   educationCount: number
 ): TResumeData => ({
+  title: 'Test Resume',
+  documentStyle: { palette: 'ocean', font: 'inter', style: 'modern' },
   personalInfo: {
     fullName: 'Test User',
     email: 'test@example.com',

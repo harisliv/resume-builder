@@ -3,11 +3,11 @@ import { View, Text } from '@react-pdf/renderer';
 import type { createStyles } from '../ResumeStyles';
 
 interface IEducation {
-  degree: string;
-  field: string;
-  institution: string;
-  location: string;
-  graduationDate: string;
+  degree?: string;
+  field?: string;
+  institution?: string;
+  location?: string;
+  graduationDate?: string;
   gpa?: string;
 }
 
@@ -22,13 +22,13 @@ export const ModernEducationCard = ({ edu, styles }: IModernEducationCardProps) 
       <View style={styles.cardHeader}>
         <View style={styles.cardLeft}>
           <Text style={styles.degree}>
-            {edu.degree} in {edu.field}
+            {edu.degree || 'Degree'} in {edu.field || 'Field'}
           </Text>
-          <Text style={styles.institution}>{edu.institution}</Text>
+          <Text style={styles.institution}>{edu.institution || 'Institution'}</Text>
         </View>
         <View style={styles.cardRight}>
-          <Text style={styles.location}>{edu.location}</Text>
-          <Text style={styles.dateRange}>{edu.graduationDate}</Text>
+          <Text style={styles.location}>{edu.location || ''}</Text>
+          <Text style={styles.dateRange}>{edu.graduationDate || ''}</Text>
           {edu.gpa && <Text style={styles.gpa}>GPA: {edu.gpa}</Text>}
         </View>
       </View>

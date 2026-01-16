@@ -2,34 +2,32 @@ import * as z from 'zod';
 import { documentStyleSchema } from './documentStyle';
 
 export const personalInfoSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  email: z.email('Invalid email address'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-  location: z.string().min(1, 'Location is required'),
-  linkedIn: z.url('Invalid URL').optional().or(z.literal('')),
-  website: z.url('Invalid URL').optional().or(z.literal('')),
-  summary: z.string().min(50, 'Summary should be at least 50 characters')
+  fullName: z.string().optional().or(z.literal('')),
+  email: z.string().optional().or(z.literal('')),
+  phone: z.string().optional().or(z.literal('')),
+  location: z.string().optional().or(z.literal('')),
+  linkedIn: z.string().optional().or(z.literal('')),
+  website: z.string().optional().or(z.literal('')),
+  summary: z.string().optional().or(z.literal(''))
 });
 
 export const experienceSchema = z.object({
-  company: z.string().min(1, 'Company name is required'),
-  position: z.string().min(1, 'Position is required'),
-  location: z.string().min(1, 'Location is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().optional(),
+  company: z.string().optional().or(z.literal('')),
+  position: z.string().optional().or(z.literal('')),
+  location: z.string().optional().or(z.literal('')),
+  startDate: z.string().optional().or(z.literal('')),
+  endDate: z.string().optional().or(z.literal('')),
   current: z.boolean().optional(),
-  description: z
-    .string()
-    .min(20, 'Description should be at least 20 characters')
+  description: z.string().optional().or(z.literal(''))
 });
 
 export const educationSchema = z.object({
-  institution: z.string().min(1, 'Institution name is required'),
-  degree: z.string().min(1, 'Degree is required'),
-  field: z.string().min(1, 'Field of study is required'),
-  location: z.string().min(1, 'Location is required'),
-  graduationDate: z.string().min(1, 'Graduation date is required'),
-  gpa: z.string().optional()
+  institution: z.string().optional().or(z.literal('')),
+  degree: z.string().optional().or(z.literal('')),
+  field: z.string().optional().or(z.literal('')),
+  location: z.string().optional().or(z.literal('')),
+  graduationDate: z.string().optional().or(z.literal('')),
+  gpa: z.string().optional().or(z.literal(''))
 });
 
 export const resumeSchema = z.object({
@@ -37,13 +35,9 @@ export const resumeSchema = z.object({
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required'),
   personalInfo: personalInfoSchema,
-  experience: z
-    .array(experienceSchema)
-    .min(1, 'At least one experience is required'),
-  education: z
-    .array(educationSchema)
-    .min(1, 'At least one education entry is required'),
-  skills: z.array(z.string()).min(3, 'At least 3 skills are required'),
+  experience: z.array(experienceSchema),
+  education: z.array(educationSchema),
+  skills: z.array(z.string()),
   documentStyle: documentStyleSchema
 });
 

@@ -16,19 +16,19 @@ export default function ResumeSectionsTabs() {
         <TabsTrigger value="skills">Skills</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="form" className="mt-6">
+      <TabsContent value="form" className="mt-6 px-1">
         <PersonalInfo />
       </TabsContent>
 
-      <TabsContent value="experience" className="mt-6">
+      <TabsContent value="experience" className="mt-6 px-1">
         <Experience />
       </TabsContent>
 
-      <TabsContent value="education" className="mt-6">
+      <TabsContent value="education" className="mt-6 px-1">
         <Education />
       </TabsContent>
 
-      <TabsContent value="skills" className="mt-6">
+      <TabsContent value="skills" className="mt-6 px-1">
         <div>Skills</div>
       </TabsContent>
     </Tabs>
