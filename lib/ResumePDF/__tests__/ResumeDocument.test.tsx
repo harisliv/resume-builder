@@ -93,6 +93,8 @@ describe('ResumeDocument', () => {
   describe('Basic Rendering', () => {
     it('renders without crashing with minimal data', () => {
       const minimalData: TResumeData = {
+        title: 'Test Resume',
+        documentStyle: { palette: 'ocean', font: 'inter', style: 'modern' },
         personalInfo: {
           fullName: 'Test User',
           email: 'test@example.com',
@@ -142,7 +144,7 @@ describe('ResumeDocument', () => {
   describe('Header Section', () => {
     it('displays the full name', () => {
       const { getByText } = render(<ResumeDocument data={mockResumeData} />);
-      expect(getByText(mockResumeData.personalInfo.fullName)).toBeTruthy();
+      expect(getByText(mockResumeData.personalInfo.fullName!)).toBeTruthy();
     });
 
     it('displays email as a link', () => {
@@ -155,13 +157,13 @@ describe('ResumeDocument', () => {
 
     it('displays phone number', () => {
       const { getByText } = render(<ResumeDocument data={mockResumeData} />);
-      expect(getByText(mockResumeData.personalInfo.phone)).toBeTruthy();
+      expect(getByText(mockResumeData.personalInfo.phone!)).toBeTruthy();
     });
 
     it('displays location', () => {
       const { getAllByText } = render(<ResumeDocument data={mockResumeData} />);
       const locationElements = getAllByText(
-        mockResumeData.personalInfo.location
+        mockResumeData.personalInfo.location!
       );
       expect(locationElements.length).toBeGreaterThanOrEqual(1);
     });
@@ -198,7 +200,7 @@ describe('ResumeDocument', () => {
   describe('Summary Section', () => {
     it('displays the summary text', () => {
       const { getByText } = render(<ResumeDocument data={mockResumeData} />);
-      expect(getByText(mockResumeData.personalInfo.summary)).toBeTruthy();
+      expect(getByText(mockResumeData.personalInfo.summary!)).toBeTruthy();
     });
 
     it('has wrap={false} to prevent splitting', () => {
@@ -214,8 +216,8 @@ describe('ResumeDocument', () => {
     it('displays all experience items', () => {
       const { getByText } = render(<ResumeDocument data={mockResumeData} />);
       mockResumeData.experience.forEach((exp) => {
-        expect(getByText(exp.position)).toBeTruthy();
-        expect(getByText(exp.company)).toBeTruthy();
+        expect(getByText(exp.position!)).toBeTruthy();
+        expect(getByText(exp.company!)).toBeTruthy();
       });
     });
 

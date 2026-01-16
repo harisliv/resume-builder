@@ -92,13 +92,13 @@ describe('Mock Data', () => {
   describe('Data Quality', () => {
     it('experience descriptions are meaningful length', () => {
       extendedMockResumeData.experience.forEach((exp) => {
-        expect(exp.description.length).toBeGreaterThanOrEqual(20);
+        expect(exp.description!.length).toBeGreaterThanOrEqual(20);
       });
     });
 
     it('summary is meaningful length', () => {
       expect(
-        extendedMockResumeData.personalInfo.summary.length
+        extendedMockResumeData.personalInfo.summary!.length
       ).toBeGreaterThanOrEqual(50);
     });
 

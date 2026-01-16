@@ -4,13 +4,13 @@ import type { createStyles } from '../ResumeStyles';
 import { ArrowRightIcon } from '../icons';
 
 interface IExperience {
-  position: string;
-  company: string;
-  location: string;
-  startDate: string;
+  position?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
   endDate?: string;
   current?: boolean;
-  description: string;
+  description?: string;
 }
 
 interface IModernExperienceCardProps {
@@ -18,27 +18,30 @@ interface IModernExperienceCardProps {
   styles: ReturnType<typeof createStyles>;
 }
 
-export const ModernExperienceCard = ({ exp, styles }: IModernExperienceCardProps) => (
+export const ModernExperienceCard = ({
+  exp,
+  styles
+}: IModernExperienceCardProps) => (
   <View style={styles.experienceItem} wrap={false}>
     <View style={styles.timelineDot} />
     <View style={[styles.card, { flex: 1 }]}>
       <View style={styles.cardHeader}>
         <View style={styles.cardLeft}>
-          <Text style={styles.position}>{exp.position}</Text>
-          <Text style={styles.company}>{exp.company}</Text>
+          <Text style={styles.position}>{exp.position || 'Position'}</Text>
+          <Text style={styles.company}>{exp.company || 'Company'}</Text>
         </View>
         <View style={styles.cardRight}>
-          <Text style={styles.location}>{exp.location}</Text>
+          <Text style={styles.location}>{exp.location || ''}</Text>
           <View style={styles.dateRangeContainer}>
-            <Text style={styles.dateRange}>{exp.startDate}</Text>
+            <Text style={styles.dateRange}>{exp.startDate || ''}</Text>
             <ArrowRightIcon />
             <Text style={styles.dateRange}>
-              {exp.current ? 'Present' : exp.endDate}
+              {exp.current ? 'Present' : exp.endDate || ''}
             </Text>
           </View>
         </View>
       </View>
-      <Text style={styles.description}>{exp.description}</Text>
+      <Text style={styles.description}>{exp.description || ''}</Text>
     </View>
   </View>
 );
