@@ -11,10 +11,10 @@ export default defineSchema({
   resumes: defineTable({
     userId: v.optional(v.string()),
     title: v.string(),
-    personalInfo: personalInfoValidator,
-    experience: v.array(experienceValidator),
-    education: v.array(educationValidator),
-    skills: v.array(v.string()),
+    personalInfo: v.optional(personalInfoValidator),
+    experience: v.optional(v.array(experienceValidator)),
+    education: v.optional(v.array(educationValidator)),
+    skills: v.optional(v.array(v.string())),
     documentStyle: documentStyleValidator
   }).index('by_user', ['userId'])
 });

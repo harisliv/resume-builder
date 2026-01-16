@@ -1,31 +1,31 @@
 import { v } from 'convex/values';
 
 export const personalInfoValidator = v.object({
-  fullName: v.string(),
-  email: v.string(),
-  phone: v.string(),
-  location: v.string(),
+  fullName: v.optional(v.string()),
+  email: v.optional(v.string()),
+  phone: v.optional(v.string()),
+  location: v.optional(v.string()),
   linkedIn: v.optional(v.string()),
   website: v.optional(v.string()),
-  summary: v.string()
+  summary: v.optional(v.string())
 });
 
 export const experienceValidator = v.object({
-  company: v.string(),
-  position: v.string(),
-  location: v.string(),
-  startDate: v.string(),
+  company: v.optional(v.string()),
+  position: v.optional(v.string()),
+  location: v.optional(v.string()),
+  startDate: v.optional(v.string()),
   endDate: v.optional(v.string()),
   current: v.optional(v.boolean()),
-  description: v.string()
+  description: v.optional(v.string())
 });
 
 export const educationValidator = v.object({
-  institution: v.string(),
-  degree: v.string(),
-  field: v.string(),
-  location: v.string(),
-  graduationDate: v.string(),
+  institution: v.optional(v.string()),
+  degree: v.optional(v.string()),
+  field: v.optional(v.string()),
+  location: v.optional(v.string()),
+  graduationDate: v.optional(v.string()),
   gpa: v.optional(v.string())
 });
 
