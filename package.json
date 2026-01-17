@@ -10,7 +10,8 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test": "vitest",
-    "convex": "npx convex dev"
+    "convex": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx convex dev",
+    "compile": "npx tsc -noEmit -w"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

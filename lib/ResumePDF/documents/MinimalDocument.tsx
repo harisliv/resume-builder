@@ -9,7 +9,11 @@ interface IMinimalDocumentProps {
   fontFamily: string;
 }
 
-export const MinimalDocument = ({ data, colors, fontFamily }: IMinimalDocumentProps) => {
+export const MinimalDocument = ({
+  data,
+  colors,
+  fontFamily
+}: IMinimalDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
 
   const minimalStyles = StyleSheet.create({
@@ -117,7 +121,9 @@ export const MinimalDocument = ({ data, colors, fontFamily }: IMinimalDocumentPr
 
       {experience && experience.length > 0 && (
         <View style={minimalStyles.section}>
-          <Text style={[minimalStyles.sectionTitle, { color: colors.experience }]}>
+          <Text
+            style={[minimalStyles.sectionTitle, { color: colors.experience }]}
+          >
             Experience
           </Text>
           {experience.map((exp, index) => (
@@ -131,7 +137,9 @@ export const MinimalDocument = ({ data, colors, fontFamily }: IMinimalDocumentPr
               <Text style={minimalStyles.itemSubtitle}>
                 {exp.company}, {exp.location}
               </Text>
-              <Text style={minimalStyles.itemDescription}>{exp.description}</Text>
+              <Text style={minimalStyles.itemDescription}>
+                {exp.description}
+              </Text>
             </View>
           ))}
         </View>
@@ -139,7 +147,9 @@ export const MinimalDocument = ({ data, colors, fontFamily }: IMinimalDocumentPr
 
       {education && education.length > 0 && (
         <View style={minimalStyles.section}>
-          <Text style={[minimalStyles.sectionTitle, { color: colors.education }]}>
+          <Text
+            style={[minimalStyles.sectionTitle, { color: colors.education }]}
+          >
             Education
           </Text>
           {education.map((edu, index) => (

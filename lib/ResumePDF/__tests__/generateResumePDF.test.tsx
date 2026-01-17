@@ -6,7 +6,9 @@ vi.mock('@react-pdf/renderer', () => ({
     register: vi.fn()
   },
   pdf: vi.fn(() => ({
-    toBlob: vi.fn().mockResolvedValue(new Blob(['test'], { type: 'application/pdf' }))
+    toBlob: vi
+      .fn()
+      .mockResolvedValue(new Blob(['test'], { type: 'application/pdf' }))
   })),
   Document: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
@@ -21,7 +23,9 @@ vi.mock('@react-pdf/renderer', () => ({
   Circle: () => <circle />,
   Rect: () => <rect />,
   Path: () => <path />,
-  Defs: ({ children }: { children: React.ReactNode }) => <defs>{children}</defs>,
+  Defs: ({ children }: { children: React.ReactNode }) => (
+    <defs>{children}</defs>
+  ),
   LinearGradient: ({ children }: { children: React.ReactNode }) => (
     <linearGradient>{children}</linearGradient>
   ),
@@ -40,11 +44,19 @@ describe('generateResumePDF', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
-    
-    createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
-    revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
-    appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation((node) => node);
-    removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation((node) => node);
+
+    createObjectURLSpy = vi
+      .spyOn(URL, 'createObjectURL')
+      .mockReturnValue('blob:test-url');
+    revokeObjectURLSpy = vi
+      .spyOn(URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+    appendChildSpy = vi
+      .spyOn(document.body, 'appendChild')
+      .mockImplementation((node) => node);
+    removeChildSpy = vi
+      .spyOn(document.body, 'removeChild')
+      .mockImplementation((node) => node);
   });
 
   afterEach(() => {
@@ -77,7 +89,9 @@ describe('generateResumePDF', () => {
 
   it('works with extended mock data', async () => {
     const { generateResumePDF } = await import('../generateResumePDF');
-    await expect(generateResumePDF(extendedMockResumeData)).resolves.not.toThrow();
+    await expect(
+      generateResumePDF(extendedMockResumeData)
+    ).resolves.not.toThrow();
   });
 
   it('handles empty full name gracefully', async () => {

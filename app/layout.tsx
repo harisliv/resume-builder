@@ -9,7 +9,7 @@ import {
   Merriweather
 } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 import {
   AuthKitProvider,
   Impersonation
@@ -18,7 +18,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ConvexProvider } from '@/components/providers/ConvexProvider';
 import { ResumeFormProvider } from '@/components/providers/ResumeFormProvider';
-import { AppSidebar } from '@/components/app-sidebar';
+import { AppSidebar } from '@/components/ui/app-sidebar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -84,7 +84,7 @@ export default function RootLayout({
                   <ResumeFormProvider>
                     <AppSidebar />
                     <SidebarInset>
-                      <div className="w-full max-w-[2000px] mx-auto min-h-screen">
+                      <div className="w-full max-w-[2000px] mx-auto h-screen overflow-hidden">
                         {children}
                       </div>
                     </SidebarInset>

@@ -10,7 +10,11 @@ interface IClassicDocumentProps {
   fontFamily: string;
 }
 
-export const ClassicDocument = ({ data, colors, fontFamily }: IClassicDocumentProps) => {
+export const ClassicDocument = ({
+  data,
+  colors,
+  fontFamily
+}: IClassicDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
 
   const classicStyles = StyleSheet.create({
@@ -104,7 +108,9 @@ export const ClassicDocument = ({ data, colors, fontFamily }: IClassicDocumentPr
             <Text style={classicStyles.contactText}>{personalInfo.email}</Text>
           )}
           {personalInfo?.phone && (
-            <Text style={classicStyles.contactText}>• {personalInfo.phone}</Text>
+            <Text style={classicStyles.contactText}>
+              • {personalInfo.phone}
+            </Text>
           )}
           {personalInfo?.location && (
             <Text style={classicStyles.contactText}>
@@ -124,7 +130,9 @@ export const ClassicDocument = ({ data, colors, fontFamily }: IClassicDocumentPr
           >
             Professional Summary
           </Text>
-          <Text style={classicStyles.itemDescription}>{personalInfo.summary}</Text>
+          <Text style={classicStyles.itemDescription}>
+            {personalInfo.summary}
+          </Text>
         </View>
       )}
 
@@ -150,7 +158,9 @@ export const ClassicDocument = ({ data, colors, fontFamily }: IClassicDocumentPr
                 <Text style={classicStyles.itemSubtitle}>{exp.company}</Text>
                 <Text style={classicStyles.itemDate}>{exp.location}</Text>
               </View>
-              <Text style={classicStyles.itemDescription}>{exp.description}</Text>
+              <Text style={classicStyles.itemDescription}>
+                {exp.description}
+              </Text>
             </View>
           ))}
         </View>
@@ -175,7 +185,9 @@ export const ClassicDocument = ({ data, colors, fontFamily }: IClassicDocumentPr
                 <Text style={classicStyles.itemDate}>{edu.graduationDate}</Text>
               </View>
               <View style={classicStyles.itemRow}>
-                <Text style={classicStyles.itemSubtitle}>{edu.institution}</Text>
+                <Text style={classicStyles.itemSubtitle}>
+                  {edu.institution}
+                </Text>
                 <Text style={classicStyles.itemDate}>{edu.location}</Text>
               </View>
               {edu.gpa && (

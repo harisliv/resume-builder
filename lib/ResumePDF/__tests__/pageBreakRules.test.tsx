@@ -63,7 +63,9 @@ vi.mock('@react-pdf/renderer', () => ({
     <defs data-testid="pdf-defs">{children}</defs>
   ),
   LinearGradient: ({ children }: { children: React.ReactNode }) => (
-    <linearGradient data-testid="pdf-linear-gradient">{children}</linearGradient>
+    <linearGradient data-testid="pdf-linear-gradient">
+      {children}
+    </linearGradient>
   ),
   Stop: () => <stop data-testid="pdf-stop" />,
   StyleSheet: {
@@ -117,8 +119,8 @@ describe('Page Break Rules', () => {
       const wrapFalseViews = container.querySelectorAll(
         '[data-testid="pdf-view"][data-wrap="false"]'
       );
-      const experienceHeader = Array.from(wrapFalseViews).find(
-        (view) => view.textContent?.includes('Experience')
+      const experienceHeader = Array.from(wrapFalseViews).find((view) =>
+        view.textContent?.includes('Experience')
       );
 
       expect(experienceHeader).toBeTruthy();
@@ -149,8 +151,8 @@ describe('Page Break Rules', () => {
       const wrapFalseViews = container.querySelectorAll(
         '[data-testid="pdf-view"][data-wrap="false"]'
       );
-      const educationHeader = Array.from(wrapFalseViews).find(
-        (view) => view.textContent?.includes('Education')
+      const educationHeader = Array.from(wrapFalseViews).find((view) =>
+        view.textContent?.includes('Education')
       );
 
       expect(educationHeader).toBeTruthy();
@@ -198,8 +200,8 @@ describe('Page Break Rules', () => {
         '[data-testid="pdf-view"][data-wrap="false"]'
       );
 
-      const skillsHeader = Array.from(wrapFalseViews).find(
-        (view) => view.textContent?.includes('Skills')
+      const skillsHeader = Array.from(wrapFalseViews).find((view) =>
+        view.textContent?.includes('Skills')
       );
       expect(skillsHeader).toBeTruthy();
     });

@@ -7,7 +7,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 overflow-auto max-h-[800px] shadow-sm border border-slate-100"
+      className="bg-white text-slate-900 shadow-sm border border-slate-100"
       style={{ fontFamily }}
     >
       <div className="px-8 py-6">

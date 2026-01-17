@@ -40,5 +40,4 @@ export default function ControlledTextarea<TForm extends FieldValues>(props: {
   );
 }
 
-export const ResumeSectionsControlledTextarea =
-  ControlledTextarea<TResumeData>;
+export const ResumeSectionsControlledTextarea = ControlledTextarea<TResumeData>;
