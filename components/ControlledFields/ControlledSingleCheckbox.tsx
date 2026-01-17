@@ -5,11 +5,9 @@ import { Checkbox } from '../ui/checkbox';
 import { useId } from 'react';
 import type { TResumeData } from '@/types';
 
-export default function ControlledSingleCheckbox<TForm extends FieldValues>(props: {
-  name: FieldPath<TForm>;
-  label?: string;
-  description?: string;
-}) {
+export default function ControlledSingleCheckbox<
+  TForm extends FieldValues
+>(props: { name: FieldPath<TForm>; label?: string; description?: string }) {
   const form = useFormContext<TForm>();
   const id = useId();
 

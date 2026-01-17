@@ -70,5 +70,4 @@ export default function ControlledCheckbox<TForm extends FieldValues>(props: {
   );
 }
 
-export const ResumeSectionsControlledCheckbox =
-  ControlledCheckbox<TResumeData>;
+export const ResumeSectionsControlledCheckbox = ControlledCheckbox<TResumeData>;

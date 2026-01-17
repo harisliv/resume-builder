@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Svg, Path, Defs, LinearGradient, Stop } from '@react-pdf/renderer';
+import {
+  View,
+  Svg,
+  Path,
+  Defs,
+  LinearGradient,
+  Stop
+} from '@react-pdf/renderer';
 
 interface IGradientIconBoxProps {
   gradientId: string;

@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { FileText, Plus, ChevronsUpDown, Check, X } from 'lucide-react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { useAuth } from '@workos-inc/authkit-nextjs/components';
 
 import { NavUser } from '@/components/ui/nav-user';
 import { Input } from '@/components/ui/input';
@@ -332,17 +331,6 @@ function StyleSelector() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
-
-  const userData = React.useMemo(
-    () => ({
-      name: user?.firstName ?? 'User',
-      email: user?.email ?? '',
-      avatar: user?.profilePictureUrl ?? ''
-    }),
-    [user]
-  );
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -362,7 +350,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={userData} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
