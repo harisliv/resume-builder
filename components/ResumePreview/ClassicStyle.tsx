@@ -7,7 +7,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 overflow-auto max-h-[800px] shadow-lg border border-slate-200"
+      className="bg-white text-slate-900 shadow-lg border border-slate-200"
       style={{ fontFamily }}
     >
       <div className="px-8 pt-6 pb-4 text-center border-b-2 border-slate-300">

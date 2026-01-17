@@ -15,9 +15,9 @@ export default function ResumeSections() {
   const form = useFormContext<TResumeData>();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 w-full max-w-[2000px] mx-auto h-full">
-      <Card className="p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 w-full max-w-[2000px] mx-auto h-full overflow-hidden">
+      <Card className="p-6 flex flex-col max-h-full overflow-hidden">
+        <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <HugeiconsIcon icon={FileText} strokeWidth={2} />
             Resume Form
@@ -34,13 +34,13 @@ export default function ResumeSections() {
             </Button>
           </div>
         </div>
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto min-h-0">
           <ResumeSectionsTabs />
         </div>
       </Card>
 
-      <Card className="p-6 flex flex-col lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)]">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-6 flex flex-col max-h-full overflow-hidden">
+        <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <HugeiconsIcon icon={FileText} strokeWidth={2} />
             Preview
@@ -50,7 +50,7 @@ export default function ResumeSections() {
             Download
           </Button>
         </div>
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto min-h-0">
           <ResumePreview
             data={form.watch()}
             style={form.watch('documentStyle')}

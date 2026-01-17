@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { mockResumeData, extendedMockResumeData } from '../mockdata';
 import { resumeSchema } from '@/types';
+import { describe, expect, it } from 'vitest';
+import { extendedMockResumeData, mockResumeData } from '../mockdata';
 
 describe('Mock Data', () => {
   describe('mockResumeData', () => {

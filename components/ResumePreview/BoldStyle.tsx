@@ -8,7 +8,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 overflow-auto max-h-[800px] shadow-xl border-0"
+      className="bg-white text-slate-900 shadow-xl border-0"
       style={{ fontFamily }}
     >
       <div className="px-6 py-6" style={{ backgroundColor: palette.summary }}>

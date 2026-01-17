@@ -81,7 +81,9 @@ vi.mock('@react-pdf/renderer', () => ({
     <defs data-testid="pdf-defs">{children}</defs>
   ),
   LinearGradient: ({ children }: { children: React.ReactNode }) => (
-    <linearGradient data-testid="pdf-linear-gradient">{children}</linearGradient>
+    <linearGradient data-testid="pdf-linear-gradient">
+      {children}
+    </linearGradient>
   ),
   Stop: () => <stop data-testid="pdf-stop" />,
   StyleSheet: {

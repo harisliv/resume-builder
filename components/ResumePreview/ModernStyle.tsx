@@ -18,7 +18,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 rounded-xl overflow-auto max-h-[800px] shadow-lg border border-slate-200"
+      className="bg-white text-slate-900 rounded-xl shadow-lg border border-slate-200"
       style={{ fontFamily }}
     >
       <div className="px-6 py-5 border-b border-slate-200">
