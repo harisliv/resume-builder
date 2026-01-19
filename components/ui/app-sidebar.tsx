@@ -124,18 +124,18 @@ function ResumeSelector() {
               size="lg"
               type="button"
               tooltip="My Resumes"
-              className="bg-background/80 shadow-sm border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0"
+              className="bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-full shrink-0 bg-blue-500">
-                <FileText className="size-5 text-white" />
+              <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+                <FileText className="size-6 text-white" strokeWidth={2.5} />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-semibold">My Resumes</span>
-                <span className="truncate text-xs text-muted-foreground">
+              <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="truncate font-bold">My Resumes</span>
+                <span className="truncate text-sm text-muted-foreground font-medium">
                   {currentTitle}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -224,7 +224,7 @@ function PaletteSelector() {
                   palette.experience,
                   palette.education
                 ]}
-                className="size-8 rounded-full"
+                className="size-10 rounded-xl"
               />
             );
           }}
@@ -237,7 +237,7 @@ function PaletteSelector() {
                   palette.experience,
                   palette.education
                 ]}
-                className="size-4 rounded-full"
+                className="size-5 rounded-md"
               />
             );
           }}
@@ -266,7 +266,7 @@ function FontSelector() {
             const font = FONT_OPTIONS[fontId] ?? FONT_OPTIONS.inter;
             return (
               <span
-                className="text-lg font-medium text-white"
+                className="text-xl font-bold text-white"
                 style={{ fontFamily: `var(${font.cssVariable})` }}
               >
                 Aa
@@ -284,7 +284,7 @@ function FontSelector() {
               </span>
             );
           }}
-          iconBgColor="bg-emerald-500"
+          iconBgColor="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30"
           tooltip="Font"
         />
       )}
@@ -309,7 +309,7 @@ function StyleSelector() {
           renderIcon={(styleId) => {
             const style = DOCUMENT_STYLES[styleId] ?? DOCUMENT_STYLES.modern;
             return (
-              <span className="text-sm font-bold text-white">
+              <span className="text-xl font-bold text-white">
                 {style.name[0]}
               </span>
             );
@@ -322,7 +322,7 @@ function StyleSelector() {
               </div>
             );
           }}
-          iconBgColor="bg-violet-500"
+          iconBgColor="bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/30"
           tooltip="Style"
         />
       )}
@@ -333,9 +333,9 @@ function StyleSelector() {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+      <SidebarHeader className="p-4">
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center mb-2">
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden text-sm font-bold text-foreground">
             My Resumes
           </SidebarGroupLabel>
           <SidebarTrigger />
@@ -343,7 +343,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <ResumeSelector />
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup className="bg-sidebar-accent/50 rounded-lg gap-3 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:gap-1">
+        <SidebarGroup className="bg-muted/30 rounded-2xl gap-5 p-4 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:gap-1 group-data-[collapsible=icon]:p-2 border border-border/40">
+          <SidebarGroupLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider group-data-[collapsible=icon]:hidden px-1">
+            Customize
+          </SidebarGroupLabel>
           <PaletteSelector />
           <FontSelector />
           <StyleSelector />

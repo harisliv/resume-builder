@@ -15,21 +15,23 @@ export default function ResumeSections() {
   const form = useFormContext<TResumeData>();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 w-full max-w-[2000px] mx-auto h-full overflow-hidden">
-      <Card className="p-6 flex flex-col max-h-full overflow-hidden">
-        <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <HugeiconsIcon icon={FileText} strokeWidth={2} />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 w-full max-w-[2000px] mx-auto h-full overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+      <Card className="p-7 flex flex-col max-h-full overflow-hidden">
+        <div className="flex items-center justify-between mb-6 flex-shrink-0">
+          <h3 className="text-xl font-bold flex items-center gap-3 tracking-tight">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/25">
+              <HugeiconsIcon icon={FileText} strokeWidth={2.5} className="size-5" />
+            </div>
             Resume Form
           </h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {isError && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive font-medium">
                 Error: {error?.message}
               </p>
             )}
-            <Button className="gap-2" type="submit" disabled={isPending}>
-              <HugeiconsIcon icon={Save} strokeWidth={2} />
+            <Button type="submit" disabled={isPending}>
+              <HugeiconsIcon icon={Save} strokeWidth={2.5} />
               {isPending ? 'Saving...' : 'Save'}
             </Button>
           </div>
@@ -39,14 +41,16 @@ export default function ResumeSections() {
         </div>
       </Card>
 
-      <Card className="p-6 flex flex-col max-h-full overflow-hidden">
-        <div className="flex items-center justify-between mb-4 flex-shrink-0">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <HugeiconsIcon icon={FileText} strokeWidth={2} />
+      <Card className="p-7 flex flex-col max-h-full overflow-hidden">
+        <div className="flex items-center justify-between mb-6 flex-shrink-0">
+          <h3 className="text-xl font-bold flex items-center gap-3 tracking-tight">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25">
+              <HugeiconsIcon icon={FileText} strokeWidth={2.5} className="size-5" />
+            </div>
             Preview
           </h3>
-          <Button className="gap-2" type="button" onClick={handleDownload}>
-            <HugeiconsIcon icon={Download} strokeWidth={2} />
+          <Button type="button" onClick={handleDownload} variant="secondary">
+            <HugeiconsIcon icon={Download} strokeWidth={2.5} />
             Download
           </Button>
         </div>

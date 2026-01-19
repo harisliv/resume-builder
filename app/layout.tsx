@@ -68,8 +68,8 @@ export default function RootLayout({
   ].join(' ');
 
   return (
-    <html lang="en" className={fontVariables} suppressHydrationWarning>
-      <body className="antialiased">
+    <html lang="en" className={`${inter.className} ${fontVariables}`} suppressHydrationWarning>
+      <body className="antialiased font-sans">
         <AuthKitProvider>
           <Impersonation />
           <ConvexProvider>

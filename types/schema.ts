@@ -1,10 +1,13 @@
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import * as z from 'zod';
 import { documentStyleSchema } from './documentStyle';
 
 export const personalInfoSchema = z.object({
   fullName: z.string().optional().or(z.literal('')),
-  email: z.string().optional().or(z.literal('')),
-  phone: z.string().optional().or(z.literal('')),
+  email: z.email().optional().or(z.literal('')),
+  phone: z.string().refine((value) => isValidPhoneNumber(value), {
+    message: 'Invalid phone number'
+  }).optional().or(z.literal('')),
   location: z.string().optional().or(z.literal('')),
   linkedIn: z.string().optional().or(z.literal('')),
   website: z.string().optional().or(z.literal('')),

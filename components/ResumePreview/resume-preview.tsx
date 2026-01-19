@@ -33,12 +33,7 @@ export default function ResumePreview({ data, style }: IResumePreviewProps) {
         style={{ fontFamily }}
       >
         <div className="text-center p-12">
-          <div
-            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center shadow-lg"
-            style={{
-              background: `linear-gradient(to bottom right, ${palette.summary}, ${palette.experience})`
-            }}
-          >
+          <div className="w-20 h-20 mx-auto mb-6 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500 via-teal-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
           <p className="text-xl text-slate-600 font-light">
