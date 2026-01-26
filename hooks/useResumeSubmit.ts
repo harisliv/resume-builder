@@ -2,21 +2,12 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeData } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '@workos-inc/authkit-nextjs/components';
-import type { User } from '@workos-inc/node';
-import { ConvexHttpClient } from 'convex/browser';
-
-const convexClient = new ConvexHttpClient(
-  process.env.NEXT_PUBLIC_CONVEX_URL as string
-);
+import { useConvex, useConvexAuth } from 'convex/react';
 
 async function submitResume(
-  data: TResumeData,
-  user: User | null
+  convex: ReturnType<typeof useConvex>,
+  data: TResumeData
 ): Promise<{ success: boolean; id: Id<'resumes'> }> {
-  if (!user) {
-    throw new Error('User not found');
-  }
   const {
     id,
     title,
@@ -28,9 +19,8 @@ async function submitResume(
   } = data;
 
   if (id) {
-    await convexClient.mutation(api.resumes.updateResume, {
-      id: id as Id<'resumes'>,
-      userId: user.id,
+    await convex.mutation(api.resumes.updateResume, {
+      id,
       title,
       personalInfo,
       experience,
@@ -38,10 +28,9 @@ async function submitResume(
       skills,
       documentStyle
     });
-    return { success: true, id: id as Id<'resumes'> };
+    return { success: true, id };
   } else {
-    const resumeId = await convexClient.mutation(api.resumes.createResume, {
-      userId: user.id,
+    const resumeId = await convex.mutation(api.resumes.createResume, {
       title,
       personalInfo,
       experience,
@@ -55,27 +44,18 @@ async function submitResume(
 
 export function useResumeSubmit() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const convex = useConvex();
+  const { isAuthenticated, isLoading } = useConvexAuth();
   return useMutation({
-    mutationFn: (data: TResumeData) => submitResume(data, user),
-    onSuccess: (
-      _data: { success: boolean; id: Id<'resumes'> },
-      variables: TResumeData
-    ) => {
+    mutationFn: async (data: TResumeData) => {
+      if (isLoading || !isAuthenticated) {
+        throw new Error('User not authenticated');
+      }
+      return submitResume(convex, data);
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
-      if (variables.userId) {
-        queryClient.invalidateQueries({
-          queryKey: ['resumes', variables.userId]
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['resumeTitles', variables.userId]
-        });
-      }
-      if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: ['resumeTitles', user.id]
-        });
-      }
+      queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
     }
   });
 }

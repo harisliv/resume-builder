@@ -5,7 +5,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { resumeSchema, type TResumeData, resumeDefaultValues } from '@/types';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
-import { useAuth } from '@workos-inc/authkit-nextjs/components';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -43,19 +42,18 @@ export function ResumeFormProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = useAuth();
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
 
   const { data: resumeTitles, isLoading: isLoadingTitles } =
-    useGetUserResumeTitles(user?.id);
-  const { data: selectedResume } = useGetResumeById(selectedResumeId, user?.id);
+    useGetUserResumeTitles();
+  const { data: selectedResume } = useGetResumeById(selectedResumeId);
 
   const form = useForm<z.infer<typeof resumeSchema>>({
     resolver: zodResolver(resumeSchema),
     defaultValues: resumeDefaultValues,
-    values: selectedResume ?? undefined,
+    values: selectedResume,
     mode: 'onChange'
   });
 
@@ -77,7 +75,6 @@ export function ResumeFormProvider({
   const handleCreateNew = (title?: string) => {
     const newResumeData: TResumeData = {
       ...resumeDefaultValues,
-      userId: user?.id,
       title: title ?? 'Untitled Resume'
     };
     submitResume(newResumeData, {

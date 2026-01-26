@@ -1,3 +1,4 @@
+import type { Id } from '@/convex/_generated/dataModel';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import * as z from 'zod';
 import { documentStyleSchema } from './documentStyle';
@@ -9,8 +10,8 @@ export const personalInfoSchema = z.object({
     message: 'Invalid phone number'
   }).optional().or(z.literal('')),
   location: z.string().optional().or(z.literal('')),
-  linkedIn: z.string().optional().or(z.literal('')),
-  website: z.string().optional().or(z.literal('')),
+  linkedIn: z.url().optional().or(z.literal('')),
+  website: z.url().optional().or(z.literal('')),
   summary: z.string().optional().or(z.literal(''))
 });
 
@@ -21,7 +22,8 @@ export const experienceSchema = z.object({
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
   current: z.boolean().optional(),
-  description: z.string().optional().or(z.literal(''))
+  description: z.string().optional().or(z.literal('')),
+  highlights: z.array(z.string()).optional()
 });
 
 export const educationSchema = z.object({
@@ -33,8 +35,12 @@ export const educationSchema = z.object({
   gpa: z.string().optional().or(z.literal(''))
 });
 
+const resumeIdSchema = z.custom<Id<'resumes'>>(
+  (value) => typeof value === 'string'
+);
+
 export const resumeSchema = z.object({
-  id: z.string().optional(),
+  id: resumeIdSchema.optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required'),
   personalInfo: personalInfoSchema,
@@ -61,7 +67,8 @@ export const experienceDefaultValues = {
   startDate: '',
   endDate: '',
   current: false,
-  description: ''
+  description: '',
+  highlights: []
 };
 
 export const educationDefaultValues = {

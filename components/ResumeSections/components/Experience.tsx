@@ -15,7 +15,8 @@ import {
   StartDate,
   EndDate,
   Current,
-  Description
+  Description,
+  Highlights
 } from './ExperienceFields';
 
 export default function Experience() {
@@ -61,6 +62,7 @@ export default function Experience() {
           </FieldRow>
           <Current index={index} />
           <Description index={index} />
+          <Highlights index={index} />
         </Card>
       ))}
     </div>

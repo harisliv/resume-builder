@@ -1,24 +1,19 @@
 import { api } from '@/convex/_generated/api';
 import { useQuery } from '@tanstack/react-query';
-import { ConvexHttpClient } from 'convex/browser';
+import { useConvex, useConvexAuth } from 'convex/react';
 
-const convexClient = new ConvexHttpClient(
-  process.env.NEXT_PUBLIC_CONVEX_URL as string
-);
-
-export function useGetUserResumeTitles(userId?: string) {
+export function useGetUserResumeTitles() {
+  const convex = useConvex();
+  const { isAuthenticated, isLoading } = useConvexAuth();
   return useQuery({
-    queryKey: ['resumeTitles', userId],
+    queryKey: ['resumeTitles'],
     queryFn: async () => {
-      if (!userId) return [];
-      const res = await convexClient.query(api.resumes.listResumeTitles, {
-        userId
-      });
+      const res = await convex.query(api.resumes.listResumeTitles);
       return res.map((item) => ({
         id: item._id,
         title: item.title
       }));
     },
-    enabled: !!userId
+    enabled: isAuthenticated && !isLoading
   });
 }

@@ -16,9 +16,9 @@ import {
 } from '@workos-inc/authkit-nextjs/components';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { ConvexProvider } from '@/components/providers/ConvexProvider';
 import { ResumeFormProvider } from '@/components/providers/ResumeFormProvider';
 import { AppSidebar } from '@/components/ui/app-sidebar';
+import { ConvexClientProvider } from '@/components/providers/ConvexProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -72,7 +72,7 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <AuthKitProvider>
           <Impersonation />
-          <ConvexProvider>
+          <ConvexClientProvider>
             <QueryProvider>
               <ThemeProvider
                 attribute="class"
@@ -92,7 +92,7 @@ export default function RootLayout({
                 </SidebarProvider>
               </ThemeProvider>
             </QueryProvider>
-          </ConvexProvider>
+          </ConvexClientProvider>
         </AuthKitProvider>
       </body>
     </html>

@@ -1,31 +1,22 @@
 import { api } from '@/convex/_generated/api';
 import { useQuery } from '@tanstack/react-query';
-import { ConvexHttpClient } from 'convex/browser';
+import { useConvex, useConvexAuth } from 'convex/react';
 import type { Id } from '@/convex/_generated/dataModel';
+import { convertConvexIdToId } from '@/lib/utils';
+import { resumeDefaultValues } from '@/types';
 
-const convexClient = new ConvexHttpClient(
-  process.env.NEXT_PUBLIC_CONVEX_URL as string
-);
-
-const convertConvexIdToId = (data: any) =>
-  data
-    ? {
-        ...data,
-        id: data._id
-      }
-    : null;
-
-export function useGetResumeById(resumeId?: Id<'resumes'>, userId?: string) {
+export function useGetResumeById(resumeId?: Id<'resumes'>) {
+  const convex = useConvex();
+  const { isAuthenticated, isLoading } = useConvexAuth();
   return useQuery({
-    queryKey: ['resume', resumeId, userId],
+    queryKey: ['resume', resumeId],
     queryFn: async () => {
-      if (!resumeId || !userId) return null;
-      const res = await convexClient.query(api.resumes.getResumeById, {
-        id: resumeId,
-        userId
+      if (!resumeId) return resumeDefaultValues;
+      const res = await convex.query(api.resumes.getResumeById, {
+        id: resumeId
       });
       return convertConvexIdToId(res);
     },
-    enabled: !!resumeId && !!userId
+    enabled: Boolean(resumeId) && isAuthenticated && !isLoading
   });
 }
