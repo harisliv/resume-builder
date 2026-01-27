@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Sparkles
 } from 'lucide-react';
+import type { TEducation, TExperience } from '@/types';
 import type { IStyleProps } from './types';
 
 export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
@@ -108,7 +109,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               </h2>
             </div>
             <div className="space-y-2.5 relative pl-1.5">
-              {experience.map((exp, index) => (
+              {experience.map((exp: TExperience, index: number) => (
                 <div key={index} className="relative pl-5">
                   <div
                     className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-white border-2 shadow-sm"
@@ -161,7 +162,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               </h2>
             </div>
             <div className="space-y-2">
-              {education.map((edu, index) => (
+              {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
                   className="bg-slate-50 rounded-lg p-3 border border-slate-200"
@@ -215,7 +216,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               </h2>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {skills.map((skill, index) => (
+              {skills.map((skill: string, index: number) => (
                 <span
                   key={index}
                   className="text-[9px] px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200"

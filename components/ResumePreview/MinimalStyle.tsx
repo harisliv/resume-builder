@@ -1,5 +1,6 @@
 'use client';
 
+import type { TEducation, TExperience } from '@/types';
 import type { IStyleProps } from './types';
 
 export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
@@ -39,7 +40,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
               Experience
             </h2>
             <div className="space-y-4">
-              {experience.map((exp, index) => (
+              {experience.map((exp: TExperience, index: number) => (
                 <div key={index}>
                   <div className="flex justify-between items-baseline">
                     <span className="text-[11px] font-medium text-slate-800">
@@ -70,7 +71,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
               Education
             </h2>
             <div className="space-y-2">
-              {education.map((edu, index) => (
+              {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
                   className="flex justify-between items-baseline"
