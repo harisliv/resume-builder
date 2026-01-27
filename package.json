@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "convex-authkit-auto-provisioning": true,
   "scripts": {
     "dev": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && next dev",
     "build": "next build",
