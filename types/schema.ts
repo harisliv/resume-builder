@@ -39,16 +39,21 @@ const resumeIdSchema = z.custom<Id<'resumes'>>(
   (value) => typeof value === 'string'
 );
 
-export const resumeSchema = z.object({
+export const resumeInfoSchema = z.object({
   id: resumeIdSchema.optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required'),
+  documentStyle: documentStyleSchema
+});
+
+export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
-  skills: z.array(z.string()),
-  documentStyle: documentStyleSchema
+  skills: z.array(z.string())
 });
+
+export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);
 
 export const personalInfoDefaultValues = {
   fullName: '',
@@ -80,12 +85,8 @@ export const educationDefaultValues = {
   gpa: ''
 };
 
-export const resumeDefaultValues = {
+export const resumeInfoDefaultValues = {
   title: '',
-  personalInfo: personalInfoDefaultValues,
-  experience: [],
-  education: [],
-  skills: [],
   documentStyle: {
     palette: 'ocean' as const,
     font: 'inter' as const,
@@ -93,7 +94,26 @@ export const resumeDefaultValues = {
   }
 };
 
+export const resumeFormDefaultValues = {
+  personalInfo: personalInfoDefaultValues,
+  experience: [],
+  education: [],
+  skills: []
+};
+
+export const resumeDefaultValues = {
+  ...resumeInfoDefaultValues,
+  ...resumeFormDefaultValues
+};
+
+export type TResumeInfo = z.infer<typeof resumeInfoSchema>;
+export type TResumeForm = z.infer<typeof resumeFormSchema>;
 export type TResumeData = z.infer<typeof resumeSchema>;
 export type TPersonalInfo = z.infer<typeof personalInfoSchema>;
 export type TExperience = z.infer<typeof experienceSchema>;
 export type TEducation = z.infer<typeof educationSchema>;
+
+export type TCombinedResumeData = {
+  formData: TResumeForm;
+  infoData: TResumeInfo;
+}

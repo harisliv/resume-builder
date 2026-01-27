@@ -4,7 +4,8 @@ import type {
   TResumeData,
   TPaletteId,
   TFontId,
-  TDocumentStyleId
+  TDocumentStyleId,
+  TCombinedResumeData
 } from '@/types';
 import './fonts';
 import { createStyles, getColors } from './ResumeStyles';
@@ -16,22 +17,23 @@ import {
   BoldDocument
 } from './documents';
 
-interface IResumeDocumentProps {
-  data: TResumeData;
-  palette?: TPaletteId;
-  font?: TFontId;
-  documentStyle?: TDocumentStyleId;
-}
-
-const ResumeDocument: React.FC<IResumeDocumentProps> = ({
-  data,
-  palette = 'ocean',
-  font = 'inter',
-  documentStyle = 'modern'
+const ResumeDocument: React.FC<TCombinedResumeData> = ({
+  formData,
+  infoData
 }) => {
-  const styles = createStyles(palette, font);
-  const colors = getColors(palette);
-  const fontFamily = PDF_FONTS[font] || FONT_FAMILY.sans;
+  const documentStyle = infoData.documentStyle?.style ?? 'modern';
+  const styles = createStyles(
+    infoData.documentStyle?.palette,
+    infoData.documentStyle?.font
+  );
+  const colors = getColors(infoData.documentStyle?.palette);
+  const fontFamily =
+    PDF_FONTS[infoData.documentStyle?.font] || FONT_FAMILY.sans;
+
+  const data: TResumeData = {
+    ...infoData,
+    ...formData
+  };
 
   return (
     <Document>

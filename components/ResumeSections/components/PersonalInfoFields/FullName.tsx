@@ -1,5 +1,10 @@
-import { ControlledInput } from '@/components/ControlledFields';
+import { ResumeSectionsControlledInput } from '@/components/ControlledFields';
 
 export default function FullName() {
-  return <ControlledInput name="personalInfo.fullName" label="Full Name" />;
+  return (
+    <ResumeSectionsControlledInput
+      name="personalInfo.fullName"
+      label="Full Name"
+    />
+  );
 }

@@ -3,7 +3,7 @@ import type { FieldPath, FieldValues } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
 import { Checkbox } from '../ui/checkbox';
 import { useId } from 'react';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 
 export default function ControlledSingleCheckbox<
   TForm extends FieldValues
@@ -37,4 +37,4 @@ export default function ControlledSingleCheckbox<
 }
 
 export const ResumeSectionsControlledSingleCheckbox =
-  ControlledSingleCheckbox<TResumeData>;
+  ControlledSingleCheckbox<TResumeForm>;

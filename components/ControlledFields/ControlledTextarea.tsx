@@ -3,7 +3,7 @@ import type { FieldPath, FieldValues } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
 import { Textarea } from '../ui/textarea';
 import { useId } from 'react';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 
 export default function ControlledTextarea<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
@@ -40,4 +40,4 @@ export default function ControlledTextarea<TForm extends FieldValues>(props: {
   );
 }
 
-export const ResumeSectionsControlledTextarea = ControlledTextarea<TResumeData>;
+export const ResumeSectionsControlledTextarea = ControlledTextarea<TResumeForm>;

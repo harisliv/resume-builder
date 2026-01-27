@@ -4,10 +4,10 @@ import { Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 
 export default function Highlights({ index }: { index: number }) {
-  const { control } = useFormContext<TResumeData>();
+  const { control } = useFormContext<TResumeForm>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: `experience.${index}.highlights` as any

@@ -14,11 +14,8 @@ import {
   AuthKitProvider,
   Impersonation
 } from '@workos-inc/authkit-nextjs/components';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { QueryProvider } from '@/components/providers/QueryProvider';
-import { ResumeFormProvider } from '@/components/providers/ResumeFormProvider';
-import { AppSidebar } from '@/components/ui/app-sidebar';
 import { ConvexClientProvider } from '@/components/providers/ConvexProvider';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -68,7 +65,11 @@ export default function RootLayout({
   ].join(' ');
 
   return (
-    <html lang="en" className={`${inter.className} ${fontVariables}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.className} ${fontVariables}`}
+      suppressHydrationWarning
+    >
       <body className="antialiased font-sans">
         <AuthKitProvider>
           <Impersonation />
@@ -80,16 +81,7 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <SidebarProvider>
-                  <ResumeFormProvider>
-                    <AppSidebar />
-                    <SidebarInset>
-                      <div className="w-full max-w-[2000px] mx-auto h-screen overflow-hidden">
-                        {children}
-                      </div>
-                    </SidebarInset>
-                  </ResumeFormProvider>
-                </SidebarProvider>
+                {children}
               </ThemeProvider>
             </QueryProvider>
           </ConvexClientProvider>

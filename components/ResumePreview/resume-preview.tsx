@@ -1,6 +1,6 @@
 'use client';
 
-import type { TResumeData, TDocumentStyle } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types';
 import { COLOR_PALETTES, FONT_OPTIONS } from '@/types';
 import { Sparkles } from 'lucide-react';
 import { ModernStyle } from './ModernStyle';
@@ -9,15 +9,19 @@ import { MinimalStyle } from './MinimalStyle';
 import { BoldStyle } from './BoldStyle';
 
 interface IResumePreviewProps {
-  data: TResumeData;
-  style?: TDocumentStyle;
+  formData: TResumeForm;
+  infoData: TResumeInfo;
 }
 
-export default function ResumePreview({ data, style }: IResumePreviewProps) {
-  const { personalInfo, experience, education, skills } = data;
-  const palette = COLOR_PALETTES[style?.palette ?? 'ocean'];
-  const font = FONT_OPTIONS[style?.font ?? 'inter'];
-  const documentStyle = style?.style ?? 'modern';
+export default function ResumePreview({
+  formData,
+  infoData
+}: IResumePreviewProps) {
+  const { personalInfo, experience, education, skills } = formData;
+  const { documentStyle } = infoData;
+  const palette = COLOR_PALETTES[documentStyle?.palette ?? 'ocean'];
+  const font = FONT_OPTIONS[documentStyle?.font ?? 'inter'];
+  const style = documentStyle?.style ?? 'modern';
   const fontFamily = `var(${font.cssVariable}), sans-serif`;
 
   const hasContent =
@@ -47,21 +51,21 @@ export default function ResumePreview({ data, style }: IResumePreviewProps) {
     );
   }
 
-  if (documentStyle === 'classic') {
+  if (style === 'classic') {
     return (
-      <ClassicStyle data={data} palette={palette} fontFamily={fontFamily} />
+      <ClassicStyle data={formData} palette={palette} fontFamily={fontFamily} />
     );
   }
 
-  if (documentStyle === 'minimal') {
+  if (style === 'minimal') {
     return (
-      <MinimalStyle data={data} palette={palette} fontFamily={fontFamily} />
+      <MinimalStyle data={formData} palette={palette} fontFamily={fontFamily} />
     );
   }
 
-  if (documentStyle === 'bold') {
-    return <BoldStyle data={data} palette={palette} fontFamily={fontFamily} />;
+  if (style === 'bold') {
+    return <BoldStyle data={formData} palette={palette} fontFamily={fontFamily} />;
   }
 
-  return <ModernStyle data={data} palette={palette} fontFamily={fontFamily} />;
+  return <ModernStyle data={formData} palette={palette} fontFamily={fontFamily} />;
 }

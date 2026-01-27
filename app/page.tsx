@@ -1,5 +1,5 @@
-import { ResumeSections } from '@/components/ResumeSections';
+import Home from './Home';
 
 export default function Page() {
-  return <ResumeSections />;
+  return <Home />;
 }

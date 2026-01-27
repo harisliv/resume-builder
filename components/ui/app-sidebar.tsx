@@ -36,7 +36,6 @@ import {
   SidebarTrigger,
   useSidebar
 } from '@/components/ui/sidebar';
-import { useResumeFormContext } from '@/components/providers/ResumeFormProvider';
 import {
   COLOR_PALETTES,
   FONT_OPTIONS,
@@ -44,7 +43,7 @@ import {
   type TPaletteId,
   type TFontId,
   type TDocumentStyleId,
-  type TResumeData
+  type TResumeInfo
 } from '@/types';
 
 const paletteNavOptions: NavSelectorOption<TPaletteId>[] = Object.values(
@@ -70,14 +69,19 @@ const styleNavOptions: NavSelectorOption<TDocumentStyleId>[] = Object.values(
   description: s.description
 }));
 
-function ResumeSelector() {
-  const {
-    resumeTitles,
-    selectedResumeId,
-    handleResumeSelect,
-    handleCreateNew,
-    isLoadingTitles
-  } = useResumeFormContext();
+function ResumeSelector({
+  resumeTitles,
+  selectedResumeId,
+  onResumeSelect,
+  onCreateNew,
+  isLoadingTitles
+}: {
+  resumeTitles: { id: string; title: string }[] | undefined;
+  selectedResumeId: string | undefined;
+  onResumeSelect: (id: string) => void;
+  onCreateNew: (title?: string) => void;
+  isLoadingTitles: boolean;
+}) {
   const { isMobile } = useSidebar();
   const [isCreating, setIsCreating] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState('');
@@ -91,7 +95,7 @@ function ResumeSelector() {
 
   const handleConfirmCreate = () => {
     if (newTitle.trim()) {
-      handleCreateNew(newTitle.trim());
+      onCreateNew(newTitle.trim());
       setNewTitle('');
       setIsCreating(false);
     }
@@ -186,7 +190,7 @@ function ResumeSelector() {
             <DropdownMenuLabel>My Resumes</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={selectedResumeId ?? ''}
-              onValueChange={handleResumeSelect}
+              onValueChange={onResumeSelect}
             >
               {resumeTitles?.map((resume) => (
                 <DropdownMenuRadioItem key={resume.id} value={resume.id}>
@@ -202,7 +206,7 @@ function ResumeSelector() {
 }
 
 function PaletteSelector() {
-  const form = useFormContext<TResumeData>();
+  const form = useFormContext<TResumeInfo>();
 
   return (
     <Controller
@@ -249,7 +253,7 @@ function PaletteSelector() {
 }
 
 function FontSelector() {
-  const form = useFormContext<TResumeData>();
+  const form = useFormContext<TResumeInfo>();
 
   return (
     <Controller
@@ -293,7 +297,7 @@ function FontSelector() {
 }
 
 function StyleSelector() {
-  const form = useFormContext<TResumeData>();
+  const form = useFormContext<TResumeInfo>();
 
   return (
     <Controller
@@ -330,7 +334,22 @@ function StyleSelector() {
   );
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export type TAppSidebarResumeProps = {
+  resumeTitles: { id: string; title: string }[] | undefined;
+  selectedResumeId: string | undefined;
+  onResumeSelect: (id: string) => void;
+  onCreateNew: (title?: string) => void;
+  isLoadingTitles: boolean;
+};
+
+export function AppSidebar({
+  resumeTitles,
+  selectedResumeId,
+  onResumeSelect,
+  onCreateNew,
+  isLoadingTitles,
+  ...props
+}: TAppSidebarResumeProps & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="p-4">
@@ -340,7 +359,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupLabel>
           <SidebarTrigger />
         </div>
-        <ResumeSelector />
+        <ResumeSelector
+          resumeTitles={resumeTitles}
+          selectedResumeId={selectedResumeId}
+          onResumeSelect={onResumeSelect}
+          onCreateNew={onCreateNew}
+          isLoadingTitles={isLoadingTitles}
+        />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="bg-muted/30 rounded-2xl gap-5 p-4 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:gap-1 group-data-[collapsible=icon]:p-2 border border-border/40">

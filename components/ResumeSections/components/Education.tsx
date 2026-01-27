@@ -4,7 +4,7 @@ import { Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Card } from '@/components/ui/card';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 import { educationDefaultValues } from '@/types';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
@@ -18,7 +18,7 @@ import {
 } from './EducationFields';
 
 export default function Education() {
-  const { control } = useFormContext<TResumeData>();
+  const { control } = useFormContext<TResumeForm>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'education'

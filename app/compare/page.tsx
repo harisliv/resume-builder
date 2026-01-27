@@ -3,6 +3,8 @@
 import dynamic from 'next/dynamic';
 import ResumePreview from '@/components/ResumePreview/resume-preview';
 import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
+import type { TResumeData } from '@/types';
+import { resumeInfoDefaultValues, resumeFormDefaultValues } from '@/types';
 
 const PDFViewerSection = dynamic(() => import('./pdf-viewer-section'), {
   ssr: false,
@@ -13,8 +15,26 @@ const PDFViewerSection = dynamic(() => import('./pdf-viewer-section'), {
   )
 });
 
+function splitResumeData(data: TResumeData) {
+  const { id, userId, title, documentStyle, personalInfo, experience, education, skills } = data;
+  return {
+    formData: {
+      personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
+      experience: experience ?? resumeFormDefaultValues.experience,
+      education: education ?? resumeFormDefaultValues.education,
+      skills: skills ?? resumeFormDefaultValues.skills
+    },
+    infoData: {
+      id,
+      userId,
+      title: title ?? resumeInfoDefaultValues.title,
+      documentStyle: documentStyle ?? resumeInfoDefaultValues.documentStyle
+    }
+  };
+}
+
 export default function ComparePage() {
-  const data = extendedMockResumeData;
+  const { formData, infoData } = splitResumeData(extendedMockResumeData);
 
   return (
     <div className="min-h-screen bg-slate-100 p-4">
@@ -27,7 +47,7 @@ export default function ComparePage() {
             HTML Preview (ResumePreview)
           </h2>
           <div className="flex-1 overflow-auto bg-white rounded-lg shadow-lg">
-            <ResumePreview data={data} />
+            <ResumePreview formData={formData} infoData={infoData} />
           </div>
         </div>
         <div className="flex flex-col">
@@ -35,7 +55,7 @@ export default function ComparePage() {
             PDF Preview (PDFViewer)
           </h2>
           <div className="flex-1 rounded-lg shadow-lg overflow-hidden">
-            <PDFViewerSection data={data} />
+            <PDFViewerSection formData={formData} infoData={infoData} />
           </div>
         </div>
       </div>

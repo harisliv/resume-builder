@@ -15,7 +15,7 @@ import {
   SelectValue
 } from '../ui/select';
 import { useId } from 'react';
-import type { TResumeData, TDocumentStyle } from '@/types';
+import type { TResumeForm, TDocumentStyle } from '@/types';
 
 export default function ControlledSelect<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
@@ -66,4 +66,4 @@ export default function ControlledSelect<TForm extends FieldValues>(props: {
   );
 }
 
-export const ResumeSectionsControlledSelect = ControlledSelect<TResumeData>;
+export const ResumeSectionsControlledSelect = ControlledSelect<TResumeForm>;

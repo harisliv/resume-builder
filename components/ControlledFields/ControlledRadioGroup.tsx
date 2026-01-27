@@ -11,7 +11,7 @@ import {
   FieldTitle
 } from '../ui/field';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 
 export default function ControlledRadioGroup<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
@@ -68,4 +68,4 @@ export default function ControlledRadioGroup<TForm extends FieldValues>(props: {
 }
 
 export const ResumeSectionsControlledRadioGroup =
-  ControlledRadioGroup<TResumeData>;
+  ControlledRadioGroup<TResumeForm>;

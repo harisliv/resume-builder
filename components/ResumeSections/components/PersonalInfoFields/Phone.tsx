@@ -1,12 +1,11 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { useId } from 'react';
-import type { TResumeData } from '@/types';
+import type { TResumeForm } from '@/types';
 
 export default function Phone() {
-  const form = useFormContext<TResumeData>();
+  const form = useFormContext<TResumeForm>();
   const id = useId();
 
   return (
@@ -18,7 +17,7 @@ export default function Phone() {
           <FieldLabel htmlFor={id}>Phone Number</FieldLabel>
           <PhoneInput
             {...field}
-            defaultCountry='GR'
+            defaultCountry="GR"
             value={field.value ?? ''}
             id={id}
             aria-invalid={fieldState.invalid}
