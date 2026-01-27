@@ -2,13 +2,11 @@
 
 import * as React from 'react';
 import { FileText, Plus, ChevronsUpDown, Check, X } from 'lucide-react';
-import { useFormContext, Controller } from 'react-hook-form';
-
 import { NavUser } from '@/components/ui/nav-user';
+import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
-  NavSelector,
   GradientCircle,
   type NavSelectorOption
 } from '@/components/ui/nav-selector';
@@ -42,8 +40,7 @@ import {
   DOCUMENT_STYLES,
   type TPaletteId,
   type TFontId,
-  type TDocumentStyleId,
-  type TResumeInfo
+  type TDocumentStyleId
 } from '@/types';
 
 const paletteNavOptions: NavSelectorOption<TPaletteId>[] = Object.values(
@@ -68,6 +65,16 @@ const styleNavOptions: NavSelectorOption<TDocumentStyleId>[] = Object.values(
   label: s.name,
   description: s.description
 }));
+
+function getPaletteById(id: string) {
+  return Object.values(COLOR_PALETTES).find((p) => p.id === id);
+}
+function getFontById(id: string) {
+  return Object.values(FONT_OPTIONS).find((f) => f.id === id);
+}
+function getStyleById(id: string) {
+  return Object.values(DOCUMENT_STYLES).find((s) => s.id === id);
+}
 
 function ResumeSelector({
   resumeTitles,
@@ -206,130 +213,95 @@ function ResumeSelector({
 }
 
 function PaletteSelector() {
-  const form = useFormContext<TResumeInfo>();
-
   return (
-    <Controller
+    <ResumeInfoControlledNavSelector
       name="documentStyle.palette"
-      control={form.control}
-      render={({ field }) => (
-        <NavSelector<TPaletteId>
-          label="Palette"
-          value={field.value}
-          displayValue={COLOR_PALETTES[field.value]?.name ?? 'Select palette'}
-          onChange={field.onChange}
-          options={paletteNavOptions}
-          renderIcon={(paletteId) => {
-            const palette = COLOR_PALETTES[paletteId] ?? COLOR_PALETTES.ocean;
-            return (
-              <GradientCircle
-                colors={[
-                  palette.summary,
-                  palette.experience,
-                  palette.education
-                ]}
-                className="size-10 rounded-xl"
-              />
-            );
-          }}
-          renderOptionIcon={(option) => {
-            const palette = COLOR_PALETTES[option.id];
-            return (
-              <GradientCircle
-                colors={[
-                  palette.summary,
-                  palette.experience,
-                  palette.education
-                ]}
-                className="size-5 rounded-md"
-              />
-            );
-          }}
-          tooltip="Palette"
-        />
-      )}
+      label="Palette"
+      options={paletteNavOptions}
+      getDisplayValue={(id) =>
+        getPaletteById(id ?? '')?.name ?? 'Select palette'
+      }
+      renderIcon={(paletteId) => {
+        const palette = getPaletteById(paletteId ?? '') ?? COLOR_PALETTES.ocean;
+        return (
+          <GradientCircle
+            colors={[palette.summary, palette.experience, palette.education]}
+            className="size-10 rounded-xl"
+          />
+        );
+      }}
+      renderOptionIcon={(option) => {
+        const palette = getPaletteById(option.id);
+        return palette ? (
+          <GradientCircle
+            colors={[palette.summary, palette.experience, palette.education]}
+            className="size-5 rounded-md"
+          />
+        ) : null;
+      }}
+      tooltip="Palette"
     />
   );
 }
 
 function FontSelector() {
-  const form = useFormContext<TResumeInfo>();
-
   return (
-    <Controller
+    <ResumeInfoControlledNavSelector
       name="documentStyle.font"
-      control={form.control}
-      render={({ field }) => (
-        <NavSelector<TFontId>
-          label="Font"
-          value={field.value}
-          displayValue={FONT_OPTIONS[field.value]?.name ?? 'Select font'}
-          onChange={field.onChange}
-          options={fontNavOptions}
-          renderIcon={(fontId) => {
-            const font = FONT_OPTIONS[fontId] ?? FONT_OPTIONS.inter;
-            return (
-              <span
-                className="text-xl font-bold text-white"
-                style={{ fontFamily: `var(${font.cssVariable})` }}
-              >
-                Aa
-              </span>
-            );
-          }}
-          renderOptionIcon={(option) => {
-            const font = FONT_OPTIONS[option.id];
-            return (
-              <span
-                className="text-sm w-6"
-                style={{ fontFamily: `var(${font.cssVariable})` }}
-              >
-                Aa
-              </span>
-            );
-          }}
-          iconBgColor="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30"
-          tooltip="Font"
-        />
-      )}
+      label="Font"
+      options={fontNavOptions}
+      getDisplayValue={(id) => getFontById(id ?? '')?.name ?? 'Select font'}
+      renderIcon={(fontId) => {
+        const font = getFontById(fontId ?? '') ?? FONT_OPTIONS.inter;
+        return (
+          <span
+            className="text-xl font-bold text-white"
+            style={{ fontFamily: `var(${font.cssVariable})` }}
+          >
+            Aa
+          </span>
+        );
+      }}
+      renderOptionIcon={(option) => {
+        const font = getFontById(option.id);
+        return font ? (
+          <span
+            className="text-sm w-6"
+            style={{ fontFamily: `var(${font.cssVariable})` }}
+          >
+            Aa
+          </span>
+        ) : null;
+      }}
+      iconBgColor="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30"
+      tooltip="Font"
     />
   );
 }
 
 function StyleSelector() {
-  const form = useFormContext<TResumeInfo>();
-
   return (
-    <Controller
+    <ResumeInfoControlledNavSelector
       name="documentStyle.style"
-      control={form.control}
-      render={({ field }) => (
-        <NavSelector<TDocumentStyleId>
-          label="Style"
-          value={field.value}
-          displayValue={DOCUMENT_STYLES[field.value]?.name ?? 'Select style'}
-          onChange={field.onChange}
-          options={styleNavOptions}
-          renderIcon={(styleId) => {
-            const style = DOCUMENT_STYLES[styleId] ?? DOCUMENT_STYLES.modern;
-            return (
-              <span className="text-xl font-bold text-white">
-                {style.name[0]}
-              </span>
-            );
-          }}
-          renderOptionIcon={(option) => {
-            const style = DOCUMENT_STYLES[option.id];
-            return (
-              <div className="flex items-center justify-center size-5 rounded border text-[10px] font-bold shrink-0">
-                {style.name[0]}
-              </div>
-            );
-          }}
-          iconBgColor="bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/30"
-          tooltip="Style"
-        />
-      )}
+      label="Style"
+      options={styleNavOptions}
+      getDisplayValue={(id) => getStyleById(id ?? '')?.name ?? 'Select style'}
+      renderIcon={(styleId) => {
+        const style = getStyleById(styleId ?? '') ?? DOCUMENT_STYLES.modern;
+        return (
+          <span className="text-xl font-bold text-white">{style.name[0]}</span>
+        );
+      }}
+      renderOptionIcon={(option) => {
+        const style = getStyleById(option.id);
+        return style ? (
+          <div className="flex items-center justify-center size-5 rounded border text-[10px] font-bold shrink-0">
+            {style.name[0]}
+          </div>
+        ) : null;
+      }}
+      iconBgColor="bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/30"
+      tooltip="Style"
     />
   );
 }

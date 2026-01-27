@@ -15,3 +15,6 @@ export { default as ControlledSingleCheckbox } from './ControlledSingleCheckbox'
 
 export * from './ControlledRadioGroup';
 export { default as ControlledRadioGroup } from './ControlledRadioGroup';
+
+export * from './ControlledNavSelector';
+export { default as ControlledNavSelector } from './ControlledNavSelector';

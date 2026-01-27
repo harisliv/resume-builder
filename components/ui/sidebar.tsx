@@ -5,7 +5,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -244,10 +244,10 @@ function Sidebar({
         {...props}
       >
         <div
-        data-sidebar="sidebar"
-        data-slot="sidebar-inner"
-        className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-2xl group-data-[variant=floating]:border group-data-[variant=floating]:shadow-[0_1px_2px_oklch(0_0_0_/_0.02),0_4px_8px_oklch(0_0_0_/_0.03),0_8px_16px_oklch(0_0_0_/_0.04)]"
-      >
+          data-sidebar="sidebar"
+          data-slot="sidebar-inner"
+          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-2xl group-data-[variant=floating]:border group-data-[variant=floating]:shadow-[0_1px_2px_oklch(0_0_0_/_0.02),0_4px_8px_oklch(0_0_0_/_0.03),0_8px_16px_oklch(0_0_0_/_0.04)]"
+        >
           {children}
         </div>
       </div>

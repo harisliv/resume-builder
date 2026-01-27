@@ -1,22 +1,37 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import ResumePreview from '@/components/ResumePreview/resume-preview';
+import { ResumePreview } from '@/components/ResumePreview';
 import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
 import type { TResumeData } from '@/types';
 import { resumeInfoDefaultValues, resumeFormDefaultValues } from '@/types';
 
-const PDFViewerSection = dynamic(() => import('./pdf-viewer-section'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-full">
-      Loading PDF...
-    </div>
-  )
-});
+const PDFViewerSection = dynamic(
+  () =>
+    import('@/components/PdfViewer').then((m) => ({
+      default: m.PdfViewerSection
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        Loading PDF...
+      </div>
+    )
+  }
+);
 
 function splitResumeData(data: TResumeData) {
-  const { id, userId, title, documentStyle, personalInfo, experience, education, skills } = data;
+  const {
+    id,
+    userId,
+    title,
+    documentStyle,
+    personalInfo,
+    experience,
+    education,
+    skills
+  } = data;
   return {
     formData: {
       personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
