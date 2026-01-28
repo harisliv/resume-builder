@@ -17,7 +17,8 @@ export const experienceValidator = v.object({
   startDate: v.optional(v.string()),
   endDate: v.optional(v.string()),
   current: v.optional(v.boolean()),
-  description: v.optional(v.string())
+  description: v.optional(v.string()),
+  highlights: v.optional(v.array(v.string()))
 });
 
 export const educationValidator = v.object({

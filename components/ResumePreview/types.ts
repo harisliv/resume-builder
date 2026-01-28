@@ -1,13 +1,7 @@
-import type { TResumeData } from '@/types';
-import type { COLOR_PALETTES } from '@/types';
-
-export interface IResumePreviewProps {
-  data: TResumeData;
-  style?: import('@/types').TDocumentStyle;
-}
+import type { TColorPalette, TResumeForm } from '@/types';
 
 export interface IStyleProps {
-  data: TResumeData;
-  palette: (typeof COLOR_PALETTES)[keyof typeof COLOR_PALETTES];
+  data: TResumeForm;
+  palette: TColorPalette;
   fontFamily: string;
 }

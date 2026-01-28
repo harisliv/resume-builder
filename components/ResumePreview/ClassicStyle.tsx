@@ -1,5 +1,6 @@
 'use client';
 
+import type { TEducation, TExperience } from '@/types';
 import type { IStyleProps } from './types';
 
 export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
@@ -7,7 +8,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 overflow-auto max-h-[800px] shadow-lg border border-slate-200"
+      className="bg-white text-slate-900 shadow-lg border border-slate-200"
       style={{ fontFamily }}
     >
       <div className="px-8 pt-6 pb-4 text-center border-b-2 border-slate-300">
@@ -50,7 +51,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
               Professional Experience
             </h2>
             <div className="space-y-3">
-              {experience.map((exp, index) => (
+              {experience.map((exp: TExperience, index: number) => (
                 <div key={index}>
                   <div className="flex justify-between items-baseline">
                     <h3 className="font-bold text-slate-900 text-[11px]">
@@ -87,7 +88,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
               Education
             </h2>
             <div className="space-y-2">
-              {education.map((edu, index) => (
+              {education.map((edu: TEducation, index: number) => (
                 <div key={index}>
                   <div className="flex justify-between items-baseline">
                     <h3 className="font-bold text-slate-900 text-[11px]">

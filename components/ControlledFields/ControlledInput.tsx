@@ -3,7 +3,7 @@ import type { FieldPath, FieldValues } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { useId } from 'react';
-import type { TResumeData } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types';
 
 export default function ControlledInput<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
@@ -40,4 +40,5 @@ export default function ControlledInput<TForm extends FieldValues>(props: {
   );
 }
 
-export const ResumeSectionsControlledInput = ControlledInput<TResumeData>;
+export const ResumeFormControlledInput = ControlledInput<TResumeForm>;
+export const ResumeInfoControlledInput = ControlledInput<TResumeInfo>;

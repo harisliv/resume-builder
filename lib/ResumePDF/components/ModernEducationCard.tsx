@@ -16,7 +16,10 @@ interface IModernEducationCardProps {
   styles: ReturnType<typeof createStyles>;
 }
 
-export const ModernEducationCard = ({ edu, styles }: IModernEducationCardProps) => (
+export const ModernEducationCard = ({
+  edu,
+  styles
+}: IModernEducationCardProps) => (
   <View style={styles.educationItem} wrap={false}>
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -24,7 +27,9 @@ export const ModernEducationCard = ({ edu, styles }: IModernEducationCardProps) 
           <Text style={styles.degree}>
             {edu.degree || 'Degree'} in {edu.field || 'Field'}
           </Text>
-          <Text style={styles.institution}>{edu.institution || 'Institution'}</Text>
+          <Text style={styles.institution}>
+            {edu.institution || 'Institution'}
+          </Text>
         </View>
         <View style={styles.cardRight}>
           <Text style={styles.location}>{edu.location || ''}</Text>

@@ -1,24 +1,16 @@
 import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
-import type { TResumeData, TDocumentStyle } from '@/types';
+import type { TCombinedResumeData } from '@/types';
 import { pdf } from '@react-pdf/renderer';
 
 export const generateResumePDF = async (
-  data: TResumeData,
-  style?: TDocumentStyle
+  data: TCombinedResumeData
 ): Promise<void> => {
-  const doc = (
-    <ResumeDocument
-      data={data}
-      palette={style?.palette}
-      font={style?.font}
-      documentStyle={style?.style}
-    />
-  );
+  const doc = <ResumeDocument formData={data.formData} infoData={data.infoData} />;
   const instance = pdf(doc);
   const blob = await instance.toBlob();
 
-  const fileName = data.personalInfo?.fullName
-    ? `${data.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`
+  const fileName = data.formData.personalInfo?.fullName
+    ? `${data.formData.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`
     : 'Resume.pdf';
 
   const url = URL.createObjectURL(blob);

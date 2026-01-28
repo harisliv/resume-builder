@@ -46,7 +46,7 @@ export const createStyles = (
     },
     header: {
       paddingBottom: 20,
-      borderBottom: `1 solid ${  colors.cardBorder}`,
+      borderBottom: `1 solid ${colors.cardBorder}`,
       marginBottom: 0,
       marginHorizontal: 0,
       paddingHorizontal: 0
@@ -94,7 +94,7 @@ export const createStyles = (
       marginTop: 20,
       marginBottom: 20,
       paddingLeft: 12,
-      borderLeft: `2 solid ${  colors.summary}`
+      borderLeft: `2 solid ${colors.summary}`
     },
     summaryText: {
       fontSize: 10,

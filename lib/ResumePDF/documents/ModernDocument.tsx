@@ -24,7 +24,11 @@ interface IModernDocumentProps {
   colors: ReturnType<typeof getColors>;
 }
 
-export const ModernDocument = ({ data, styles, colors }: IModernDocumentProps) => {
+export const ModernDocument = ({
+  data,
+  styles,
+  colors
+}: IModernDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
 
   return (

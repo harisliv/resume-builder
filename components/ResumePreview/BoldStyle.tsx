@@ -1,6 +1,7 @@
 'use client';
 
 import { Mail, Phone, MapPin } from 'lucide-react';
+import type { TEducation, TExperience } from '@/types';
 import type { IStyleProps } from './types';
 
 export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
@@ -8,7 +9,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 overflow-auto max-h-[800px] shadow-xl border-0"
+      className="bg-white text-slate-900 shadow-xl border-0"
       style={{ fontFamily }}
     >
       <div className="px-6 py-6" style={{ backgroundColor: palette.summary }}>
@@ -62,7 +63,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               Experience
             </h2>
             <div className="space-y-3">
-              {experience.map((exp, index) => (
+              {experience.map((exp: TExperience, index: number) => (
                 <div
                   key={index}
                   className="p-3 rounded-lg border-l-4"
@@ -115,7 +116,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               Education
             </h2>
             <div className="space-y-2">
-              {education.map((edu, index) => (
+              {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
                   className="p-3 rounded-lg border-l-4"
@@ -172,7 +173,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               Skills
             </h2>
             <div className="flex flex-wrap gap-1.5">
-              {skills.map((skill, index) => (
+              {skills.map((skill: string, index: number) => (
                 <span
                   key={index}
                   className="text-[9px] px-3 py-1.5 rounded-full text-white font-semibold"

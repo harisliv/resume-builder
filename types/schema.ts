@@ -1,13 +1,17 @@
+import type { Id } from '@/convex/_generated/dataModel';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import * as z from 'zod';
 import { documentStyleSchema } from './documentStyle';
 
 export const personalInfoSchema = z.object({
   fullName: z.string().optional().or(z.literal('')),
-  email: z.string().optional().or(z.literal('')),
-  phone: z.string().optional().or(z.literal('')),
+  email: z.email().optional().or(z.literal('')),
+  phone: z.string().refine((value) => isValidPhoneNumber(value), {
+    message: 'Invalid phone number'
+  }).optional().or(z.literal('')),
   location: z.string().optional().or(z.literal('')),
-  linkedIn: z.string().optional().or(z.literal('')),
-  website: z.string().optional().or(z.literal('')),
+  linkedIn: z.url().optional().or(z.literal('')),
+  website: z.url().optional().or(z.literal('')),
   summary: z.string().optional().or(z.literal(''))
 });
 
@@ -18,7 +22,8 @@ export const experienceSchema = z.object({
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
   current: z.boolean().optional(),
-  description: z.string().optional().or(z.literal(''))
+  description: z.string().optional().or(z.literal('')),
+  highlights: z.array(z.string()).optional()
 });
 
 export const educationSchema = z.object({
@@ -30,16 +35,25 @@ export const educationSchema = z.object({
   gpa: z.string().optional().or(z.literal(''))
 });
 
-export const resumeSchema = z.object({
-  id: z.string().optional(),
+const resumeIdSchema = z.custom<Id<'resumes'>>(
+  (value) => typeof value === 'string'
+);
+
+export const resumeInfoSchema = z.object({
+  id: resumeIdSchema.optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required'),
+  documentStyle: documentStyleSchema
+});
+
+export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
-  skills: z.array(z.string()),
-  documentStyle: documentStyleSchema
+  skills: z.array(z.string())
 });
+
+export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);
 
 export const personalInfoDefaultValues = {
   fullName: '',
@@ -58,7 +72,8 @@ export const experienceDefaultValues = {
   startDate: '',
   endDate: '',
   current: false,
-  description: ''
+  description: '',
+  highlights: []
 };
 
 export const educationDefaultValues = {
@@ -70,12 +85,8 @@ export const educationDefaultValues = {
   gpa: ''
 };
 
-export const resumeDefaultValues = {
+export const resumeInfoDefaultValues = {
   title: '',
-  personalInfo: personalInfoDefaultValues,
-  experience: [],
-  education: [],
-  skills: [],
   documentStyle: {
     palette: 'ocean' as const,
     font: 'inter' as const,
@@ -83,7 +94,26 @@ export const resumeDefaultValues = {
   }
 };
 
+export const resumeFormDefaultValues = {
+  personalInfo: personalInfoDefaultValues,
+  experience: [],
+  education: [],
+  skills: []
+};
+
+export const resumeDefaultValues = {
+  ...resumeInfoDefaultValues,
+  ...resumeFormDefaultValues
+};
+
+export type TResumeInfo = z.infer<typeof resumeInfoSchema>;
+export type TResumeForm = z.infer<typeof resumeFormSchema>;
 export type TResumeData = z.infer<typeof resumeSchema>;
 export type TPersonalInfo = z.infer<typeof personalInfoSchema>;
 export type TExperience = z.infer<typeof experienceSchema>;
 export type TEducation = z.infer<typeof educationSchema>;
+
+export type TCombinedResumeData = {
+  formData: TResumeForm;
+  infoData: TResumeInfo;
+}

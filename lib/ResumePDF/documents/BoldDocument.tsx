@@ -10,7 +10,11 @@ interface IBoldDocumentProps {
   fontFamily: string;
 }
 
-export const BoldDocument = ({ data, colors, fontFamily }: IBoldDocumentProps) => {
+export const BoldDocument = ({
+  data,
+  colors,
+  fontFamily
+}: IBoldDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
 
   const boldStyles = StyleSheet.create({
@@ -48,7 +52,7 @@ export const BoldDocument = ({ data, colors, fontFamily }: IBoldDocumentProps) =
       paddingTop: 20
     },
     summaryBox: {
-      backgroundColor: `${colors.summary  }15`,
+      backgroundColor: `${colors.summary}15`,
       padding: 14,
       borderRadius: 6,
       marginBottom: 20
@@ -202,7 +206,9 @@ export const BoldDocument = ({ data, colors, fontFamily }: IBoldDocumentProps) =
                     </Text>
                   </View>
                 </View>
-                <Text style={boldStyles.itemDescription}>{exp.description}</Text>
+                <Text style={boldStyles.itemDescription}>
+                  {exp.description}
+                </Text>
               </View>
             ))}
           </>
@@ -245,7 +251,9 @@ export const BoldDocument = ({ data, colors, fontFamily }: IBoldDocumentProps) =
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
                     <Text style={boldStyles.itemLocation}>{edu.location}</Text>
-                    <Text style={boldStyles.itemDate}>{edu.graduationDate}</Text>
+                    <Text style={boldStyles.itemDate}>
+                      {edu.graduationDate}
+                    </Text>
                     {edu.gpa && (
                       <Text
                         style={[boldStyles.itemDate, { color: colors.skills }]}
@@ -264,7 +272,10 @@ export const BoldDocument = ({ data, colors, fontFamily }: IBoldDocumentProps) =
           <>
             <View style={boldStyles.sectionHeader}>
               <View
-                style={[boldStyles.sectionBar, { backgroundColor: colors.skills }]}
+                style={[
+                  boldStyles.sectionBar,
+                  { backgroundColor: colors.skills }
+                ]}
               />
               <Text style={[boldStyles.sectionTitle, { color: colors.skills }]}>
                 Skills

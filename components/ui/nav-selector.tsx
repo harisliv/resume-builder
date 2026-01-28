@@ -59,23 +59,23 @@ export function NavSelector<T extends string = string>({
               size="lg"
               type="button"
               tooltip={tooltip ?? label}
-              className="bg-background/80 shadow-sm border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0"
+              className="cursor-pointer bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200"
             >
               <div
                 className={cn(
-                  'flex aspect-square size-8 items-center justify-center rounded-full shrink-0',
+                  'flex aspect-square size-10 items-center justify-center rounded-xl shrink-0',
                   iconBgColor
                 )}
               >
                 {renderIcon(value)}
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-semibold">{label}</span>
-                <span className="truncate text-xs text-muted-foreground">
+              <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
+                <span className="truncate font-bold">{label}</span>
+                <span className="truncate text-sm text-muted-foreground font-medium">
                   {displayValue}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -128,9 +128,9 @@ export function GradientCircle({
 }) {
   return (
     <div
-      className={className ?? 'size-8 rounded-full'}
+      className={cn('size-10 rounded-xl shadow-lg', className)}
       style={{
-        background: `conic-gradient(${colors[0]} 0deg 120deg, ${colors[1]} 120deg 240deg, ${colors[2]} 240deg 360deg)`
+        background: `linear-gradient(90deg, ${colors[0]} 0%, ${colors[1]} 30%, ${colors[2]} 80%)`
       }}
     />
   );

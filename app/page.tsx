@@ -1,5 +1,6 @@
-import { ResumeSections } from '@/components/ResumeSections';
+import { Home } from '@/components/Home';
 
 export default function Page() {
-  return <ResumeSections />;
+  console.log(process.env.VERCEL_BRANCH_URL);
+  return <Home />;
 }

@@ -9,16 +9,13 @@ import {
   Merriweather
 } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import {
   AuthKitProvider,
   Impersonation
 } from '@workos-inc/authkit-nextjs/components';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { ConvexClientProvider } from '@/components/providers/ConvexProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { ConvexProvider } from '@/components/providers/ConvexProvider';
-import { ResumeFormProvider } from '@/components/providers/ResumeFormProvider';
-import { AppSidebar } from '@/components/app-sidebar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -68,11 +65,15 @@ export default function RootLayout({
   ].join(' ');
 
   return (
-    <html lang="en" className={fontVariables} suppressHydrationWarning>
-      <body className="antialiased">
+    <html
+      lang="en"
+      className={`${inter.className} ${fontVariables}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased font-sans">
         <AuthKitProvider>
           <Impersonation />
-          <ConvexProvider>
+          <ConvexClientProvider>
             <QueryProvider>
               <ThemeProvider
                 attribute="class"
@@ -80,19 +81,10 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <SidebarProvider>
-                  <ResumeFormProvider>
-                    <AppSidebar />
-                    <SidebarInset>
-                      <div className="w-full max-w-[2000px] mx-auto min-h-screen">
-                        {children}
-                      </div>
-                    </SidebarInset>
-                  </ResumeFormProvider>
-                </SidebarProvider>
+                {children}
               </ThemeProvider>
             </QueryProvider>
-          </ConvexProvider>
+          </ConvexClientProvider>
         </AuthKitProvider>
       </body>
     </html>
