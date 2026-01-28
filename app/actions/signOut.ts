@@ -9,5 +9,6 @@ const returnTo = process.env.VERCEL_ENV === 'preview'
     : '/';
 
 export const handleSignOutAction = async () => {
+  console.log("🚀 ~ handleSignOutAction ~ returnTo:", returnTo)
   await signOut({ returnTo });
 };
