@@ -8,7 +8,7 @@ export default authkitMiddleware({
   },
   redirectUri:
     process.env.VERCEL_ENV === 'preview'
-      ? `https://${process.env.VERCEL_BRANCH_URL}/callback`
+      ? `https://${process.env.VERCEL_URL}/callback`
       : process.env.VERCEL_ENV === 'production'
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}/callback`
         : undefined,
