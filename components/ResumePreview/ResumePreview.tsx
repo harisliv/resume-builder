@@ -64,8 +64,12 @@ export default function ResumePreview({
   }
 
   if (style === 'bold') {
-    return <BoldStyle data={formData} palette={palette} fontFamily={fontFamily} />;
+    return (
+      <BoldStyle data={formData} palette={palette} fontFamily={fontFamily} />
+    );
   }
 
-  return <ModernStyle data={formData} palette={palette} fontFamily={fontFamily} />;
+  return (
+    <ModernStyle data={formData} palette={palette} fontFamily={fontFamily} />
+  );
 }

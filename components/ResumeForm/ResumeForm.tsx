@@ -1,12 +1,19 @@
 'use client';
 
-import { HugeiconsIcon } from '@hugeicons/react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { HugeiconsIcon } from '@hugeicons/react';
 import { FileText, Save } from '@hugeicons/core-free-icons';
 import ResumeFormTabs from './components/ResumeFormTabs';
 import { useFormContext } from 'react-hook-form';
 import type { TResumeForm } from '@/types';
+import {
+  SectionCard,
+  SectionCardHeader,
+  SectionCardTitle,
+  SectionCardActions,
+  SectionCardContent
+} from '@/components/ui/section-card';
+import { ErrorMessage } from '@/components/ui/error-message';
 
 export default function ResumeForm({
   onSubmit,
@@ -24,36 +31,27 @@ export default function ResumeForm({
   const handleSubmit = form.handleSubmit(onSubmit);
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="contents">
-      <Card className="p-7 flex flex-col max-h-full overflow-hidden">
-        <div className="flex items-center justify-between mb-6 flex-shrink-0">
-          <h3 className="text-xl font-bold flex items-center gap-3 tracking-tight">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/25">
-              <HugeiconsIcon
-                icon={FileText}
-                strokeWidth={2.5}
-                className="size-5"
-              />
-            </div>
-            Resume Form
-          </h3>
-          <div className="flex items-center gap-3">
+    <form noValidate onSubmit={handleSubmit}>
+      <SectionCard>
+        <SectionCardHeader>
+          <SectionCardTitle icon={FileText}>Resume Form</SectionCardTitle>
+          <SectionCardActions>
             {isError && (
-              <p className="text-sm text-destructive font-medium">
+              <ErrorMessage>
                 Error:{' '}
                 {error instanceof Error ? error.message : 'An error occurred'}
-              </p>
+              </ErrorMessage>
             )}
             <Button type="submit" disabled={isPending}>
               <HugeiconsIcon icon={Save} strokeWidth={2.5} />
               {isPending ? 'Saving...' : 'Save'}
             </Button>
-          </div>
-        </div>
-        <div className="flex-1 overflow-auto min-h-0">
+          </SectionCardActions>
+        </SectionCardHeader>
+        <SectionCardContent>
           <ResumeFormTabs />
-        </div>
-      </Card>
+        </SectionCardContent>
+      </SectionCard>
     </form>
   );
 }

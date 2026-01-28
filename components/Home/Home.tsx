@@ -23,8 +23,11 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/ui/app-sidebar';
 import { FormProvider } from 'react-hook-form';
 import ResumePreviewWrapper from '@/components/ResumePreview/ResumePreviewWrapper';
+import { HomeLayout } from '@/components/ui/home-layout';
 
 export default function Home() {
+  console.log(process.env.VERCEL_BRANCH_URL);
+
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
@@ -99,22 +102,20 @@ export default function Home() {
         />
       </FormProvider>
       <SidebarInset>
-        <div className="w-full max-w-[2000px] mx-auto h-screen overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 w-full max-w-[2000px] mx-auto h-full overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
-            <FormProvider {...formForm}>
-              <ResumeForm
-                onSubmit={handleSubmit}
-                isPending={isPending}
-                isError={isError}
-                error={error}
-              />
-            </FormProvider>
-            <ResumePreviewWrapper
-              formData={formForm.watch()}
-              infoData={infoForm.watch()}
+        <HomeLayout>
+          <FormProvider {...formForm}>
+            <ResumeForm
+              onSubmit={handleSubmit}
+              isPending={isPending}
+              isError={isError}
+              error={error}
             />
-          </div>
-        </div>
+          </FormProvider>
+          <ResumePreviewWrapper
+            formData={formForm.watch()}
+            infoData={infoForm.watch()}
+          />
+        </HomeLayout>
       </SidebarInset>
     </SidebarProvider>
   );
