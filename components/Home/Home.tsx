@@ -26,8 +26,6 @@ import ResumePreviewWrapper from '@/components/ResumePreview/ResumePreviewWrappe
 import { HomeLayout } from '@/components/ui/home-layout';
 
 export default function Home() {
-  console.log(process.env.VERCEL_BRANCH_URL);
-
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
