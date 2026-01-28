@@ -1,6 +1,13 @@
 'use client';
 
-import { ChevronsUpDown, LogOut, Sparkles } from 'lucide-react';
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles
+} from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -20,18 +27,11 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '@workos-inc/authkit-nextjs/components';
 import { Button } from './button';
-
-const returnTo =
-  process.env.VERCEL_ENV === 'preview'
-    ? `https://${process.env.VERCEL_URL}`
-    : process.env.VERCEL_ENV === 'production'
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : '/';
+import { handleSignOutAction } from '@/app/actions/signOut';
 
 export function NavUser() {
-  console.log('🚀 ~ returnTo:', returnTo);
   const { isMobile } = useSidebar();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   if (!user) {
     return (
@@ -113,7 +113,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={() => {
-                signOut({ returnTo });
+                handleSignOutAction();
               }}
             >
               <LogOut />
