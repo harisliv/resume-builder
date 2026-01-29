@@ -96,8 +96,8 @@ export const resumeInfoDefaultValues = {
 
 export const resumeFormDefaultValues = {
   personalInfo: personalInfoDefaultValues,
-  experience: [],
-  education: [],
+  experience: [experienceDefaultValues],
+  education: [educationDefaultValues],
   skills: []
 };
 

@@ -5,6 +5,7 @@ export default function GPA({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`education.${index}.gpa`}
       label="GPA (Optional)"
+      placeholder="3.8"
     />
   );
 }

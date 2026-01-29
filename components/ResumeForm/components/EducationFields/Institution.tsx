@@ -5,6 +5,7 @@ export default function Institution({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`education.${index}.institution`}
       label="Institution"
+      placeholder="University of California"
     />
   );
 }

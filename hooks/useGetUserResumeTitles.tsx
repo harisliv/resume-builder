@@ -4,8 +4,8 @@ import { useConvex, useConvexAuth } from 'convex/react';
 
 export function useGetUserResumeTitles() {
   const convex = useConvex();
-  const { isAuthenticated, isLoading } = useConvexAuth();
-  return useQuery({
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
+  const query = useQuery({
     queryKey: ['resumeTitles'],
     queryFn: async () => {
       const res = await convex.query(api.resumes.listResumeTitles);
@@ -14,6 +14,11 @@ export function useGetUserResumeTitles() {
         title: item.title
       }));
     },
-    enabled: isAuthenticated && !isLoading
+    enabled: isAuthenticated && !isAuthLoading
   });
+
+  return {
+    ...query,
+    isLoading: isAuthLoading || query.isLoading
+  };
 }

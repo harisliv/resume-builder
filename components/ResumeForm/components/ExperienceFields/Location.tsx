@@ -5,6 +5,7 @@ export default function Location({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`experience.${index}.location`}
       label="Location"
+      placeholder="San Francisco, CA"
     />
   );
 }

@@ -5,6 +5,7 @@ export default function Position({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`experience.${index}.position`}
       label="Position"
+      placeholder="Senior Software Engineer"
     />
   );
 }

@@ -18,6 +18,7 @@ import {
   useSidebar
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { Spinner } from '@/components/ui/spinner';
 
 export type NavSelectorOption<T extends string = string> = {
   id: T;
@@ -35,6 +36,7 @@ export type NavSelectorProps<T extends string = string> = {
   renderOptionIcon?: (option: NavSelectorOption<T>) => React.ReactNode;
   tooltip?: string;
   iconBgColor?: string;
+  disabled?: boolean;
 };
 
 export function NavSelector<T extends string = string>({
@@ -46,7 +48,8 @@ export function NavSelector<T extends string = string>({
   renderIcon,
   renderOptionIcon,
   tooltip,
-  iconBgColor
+  iconBgColor,
+  disabled = false
 }: NavSelectorProps<T>) {
   const { isMobile } = useSidebar();
 
@@ -54,12 +57,16 @@ export function NavSelector<T extends string = string>({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild disabled={disabled}>
             <SidebarMenuButton
               size="lg"
               type="button"
               tooltip={tooltip ?? label}
-              className="cursor-pointer bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200"
+              disabled={disabled}
+              className={cn(
+                "bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200",
+                disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+              )}
             >
               <div
                 className={cn(
@@ -75,7 +82,11 @@ export function NavSelector<T extends string = string>({
                   {displayValue}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+              {disabled ? (
+                <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+              ) : (
+                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

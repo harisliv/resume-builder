@@ -5,6 +5,7 @@ export default function StartDate({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`experience.${index}.startDate`}
       label="Start Date"
+      placeholder="Jan 2020"
     />
   );
 }

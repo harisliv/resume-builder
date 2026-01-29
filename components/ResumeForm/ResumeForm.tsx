@@ -14,6 +14,7 @@ import {
   SectionCardContent
 } from '@/components/ui/section-card';
 import { ErrorMessage } from '@/components/ui/error-message';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function ResumeForm({
   onSubmit,
@@ -43,8 +44,17 @@ export default function ResumeForm({
               </ErrorMessage>
             )}
             <Button type="submit" disabled={isPending}>
-              <HugeiconsIcon icon={Save} strokeWidth={2.5} />
-              {isPending ? 'Saving...' : 'Save'}
+              {isPending ? (
+                <>
+                  <Spinner className="size-4" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <HugeiconsIcon icon={Save} strokeWidth={2.5} />
+                  Save
+                </>
+              )}
             </Button>
           </SectionCardActions>
         </SectionCardHeader>

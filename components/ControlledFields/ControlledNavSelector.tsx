@@ -18,6 +18,7 @@ export default function ControlledNavSelector<
   renderOptionIcon?: (option: NavSelectorOption<TValue>) => React.ReactNode;
   tooltip?: string;
   iconBgColor?: string;
+  disabled?: boolean;
 }) {
   const form = useFormContext<TForm>();
 
@@ -36,6 +37,7 @@ export default function ControlledNavSelector<
           renderOptionIcon={props.renderOptionIcon}
           tooltip={props.tooltip}
           iconBgColor={props.iconBgColor}
+          disabled={props.disabled}
         />
       )}
     />

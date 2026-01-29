@@ -6,9 +6,15 @@ import { cn } from '@/lib/utils';
 
 type IconVariant = 'primary' | 'emerald';
 
-function SectionCard({ children }: { children: React.ReactNode }) {
+function SectionCard({
+  children,
+  className
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <Card className="p-7 flex flex-col max-h-full overflow-hidden">
+    <Card className={cn('p-7 flex flex-col h-full', className)}>
       {children}
     </Card>
   );
@@ -51,7 +57,7 @@ function SectionCardActions({ children }: { children: React.ReactNode }) {
 }
 
 function SectionCardContent({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 overflow-auto min-h-0">{children}</div>;
+  return <div className="flex-1 min-h-0 p-1">{children}</div>;
 }
 
 export {

@@ -21,7 +21,7 @@ export default function Phone() {
             value={field.value ?? ''}
             id={id}
             aria-invalid={fieldState.invalid}
-            placeholder="Enter a phone number"
+            placeholder="+1 (555) 123-4567"
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
