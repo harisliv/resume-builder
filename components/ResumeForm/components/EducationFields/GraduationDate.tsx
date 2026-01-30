@@ -5,6 +5,7 @@ export default function GraduationDate({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`education.${index}.graduationDate`}
       label="Graduation Date"
+      placeholder="May 2019"
     />
   );
 }

@@ -34,7 +34,10 @@ export default function Education() {
         </Button>
       </div>
       {fields.map((field, index) => (
-        <Card key={field.id} className="p-4 pb-8 space-y-4">
+        <Card
+          key={field.id}
+          className="p-4 pb-8 space-y-4 shadow-none hover:shadow-none "
+        >
           <div className="flex items-center justify-between">
             <h4 className="font-medium">Education {index + 1}</h4>
             <Button

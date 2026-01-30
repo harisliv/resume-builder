@@ -5,6 +5,7 @@ export default function Field({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`education.${index}.field`}
       label="Field of Study"
+      placeholder="Computer Science"
     />
   );
 }

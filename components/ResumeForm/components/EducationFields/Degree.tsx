@@ -5,6 +5,7 @@ export default function Degree({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`education.${index}.degree`}
       label="Degree"
+      placeholder="Bachelor of Science"
     />
   );
 }

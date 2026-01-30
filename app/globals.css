@@ -134,3 +134,31 @@
     @apply bg-background text-foreground antialiased;
   }
 }
+
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.55 0.26 280 / 0.6), 0 0 0 0 oklch(0.55 0.26 280 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px oklch(0.55 0.26 280 / 0.3), 0 0 0 12px oklch(0.55 0.26 280 / 0);
+  }
+}
+
+.dark .animate-pulse-subtle {
+  animation: pulse-subtle-dark 2s infinite;
+}
+
+@keyframes pulse-subtle-dark {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 oklch(0.68 0.22 280 / 0.6), 0 0 0 0 oklch(0.68 0.22 280 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px oklch(0.68 0.22 280 / 0.3), 0 0 0 12px oklch(0.68 0.22 280 / 0);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s infinite;
+}

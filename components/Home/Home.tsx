@@ -33,8 +33,11 @@ export default function Home() {
   const { data: resumeTitles, isLoading: isLoadingTitles } =
     useGetUserResumeTitles();
 
-  const { form: formValues, info: infoValues } =
-    useGetResumeById(selectedResumeId);
+  const {
+    form: formValues,
+    info: infoValues,
+    isLoading: isLoadingResume
+  } = useGetResumeById(selectedResumeId);
 
   const formForm = useForm<z.infer<typeof resumeFormSchema>>({
     resolver: zodResolver(resumeFormSchema),
@@ -97,6 +100,7 @@ export default function Home() {
           onResumeSelect={handleResumeSelect}
           onCreateNew={handleCreateNew}
           isLoadingTitles={isLoadingTitles}
+          isLoadingResume={isLoadingResume}
         />
       </FormProvider>
       <SidebarInset>

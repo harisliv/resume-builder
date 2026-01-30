@@ -5,6 +5,7 @@ export default function EndDate({ index }: { index: number }) {
     <ResumeFormControlledInput
       name={`experience.${index}.endDate`}
       label="End Date"
+      placeholder="Dec 2023"
     />
   );
 }

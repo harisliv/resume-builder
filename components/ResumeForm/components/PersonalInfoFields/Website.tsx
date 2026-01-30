@@ -2,6 +2,10 @@ import { ResumeFormControlledInput } from '@/components/ControlledFields';
 
 export default function Website() {
   return (
-    <ResumeFormControlledInput name="personalInfo.website" label="Website" />
+    <ResumeFormControlledInput
+      name="personalInfo.website"
+      label="Website"
+      placeholder="https://johndoe.com"
+    />
   );
 }
