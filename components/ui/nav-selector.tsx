@@ -64,13 +64,15 @@ export function NavSelector<T extends string = string>({
               tooltip={tooltip ?? label}
               disabled={disabled}
               className={cn(
-                "bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200",
+                "bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200",
+                "group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0",
                 disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
               )}
             >
               <div
                 className={cn(
                   'flex aspect-square size-10 items-center justify-center rounded-xl shrink-0',
+                  'group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg',
                   iconBgColor
                 )}
               >
@@ -139,7 +141,7 @@ export function GradientCircle({
 }) {
   return (
     <div
-      className={cn('size-10 rounded-xl shadow-lg', className)}
+      className={cn('size-10 rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg', className)}
       style={{
         background: `linear-gradient(90deg, ${colors[0]} 0%, ${colors[1]} 30%, ${colors[2]} 80%)`
       }}
