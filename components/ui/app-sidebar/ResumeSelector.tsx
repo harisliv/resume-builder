@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
 
 export function ResumeSelector({
   resumeTitles,
@@ -80,12 +82,19 @@ export function ResumeSelector({
               tooltip="My Resumes"
               disabled={isLoadingTitles}
               className={cn(
-                "bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200",
-                isLoadingTitles ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200',
+                isLoadingTitles
+                  ? 'cursor-not-allowed opacity-50'
+                  : 'cursor-pointer'
               )}
             >
               <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
-                <FileText className="size-6 text-white" strokeWidth={2.5} />
+                <HugeiconsIcon
+                  icon={LeftToRightListBulletIcon}
+                  size={24}
+                  color="white"
+                  strokeWidth={1.5}
+                />
               </div>
               <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-bold">My Resumes</span>

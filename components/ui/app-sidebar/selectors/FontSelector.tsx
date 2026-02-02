@@ -13,7 +13,12 @@ export function FontSelector({ disabled }: { disabled?: boolean }) {
       options={fontNavOptions}
       getDisplayValue={(id) => getFontById(id ?? '')?.name ?? 'Select font'}
       renderIcon={() => (
-        <HugeiconsIcon icon={TextFontIcon} size={20} strokeWidth={1.5} color="white" />
+        <HugeiconsIcon
+          icon={TextFontIcon}
+          size={20}
+          strokeWidth={1.5}
+          color="white"
+        />
       )}
       renderOptionIcon={(option) => {
         const font = getFontById(option.id);

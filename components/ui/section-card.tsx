@@ -45,7 +45,7 @@ function SectionCardTitle({
   return (
     <h3 className="text-xl font-bold flex items-center gap-3 tracking-tight">
       <div className={cn('p-2.5 rounded-xl', iconGradientClass)}>
-        <HugeiconsIcon icon={icon} strokeWidth={2.5} className="size-5" />
+        <HugeiconsIcon icon={icon} strokeWidth={1.5} size={24} />
       </div>
       {children}
     </h3>

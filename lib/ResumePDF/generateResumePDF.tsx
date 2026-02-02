@@ -5,7 +5,9 @@ import { pdf } from '@react-pdf/renderer';
 export const generateResumePDF = async (
   data: TCombinedResumeData
 ): Promise<void> => {
-  const doc = <ResumeDocument formData={data.formData} infoData={data.infoData} />;
+  const doc = (
+    <ResumeDocument formData={data.formData} infoData={data.infoData} />
+  );
   const instance = pdf(doc);
   const blob = await instance.toBlob();
 
