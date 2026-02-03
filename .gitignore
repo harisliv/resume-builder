@@ -44,3 +44,5 @@ next-env.d.ts
 /docs
 .kilocode
 .kilocodemodes
+# next-agents-md
+.next-docs/
