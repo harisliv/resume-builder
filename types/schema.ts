@@ -6,9 +6,13 @@ import { documentStyleSchema } from './documentStyle';
 export const personalInfoSchema = z.object({
   fullName: z.string().optional().or(z.literal('')),
   email: z.email().optional().or(z.literal('')),
-  phone: z.string().refine((value) => isValidPhoneNumber(value), {
-    message: 'Invalid phone number'
-  }).optional().or(z.literal('')),
+  phone: z
+    .string()
+    .refine((value) => isValidPhoneNumber(value), {
+      message: 'Invalid phone number'
+    })
+    .optional()
+    .or(z.literal('')),
   location: z.string().optional().or(z.literal('')),
   linkedIn: z.url().optional().or(z.literal('')),
   website: z.url().optional().or(z.literal('')),
@@ -116,4 +120,4 @@ export type TEducation = z.infer<typeof educationSchema>;
 export type TCombinedResumeData = {
   formData: TResumeForm;
   infoData: TResumeInfo;
-}
+};

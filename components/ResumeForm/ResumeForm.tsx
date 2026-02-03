@@ -51,7 +51,7 @@ export default function ResumeForm({
                 </>
               ) : (
                 <>
-                  <HugeiconsIcon icon={Save} strokeWidth={2.5} />
+                  <HugeiconsIcon icon={Save} strokeWidth={2} />
                   Save
                 </>
               )}

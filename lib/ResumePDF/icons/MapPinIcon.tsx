@@ -1,22 +1,42 @@
 import React from 'react';
 import { Svg, Path, Circle } from '@react-pdf/renderer';
-import { COLORS } from '../ResumeStyles';
+import {
+  type IconProps,
+  DEFAULT_ICON_SIZES,
+  DEFAULT_STROKE_WIDTHS,
+  DEFAULT_VIEWBOX,
+  DEFAULT_STROKE_STYLE
+} from './types';
 
-export const MapPinIcon = () => (
-  <Svg width="12" height="12" viewBox="0 0 24 24">
+/**
+ * Map pin/location icon for contact information
+ * Features a location marker with optional center dot fill
+ */
+export const MapPinIcon = ({
+  size = DEFAULT_ICON_SIZES.contact,
+  color = '#475569',
+  strokeWidth = DEFAULT_STROKE_WIDTHS.contact,
+  fill = 'none',
+  style
+}: IconProps) => (
+  <Svg width={size} height={size} viewBox={DEFAULT_VIEWBOX} style={style}>
+    {/* Location marker outline */}
     <Path
-      d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
-      stroke={COLORS.slate600}
-      strokeWidth="2"
-      fill="none"
+      d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      fill={fill}
+      strokeLinecap={DEFAULT_STROKE_STYLE.strokeLinecap}
+      strokeLinejoin={DEFAULT_STROKE_STYLE.strokeLinejoin}
     />
+    {/* Center dot */}
     <Circle
       cx="12"
       cy="10"
-      r="3"
-      stroke={COLORS.slate600}
-      strokeWidth="2"
-      fill="none"
+      r="2.5"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      fill={fill === 'none' ? 'none' : color}
     />
   </Svg>
 );

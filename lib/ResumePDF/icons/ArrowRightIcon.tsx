@@ -1,16 +1,33 @@
 import React from 'react';
 import { Svg, Path } from '@react-pdf/renderer';
-import { COLORS } from '../ResumeStyles';
+import {
+  type IconProps,
+  DEFAULT_ICON_SIZES,
+  DEFAULT_STROKE_WIDTHS,
+  DEFAULT_VIEWBOX,
+  DEFAULT_STROKE_STYLE
+} from './types';
 
-export const ArrowRightIcon = () => (
-  <Svg width="5" height="5" viewBox="0 0 10 10" style={{ marginHorizontal: 1 }}>
+/**
+ * Arrow right icon for lists and navigation
+ * Small utility arrow with rounded caps
+ */
+export const ArrowRightIcon = ({
+  size = DEFAULT_ICON_SIZES.utility,
+  color = '#94a3b8',
+  strokeWidth = DEFAULT_STROKE_WIDTHS.utility,
+  fill = 'none',
+  style
+}: IconProps) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24" style={style}>
+    {/* Arrow shaft and head */}
     <Path
-      d="M1 5h7M6 2.5l2.5 2.5L6 7.5"
-      stroke={COLORS.textDark}
-      strokeWidth="0.8"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M5 12h14M14 7l5 5-5 5"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      fill={fill}
+      strokeLinecap={DEFAULT_STROKE_STYLE.strokeLinecap}
+      strokeLinejoin={DEFAULT_STROKE_STYLE.strokeLinejoin}
     />
   </Svg>
 );

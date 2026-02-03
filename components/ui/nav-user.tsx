@@ -44,7 +44,12 @@ export function NavUser() {
             >
               <a href="/login" className="flex items-center justify-center">
                 <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-primary to-primary/80">
-                  <HugeiconsIcon icon={UserCircle02Icon} size={18} strokeWidth={1.5} color="white" />
+                  <HugeiconsIcon
+                    icon={UserCircle02Icon}
+                    size={18}
+                    strokeWidth={1.5}
+                    color="white"
+                  />
                 </div>
               </a>
             </SidebarMenuButton>

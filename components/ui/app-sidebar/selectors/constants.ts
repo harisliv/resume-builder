@@ -23,13 +23,12 @@ export const fontNavOptions: NavSelectorOption<TFontId>[] = Object.values(
   description: f.category
 }));
 
-export const styleNavOptions: NavSelectorOption<TDocumentStyleId>[] = Object.values(
-  DOCUMENT_STYLES
-).map((s) => ({
-  id: s.id,
-  label: s.name,
-  description: s.description
-}));
+export const styleNavOptions: NavSelectorOption<TDocumentStyleId>[] =
+  Object.values(DOCUMENT_STYLES).map((s) => ({
+    id: s.id,
+    label: s.name,
+    description: s.description
+  }));
 
 export function getPaletteById(id: string) {
   return Object.values(COLOR_PALETTES).find((p) => p.id === id);
