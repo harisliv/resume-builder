@@ -2,11 +2,11 @@ This is a Next.js resume builder application with PDF export, preview, and futur
 
 This project uses pnpm.
 
-After each question we should consider if this info should be documented here.
+After each question we should update the guides in this folder to reflect any new knowledge.
 
-For TypeScript conventions, see [docs/TYPESCRIPT.md](.cursor/TYPESCRIPT.md)
-For Convex guidelines, see [docs/CONVEX.md](.cursor/CONVEX.md)
-For React/Next.js patterns, see [docs/REACT_NEXTJS.md](.cursor/REACT_NEXTJS.md)
-For ShadCN integration, see [docs/SHADCN.md](.cursor/SHADCN.md)
-For testing setup, see [docs/TESTING.md](.cursor/TESTING.md)
-For project structure, see [docs/PROJECT_STRUCTURE.md](.cursor/PROJECT_STRUCTURE.md)
+For react, typescript best practices, see [docs/CODE_BEST_PRACTICES.md](docs/CODE_BEST_PRACTICES.md)
+For Convex guidelines, see [docs/CONVEX.md](docs/CONVEX.md)
+For testing setup, see [docs/TESTING.md](docs/TESTING.md)
+For project structure, see [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)
+For PDF styling guidelines, see [docs/PDFSTYLING.md](docs/PDFStyling.md)
+For aesthetic design guide and styling, see [docs/AESTHETICGUIDE.md](docs/AestheticGuide.md)
