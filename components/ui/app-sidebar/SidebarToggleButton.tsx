@@ -24,7 +24,7 @@ export function SidebarToggleButton() {
       aria-label="Toggle Sidebar"
     >
       {isCollapsed ? (
-        <ChevronRight className="text-primary size-5" />
+        <ChevronRight className="size-5 text-primary" />
       ) : (
         <ChevronLeft className="size-5" />
       )}

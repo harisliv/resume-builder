@@ -11,15 +11,15 @@ export default function ResumeFormTabs() {
     <Tabs
       value={activeTab}
       onValueChange={setActiveTab}
-      className="flex h-full min-h-0 flex-col"
+      className="h-full flex flex-col min-h-0"
     >
-      <TabsList className="grid w-full shrink-0 grid-cols-4">
+      <TabsList className="grid w-full grid-cols-4 shrink-0">
         <TabsTrigger value="form">Form</TabsTrigger>
         <TabsTrigger value="experience">Experience</TabsTrigger>
         <TabsTrigger value="education">Education</TabsTrigger>
         <TabsTrigger value="skills">Skills</TabsTrigger>
       </TabsList>
-      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
         <TabsContent value="form" className="mt-6 px-1">
           <PersonalInfo />
         </TabsContent>

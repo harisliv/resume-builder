@@ -70,7 +70,7 @@ export default function RootLayout({
       className={`${inter.className} ${fontVariables}`}
       suppressHydrationWarning
     >
-      <body className="font-sans antialiased">
+      <body className="antialiased font-sans">
         <AuthKitProvider>
           <Impersonation />
           <ConvexClientProvider>

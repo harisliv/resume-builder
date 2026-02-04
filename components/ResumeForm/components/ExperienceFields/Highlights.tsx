@@ -41,7 +41,7 @@ export default function Highlights({ index }: { index: number }) {
             >
               <HugeiconsIcon
                 icon={Delete02Icon}
-                className="text-destructive h-4 w-4"
+                className="h-4 w-4 text-destructive"
               />
             </Button>
           </div>
@@ -53,7 +53,7 @@ export default function Highlights({ index }: { index: number }) {
           onClick={() => append('')}
           className="w-full"
         >
-          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4 mr-2" />
           Add Highlight
         </Button>
       </div>

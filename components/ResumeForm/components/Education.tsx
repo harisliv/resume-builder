@@ -36,10 +36,10 @@ export default function Education() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <SectionTitle>Education</SectionTitle>
         <Button type="button" onClick={() => append(educationDefaultValues)}>
-          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4 mr-2" />
           Add Education
         </Button>
       </div>

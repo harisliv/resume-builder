@@ -24,7 +24,7 @@ export function FontSelector({ disabled }: { disabled?: boolean }) {
         const font = getFontById(option.id);
         return font ? (
           <span
-            className="w-6 text-sm"
+            className="text-sm w-6"
             style={{ fontFamily: `var(${font.cssVariable})` }}
           >
             Aa

@@ -82,13 +82,13 @@ export function ResumeSelector({
               tooltip="My Resumes"
               disabled={isLoadingTitles}
               className={cn(
-                'bg-background border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 border shadow-sm transition-all duration-200 group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none hover:shadow-md',
+                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200',
                 isLoadingTitles
                   ? 'cursor-not-allowed opacity-50'
                   : 'cursor-pointer'
               )}
             >
-              <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+              <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
                 <HugeiconsIcon
                   icon={LeftToRightListBulletIcon}
                   size={24}
@@ -98,14 +98,14 @@ export function ResumeSelector({
               </div>
               <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-bold">My Resumes</span>
-                <span className="text-muted-foreground truncate text-sm font-medium">
+                <span className="truncate text-sm text-muted-foreground font-medium">
                   {currentTitle}
                 </span>
               </div>
               {isLoadingTitles ? (
                 <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               ) : (
-                <ChevronsUpDown className="text-muted-foreground ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -149,7 +149,7 @@ export function ResumeSelector({
                 onClick={() => setIsCreating(true)}
                 onSelect={(e) => e.preventDefault()}
               >
-                <Plus className="mr-2 size-4" />
+                <Plus className="size-4 mr-2" />
                 Create New Resume
               </DropdownMenuItem>
             )}

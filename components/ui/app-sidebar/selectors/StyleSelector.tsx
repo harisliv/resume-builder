@@ -23,7 +23,7 @@ export function StyleSelector({ disabled }: { disabled?: boolean }) {
       renderOptionIcon={(option) => {
         const style = getStyleById(option.id);
         return style ? (
-          <div className="flex size-5 shrink-0 items-center justify-center rounded border text-[10px] font-bold">
+          <div className="flex items-center justify-center size-5 rounded border text-[10px] font-bold shrink-0">
             {style.name[0]}
           </div>
         ) : null;

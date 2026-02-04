@@ -43,24 +43,24 @@ export function AppSidebar({
       <SidebarHeader
         className={cn(
           'p-4',
-          isCollapsed && 'flex flex-col items-center gap-3 p-3'
+          isCollapsed && 'p-3 flex flex-col items-center gap-3'
         )}
       >
         {!isCollapsed && (
-          <div className="mb-2 flex items-center justify-between">
-            <SidebarGroupLabel className="text-foreground text-sm font-bold">
+          <div className="flex items-center justify-between mb-2">
+            <SidebarGroupLabel className="text-sm font-bold text-foreground">
               My Resumes
             </SidebarGroupLabel>
             <SidebarToggleButton />
           </div>
         )}
         {isCollapsed && (
-          <div className="mb-1 flex w-full justify-center">
+          <div className="w-full flex justify-center mb-1">
             <SidebarToggleButton />
           </div>
         )}
         {isCollapsed ? (
-          <div className="bg-muted/40 border-border/50 flex w-full flex-col items-center rounded-xl border p-2.5 shadow-sm">
+          <div className="w-full flex flex-col items-center bg-muted/40 rounded-xl p-2.5 border border-border/50 shadow-sm">
             <ResumeSelector
               resumeTitles={resumeTitles}
               selectedResumeId={selectedResumeId}
@@ -82,16 +82,16 @@ export function AppSidebar({
       <SidebarContent className={cn(isCollapsed && 'px-3')}>
         <SidebarGroup
           className={cn(
-            'gap-5 rounded-2xl p-4',
+            'bg-muted/30 rounded-2xl gap-5 p-4 border border-border/40',
             'group-data-[collapsible=icon]:bg-muted/40 group-data-[collapsible=icon]:rounded-xl',
             'group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:p-2.5',
-            'group-data-[collapsible=icon]:border-border/50 group-data-[collapsible=icon]:gap-2.5',
+            'group-data-[collapsible=icon]:gap-2.5 group-data-[collapsible=icon]:border-border/50',
             'group-data-[collapsible=icon]:shadow-sm'
           )}
         >
           <SidebarGroupLabel
             className={cn(
-              'text-muted-foreground px-1 text-xs font-bold tracking-wider uppercase',
+              'text-xs font-bold text-muted-foreground uppercase tracking-wider px-1',
               isCollapsed && 'hidden'
             )}
           >
@@ -104,7 +104,7 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter className={cn('p-4', isCollapsed && 'p-3')}>
         {isCollapsed ? (
-          <div className="bg-muted/40 border-border/50 flex w-full flex-col items-center rounded-xl border p-2.5 shadow-sm">
+          <div className="w-full flex flex-col items-center bg-muted/40 rounded-xl p-2.5 border border-border/50 shadow-sm">
             <NavUser />
           </div>
         ) : (

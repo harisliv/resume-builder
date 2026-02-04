@@ -19,20 +19,20 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="rounded-xl border border-slate-200 bg-white text-slate-900"
+      className="bg-white text-slate-900 rounded-xl border border-slate-200"
       style={{ fontFamily }}
     >
-      <div className="border-b border-slate-200 px-6 py-5">
-        <h1 className="mb-3 text-2xl font-bold tracking-tight text-slate-900">
+      <div className="px-6 py-5 border-b border-slate-200">
+        <h1 className="text-2xl font-bold mb-3 text-slate-900 tracking-tight">
           {personalInfo?.fullName || 'Your Name'}
         </h1>
         <div className="flex justify-between text-[9px]">
           {personalInfo?.email && (
             <a
               href={`mailto:${personalInfo.email}`}
-              className="group flex items-center gap-1 text-slate-600 transition-opacity hover:opacity-80"
+              className="flex items-center gap-1 text-slate-600 hover:opacity-80 transition-opacity group"
             >
-              <span className="rounded-md bg-slate-100 p-1 transition-colors group-hover:bg-slate-200">
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-slate-200 transition-colors">
                 <Mail className="h-3 w-3" />
               </span>
               {personalInfo.email}
@@ -40,7 +40,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
           )}
           {personalInfo?.phone && (
             <span className="flex items-center gap-1 text-slate-600">
-              <span className="rounded-md bg-slate-100 p-1">
+              <span className="p-1 rounded-md bg-slate-100">
                 <Phone className="h-3 w-3" />
               </span>
               {personalInfo.phone}
@@ -48,7 +48,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
           )}
           {personalInfo?.location && (
             <span className="flex items-center gap-1 text-slate-600">
-              <span className="rounded-md bg-slate-100 p-1">
+              <span className="p-1 rounded-md bg-slate-100">
                 <MapPin className="h-3 w-3" />
               </span>
               {personalInfo.location}
@@ -59,9 +59,9 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               href={personalInfo.linkedIn}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-1 text-slate-600 transition-opacity hover:opacity-80"
+              className="flex items-center gap-1 text-slate-600 hover:opacity-80 transition-opacity group"
             >
-              <span className="rounded-md bg-slate-100 p-1 transition-colors group-hover:bg-slate-200">
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-slate-200 transition-colors">
                 <HugeiconsIcon icon={Linkedin02Icon} className="h-3 w-3" />
               </span>
               LinkedIn
@@ -72,9 +72,9 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               href={personalInfo.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-1 text-slate-600 transition-opacity hover:opacity-80"
+              className="flex items-center gap-1 text-slate-600 hover:opacity-80 transition-opacity group"
             >
-              <span className="rounded-md bg-slate-100 p-1 transition-colors group-hover:bg-slate-200">
+              <span className="p-1 rounded-md bg-slate-100 group-hover:bg-slate-200 transition-colors">
                 <Globe className="h-3 w-3" />
               </span>
               Portfolio
@@ -83,13 +83,13 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
         </div>
       </div>
 
-      <div className="space-y-5 px-6 py-5">
+      <div className="px-6 py-5 space-y-5">
         {personalInfo?.summary && (
           <div
-            className="relative border-l-2 pl-3"
+            className="relative pl-3 border-l-2"
             style={{ borderColor: palette.summary }}
           >
-            <p className="text-[10px] leading-relaxed text-slate-600">
+            <p className="text-slate-600 leading-relaxed text-[10px]">
               {personalInfo.summary}
             </p>
           </div>
@@ -97,9 +97,9 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
 
         {experience && experience.length > 0 && (
           <div>
-            <div className="mb-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-3">
               <div
-                className="rounded-lg p-1.5 shadow-sm"
+                className="p-1.5 rounded-lg shadow-sm"
                 style={{ backgroundColor: palette.experience }}
               >
                 <Briefcase className="h-3.5 w-3.5 text-white" />
@@ -108,17 +108,17 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
                 Experience
               </h2>
             </div>
-            <div className="relative space-y-2.5 pl-1.5">
+            <div className="space-y-2.5 relative pl-1.5">
               {experience.map((exp: TExperience, index: number) => (
                 <div key={index} className="relative pl-5">
                   <div
-                    className="absolute top-1.5 left-0 h-3 w-3 rounded-full border-2 bg-white shadow-sm"
+                    className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-white border-2 shadow-sm"
                     style={{ borderColor: palette.experience }}
                   />
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <div className="mb-2 flex flex-wrap items-start justify-between gap-1">
+                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <div className="flex justify-between items-start mb-2 flex-wrap gap-1">
                       <div>
-                        <h3 className="text-[11px] font-semibold text-slate-900">
+                        <h3 className="font-semibold text-slate-900 text-[11px]">
                           {exp.position}
                         </h3>
                         <p
@@ -132,13 +132,13 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
                         <p className="text-[8px] text-slate-500">
                           {exp.location}
                         </p>
-                        <p className="font-mono text-[8px] text-slate-400">
+                        <p className="text-[8px] text-slate-400 font-mono">
                           {exp.startDate} →{' '}
                           {exp.current ? 'Present' : exp.endDate}
                         </p>
                       </div>
                     </div>
-                    <p className="text-[9px] leading-relaxed text-slate-500">
+                    <p className="text-[9px] text-slate-500 leading-relaxed">
                       {exp.description}
                     </p>
                   </div>
@@ -150,9 +150,9 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
 
         {education && education.length > 0 && (
           <div>
-            <div className="mb-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-3">
               <div
-                className="rounded-lg p-1.5 shadow-sm"
+                className="p-1.5 rounded-lg shadow-sm"
                 style={{ backgroundColor: palette.education }}
               >
                 <GraduationCap className="h-3.5 w-3.5 text-white" />
@@ -165,11 +165,11 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
-                  className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+                  className="bg-slate-50 rounded-lg p-3 border border-slate-200"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-1">
+                  <div className="flex justify-between items-start flex-wrap gap-1">
                     <div>
-                      <h3 className="text-[11px] font-semibold text-slate-900">
+                      <h3 className="font-semibold text-slate-900 text-[11px]">
                         {edu.degree} in {edu.field}
                       </h3>
                       <p
@@ -183,12 +183,12 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
                       <p className="text-[8px] text-slate-500">
                         {edu.location}
                       </p>
-                      <p className="font-mono text-[8px] text-slate-400">
+                      <p className="text-[8px] text-slate-400 font-mono">
                         {edu.graduationDate}
                       </p>
                       {edu.gpa && (
                         <p
-                          className="mt-0.5 text-[8px] font-medium"
+                          className="text-[8px] mt-0.5 font-medium"
                           style={{ color: palette.skills }}
                         >
                           GPA: {edu.gpa}
@@ -204,9 +204,9 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
 
         {skills && skills.length > 0 && (
           <div>
-            <div className="mb-3 flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-3">
               <div
-                className="rounded-lg p-1.5 shadow-sm"
+                className="p-1.5 rounded-lg shadow-sm"
                 style={{ backgroundColor: palette.skills }}
               >
                 <Sparkles className="h-3.5 w-3.5 text-white" />
@@ -219,7 +219,7 @@ export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {
               {skills.map((skill: string, index: number) => (
                 <span
                   key={index}
-                  className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[9px] text-slate-600"
+                  className="text-[9px] px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200"
                 >
                   {skill}
                 </span>

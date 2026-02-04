@@ -9,14 +9,14 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="border-0 bg-white text-slate-900 shadow-xl"
+      className="bg-white text-slate-900 shadow-xl border-0"
       style={{ fontFamily }}
     >
       <div className="px-6 py-6" style={{ backgroundColor: palette.summary }}>
-        <h1 className="text-3xl font-black tracking-tight text-white">
+        <h1 className="text-3xl font-black text-white tracking-tight">
           {personalInfo?.fullName || 'Your Name'}
         </h1>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-white/90">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[10px] text-white/90">
           {personalInfo?.email && (
             <span className="flex items-center gap-1">
               <Mail className="h-3 w-3" />
@@ -38,13 +38,13 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
         </div>
       </div>
 
-      <div className="space-y-5 px-6 py-5">
+      <div className="px-6 py-5 space-y-5">
         {personalInfo?.summary && (
           <div
-            className="rounded-lg p-4"
+            className="p-4 rounded-lg"
             style={{ backgroundColor: `${palette.summary}15` }}
           >
-            <p className="text-[10px] leading-relaxed font-medium text-slate-700">
+            <p className="text-[10px] text-slate-700 leading-relaxed font-medium">
               {personalInfo.summary}
             </p>
           </div>
@@ -53,11 +53,11 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
         {experience && experience.length > 0 && (
           <div>
             <h2
-              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
+              className="text-base font-black uppercase tracking-wide mb-3 flex items-center gap-2"
               style={{ color: palette.experience }}
             >
               <div
-                className="h-1 w-8 rounded-full"
+                className="w-8 h-1 rounded-full"
                 style={{ backgroundColor: palette.experience }}
               />
               Experience
@@ -66,15 +66,15 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               {experience.map((exp: TExperience, index: number) => (
                 <div
                   key={index}
-                  className="rounded-lg border-l-4 p-3"
+                  className="p-3 rounded-lg border-l-4"
                   style={{
                     borderColor: palette.experience,
                     backgroundColor: `${palette.experience}08`
                   }}
                 >
-                  <div className="mb-1 flex items-start justify-between">
+                  <div className="flex justify-between items-start mb-1">
                     <div>
-                      <h3 className="text-[12px] font-bold text-slate-900">
+                      <h3 className="font-bold text-slate-900 text-[12px]">
                         {exp.position}
                       </h3>
                       <p
@@ -85,16 +85,16 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[8px] font-medium text-slate-500">
+                      <p className="text-[8px] text-slate-500 font-medium">
                         {exp.location}
                       </p>
-                      <p className="font-mono text-[8px] font-bold text-slate-400">
+                      <p className="text-[8px] text-slate-400 font-mono font-bold">
                         {exp.startDate} →{' '}
                         {exp.current ? 'Present' : exp.endDate}
                       </p>
                     </div>
                   </div>
-                  <p className="text-[9px] leading-relaxed text-slate-600">
+                  <p className="text-[9px] text-slate-600 leading-relaxed">
                     {exp.description}
                   </p>
                 </div>
@@ -106,11 +106,11 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
         {education && education.length > 0 && (
           <div>
             <h2
-              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
+              className="text-base font-black uppercase tracking-wide mb-3 flex items-center gap-2"
               style={{ color: palette.education }}
             >
               <div
-                className="h-1 w-8 rounded-full"
+                className="w-8 h-1 rounded-full"
                 style={{ backgroundColor: palette.education }}
               />
               Education
@@ -119,15 +119,15 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
-                  className="rounded-lg border-l-4 p-3"
+                  className="p-3 rounded-lg border-l-4"
                   style={{
                     borderColor: palette.education,
                     backgroundColor: `${palette.education}08`
                   }}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-[11px] font-bold text-slate-900">
+                      <h3 className="font-bold text-slate-900 text-[11px]">
                         {edu.degree} in {edu.field}
                       </h3>
                       <p
@@ -141,12 +141,12 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
                       <p className="text-[8px] text-slate-500">
                         {edu.location}
                       </p>
-                      <p className="font-mono text-[8px] font-bold text-slate-400">
+                      <p className="text-[8px] text-slate-400 font-mono font-bold">
                         {edu.graduationDate}
                       </p>
                       {edu.gpa && (
                         <p
-                          className="mt-0.5 text-[9px] font-bold"
+                          className="text-[9px] mt-0.5 font-bold"
                           style={{ color: palette.skills }}
                         >
                           GPA: {edu.gpa}
@@ -163,11 +163,11 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
         {skills && skills.length > 0 && (
           <div>
             <h2
-              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
+              className="text-base font-black uppercase tracking-wide mb-3 flex items-center gap-2"
               style={{ color: palette.skills }}
             >
               <div
-                className="h-1 w-8 rounded-full"
+                className="w-8 h-1 rounded-full"
                 style={{ backgroundColor: palette.skills }}
               />
               Skills
@@ -176,7 +176,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               {skills.map((skill: string, index: number) => (
                 <span
                   key={index}
-                  className="rounded-full px-3 py-1.5 text-[9px] font-semibold text-white"
+                  className="text-[9px] px-3 py-1.5 rounded-full text-white font-semibold"
                   style={{ backgroundColor: palette.skills }}
                 >
                   {skill}
