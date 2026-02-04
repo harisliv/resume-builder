@@ -8,15 +8,15 @@
  * @module
  */
 
-import type * as auth from '../auth.js';
-import type * as resumes from '../resumes.js';
-import type * as validators from '../validators.js';
+import type * as auth from "../auth.js";
+import type * as resumes from "../resumes.js";
+import type * as validators from "../validators.js";
 
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference
-} from 'convex/server';
+  FunctionReference,
+} from "convex/server";
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
@@ -34,7 +34,7 @@ declare const fullApi: ApiFromModules<{
  */
 export declare const api: FilterApi<
   typeof fullApi,
-  FunctionReference<any, 'public'>
+  FunctionReference<any, "public">
 >;
 
 /**
@@ -47,7 +47,7 @@ export declare const api: FilterApi<
  */
 export declare const internal: FilterApi<
   typeof fullApi,
-  FunctionReference<any, 'internal'>
+  FunctionReference<any, "internal">
 >;
 
 export declare const components: {};
