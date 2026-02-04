@@ -1,8 +1,17 @@
 This is a Next.js resume builder application with PDF export, preview, and future AI-powered job application suggestions.
 
+## Plan Mode
+
+- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+- At the end of each plan, give me a list of unresolved questions to answer, if any.
+
+dont add comments if you are not told to
+
 This project uses pnpm.
 
 After each question we should update the guides in this folder to reflect any new knowledge.
+
+For pnpm commands and what not to run, see [docs/COMMANDS.md](docs/COMMANDS.md)
 
 For react, typescript best practices, see [docs/CODE_BEST_PRACTICES.md](docs/CODE_BEST_PRACTICES.md)
 For Convex guidelines, see [docs/CONVEX.md](docs/CONVEX.md)
