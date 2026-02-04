@@ -3,10 +3,7 @@
 import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields';
 import { GradientCircle } from '@/components/ui/nav-selector';
 import { COLOR_PALETTES } from '@/types';
-import {
-  paletteNavOptions,
-  getPaletteById
-} from './constants';
+import { paletteNavOptions, getPaletteById } from './constants';
 
 export function PaletteSelector({ disabled }: { disabled?: boolean }) {
   return (

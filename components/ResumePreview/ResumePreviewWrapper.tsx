@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from '@hugeicons/react';
-import { FileText, Download } from '@hugeicons/core-free-icons';
+import { FileSearchIcon, Download } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import ResumePreview from './ResumePreview';
 import type { TCombinedResumeData } from '@/types';
@@ -22,7 +22,7 @@ export default function ResumePreviewWrapper({
   return (
     <SectionCard>
       <SectionCardHeader>
-        <SectionCardTitle icon={FileText} iconVariant="emerald">
+        <SectionCardTitle icon={FileSearchIcon} iconVariant="emerald">
           Preview
         </SectionCardTitle>
         <SectionCardActions>

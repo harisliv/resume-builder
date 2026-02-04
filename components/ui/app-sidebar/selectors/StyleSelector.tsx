@@ -13,7 +13,12 @@ export function StyleSelector({ disabled }: { disabled?: boolean }) {
       options={styleNavOptions}
       getDisplayValue={(id) => getStyleById(id ?? '')?.name ?? 'Select style'}
       renderIcon={() => (
-        <HugeiconsIcon icon={Layout01Icon} size={20} strokeWidth={1.5} color="white" />
+        <HugeiconsIcon
+          icon={Layout01Icon}
+          size={20}
+          strokeWidth={1.5}
+          color="white"
+        />
       )}
       renderOptionIcon={(option) => {
         const style = getStyleById(option.id);

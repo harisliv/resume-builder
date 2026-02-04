@@ -19,6 +19,8 @@ import {
 } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { PaintBoardIcon } from '@hugeicons/core-free-icons';
 
 export type NavSelectorOption<T extends string = string> = {
   id: T;
@@ -64,9 +66,9 @@ export function NavSelector<T extends string = string>({
               tooltip={tooltip ?? label}
               disabled={disabled}
               className={cn(
-                "bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200",
-                "group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0",
-                disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
+                'group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0',
+                disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               )}
             >
               <div
@@ -141,10 +143,20 @@ export function GradientCircle({
 }) {
   return (
     <div
-      className={cn('size-10 rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg', className)}
+      className={cn(
+        'size-10 rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg items-center justify-center flex',
+        className
+      )}
       style={{
         background: `linear-gradient(90deg, ${colors[0]} 0%, ${colors[1]} 30%, ${colors[2]} 80%)`
       }}
-    />
+    >
+      <HugeiconsIcon
+        icon={PaintBoardIcon}
+        size={24}
+        color="white"
+        strokeWidth={1.5}
+      />
+    </div>
   );
 }

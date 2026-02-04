@@ -1,5 +1,9 @@
 import type { Doc } from '@/convex/_generated/dataModel';
-import { resumeFormDefaultValues, resumeInfoDefaultValues, type TResumeData } from '@/types';
+import {
+  resumeFormDefaultValues,
+  resumeInfoDefaultValues,
+  type TResumeData
+} from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -7,9 +11,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const convertConvexIdToId = (data: Doc<'resumes'> | null): TResumeData | null => {
+export const convertConvexIdToId = (
+  data: Doc<'resumes'> | null
+): TResumeData | null => {
   if (!data) return null;
-  const { _id, userId, title, personalInfo, experience, education, skills, documentStyle } = data;
+  const {
+    _id,
+    userId,
+    title,
+    personalInfo,
+    experience,
+    education,
+    skills,
+    documentStyle
+  } = data;
   return {
     id: _id,
     userId,

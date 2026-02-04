@@ -20,24 +20,24 @@ A modern, AI-ready resume builder application that helps you create professional
 
 ## 🚀 Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | Next.js 16 (App Router) |
-| **Language** | TypeScript 5 |
-| **Styling** | Tailwind CSS 4 |
-| **Backend** | Convex |
-| **Auth** | WorkOS AuthKit |
-| **PDF** | @react-pdf/renderer |
-| **UI Components** | shadcn/ui |
-| **Icons** | Lucide React + HugeIcons |
-| **Forms** | React Hook Form + Zod |
-| **Testing** | Vitest + React Testing Library |
+| Category          | Technology                     |
+| ----------------- | ------------------------------ |
+| **Framework**     | Next.js 16 (App Router)        |
+| **Language**      | TypeScript 5                   |
+| **Styling**       | Tailwind CSS 4                 |
+| **Backend**       | Convex                         |
+| **Auth**          | WorkOS AuthKit                 |
+| **PDF**           | @react-pdf/renderer            |
+| **UI Components** | shadcn/ui                      |
+| **Icons**         | Lucide React + HugeIcons       |
+| **Forms**         | React Hook Form + Zod          |
+| **Testing**       | Vitest + React Testing Library |
 
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) 18+ 
+- [Node.js](https://nodejs.org/) 18+
 - [pnpm](https://pnpm.io/) 8+
 - A [Convex](https://convex.dev/) account
 - A [WorkOS](https://workos.com/) account
@@ -68,6 +68,7 @@ npx convex dev
 ```
 
 This will:
+
 - Open a browser to authenticate with Convex
 - Create a new Convex project (or connect to existing)
 - Start the local Convex dev server
@@ -75,6 +76,7 @@ This will:
 **Step 2:** Note your deployment URL
 
 After running the command above, you'll see output like:
+
 ```
 ✔ Convex deployment ready!
    URL: https://your-deployment.convex.cloud
@@ -89,6 +91,7 @@ AuthKit provides secure authentication for your application.
 **Step 1:** Create a WorkOS account at [workos.com](https://workos.com/)
 
 **Step 2:** Get your API credentials from the WorkOS Dashboard:
+
 - Go to **API Keys** → Copy your **Client ID** and **API Key**
 - Go to **Redirects** → Add `http://localhost:3000/callback` as a redirect URI
 
@@ -135,15 +138,15 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📝 Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start Next.js development server |
-| `pnpm convex` | Start Convex development server |
-| `pnpm build` | Build production application |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm format` | Format code with Prettier |
-| `pnpm test` | Run Vitest tests |
+| Command        | Description                           |
+| -------------- | ------------------------------------- |
+| `pnpm dev`     | Start Next.js development server      |
+| `pnpm convex`  | Start Convex development server       |
+| `pnpm build`   | Build production application          |
+| `pnpm start`   | Start production server               |
+| `pnpm lint`    | Run ESLint                            |
+| `pnpm format`  | Format code with Prettier             |
+| `pnpm test`    | Run Vitest tests                      |
 | `pnpm compile` | Run TypeScript compiler in watch mode |
 
 ## 🏗️ Project Structure
@@ -199,6 +202,7 @@ npx convex deploy
 This project is licensed under the [MIT License](LICENSE) - free to use, modify, and distribute.
 
 ### What this means:
+
 - ✅ Commercial use allowed
 - ✅ Modification allowed
 - ✅ Distribution allowed
@@ -210,15 +214,18 @@ The only requirement is to include the original copyright notice and license tex
 ## 🆘 Troubleshooting
 
 ### Convex connection issues
+
 - Ensure `npx convex dev` is running
 - Check that `NEXT_PUBLIC_CONVEX_URL` matches your deployment
 
 ### AuthKit login issues
+
 - Verify redirect URI matches exactly in WorkOS dashboard
 - Check that all WorkOS env vars are set correctly
 - Ensure `WORKOS_COOKIE_PASSWORD` is at least 32 characters
 
 ### PDF export not working
+
 - Check browser console for errors
 - Ensure `@react-pdf/renderer` is properly installed
 
