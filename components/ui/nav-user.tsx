@@ -40,10 +40,10 @@ export function NavUser() {
               size="lg"
               tooltip="Sign In"
               asChild
-              className="p-0! bg-transparent shadow-none border-0"
+              className="border-0 bg-transparent p-0! shadow-none"
             >
               <a href="/login" className="flex items-center justify-center">
-                <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-primary to-primary/80">
+                <div className="from-primary to-primary/80 flex size-8 items-center justify-center rounded-lg bg-gradient-to-br">
                   <HugeiconsIcon
                     icon={UserCircle02Icon}
                     size={18}
@@ -86,12 +86,12 @@ export function NavUser() {
               tooltip={name}
               disabled={loading}
               className={cn(
-                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
-                'group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0',
+                'bg-background border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 border shadow-sm transition-all duration-200 hover:shadow-md',
+                'group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:shadow-none',
                 loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               )}
             >
-              <Avatar className="h-10 w-10 rounded-xl shrink-0 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
+              <Avatar className="h-10 w-10 shrink-0 rounded-xl group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:rounded-lg">
                 {user && (
                   <>
                     <AvatarImage
@@ -99,13 +99,13 @@ export function NavUser() {
                       alt={name}
                       className="rounded-xl group-data-[collapsible=icon]:rounded-lg"
                     />
-                    <AvatarFallback className="rounded-xl group-data-[collapsible=icon]:rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-bold group-data-[collapsible=icon]:text-sm">
+                    <AvatarFallback className="from-primary to-primary/80 rounded-xl bg-gradient-to-br font-bold text-white group-data-[collapsible=icon]:rounded-lg group-data-[collapsible=icon]:text-sm">
                       {initials}
                     </AvatarFallback>
                   </>
                 )}
                 {!user && (
-                  <AvatarFallback className="rounded-xl group-data-[collapsible=icon]:rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white font-bold">
+                  <AvatarFallback className="from-primary to-primary/80 rounded-xl bg-gradient-to-br font-bold text-white group-data-[collapsible=icon]:rounded-lg">
                     <Spinner className="size-4 text-white" />
                   </AvatarFallback>
                 )}
@@ -113,7 +113,7 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-bold">{name}</span>
                 {email && (
-                  <span className="truncate text-xs text-muted-foreground font-medium">
+                  <span className="text-muted-foreground truncate text-xs font-medium">
                     {email}
                   </span>
                 )}
@@ -121,7 +121,7 @@ export function NavUser() {
               {loading ? (
                 <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               ) : (
-                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+                <ChevronsUpDown className="text-muted-foreground ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -138,13 +138,13 @@ export function NavUser() {
                     src={user?.profilePictureUrl ?? undefined}
                     alt={name}
                   />
-                  <AvatarFallback className="rounded-xl bg-gradient-to-br from-primary to-primary/80 text-white font-bold">
+                  <AvatarFallback className="from-primary to-primary/80 rounded-xl bg-gradient-to-br font-bold text-white">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-bold">{name}</span>
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="text-muted-foreground truncate text-xs">
                     {user?.email}
                   </span>
                 </div>

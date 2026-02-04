@@ -4,8 +4,8 @@ interface SectionTitleProps {
 
 export default function SectionTitle({ children }: SectionTitleProps) {
   return (
-    <h3 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-3">
-      <span className="h-6 w-1 rounded-full bg-primary" />
+    <h3 className="text-foreground flex items-center gap-3 text-lg font-bold tracking-tight">
+      <span className="bg-primary h-6 w-1 rounded-full" />
       {children}
     </h3>
   );

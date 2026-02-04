@@ -29,9 +29,9 @@ import {
 const AestheticPDFViewer = dynamic(() => import('./AestheticPDFViewer'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-full bg-slate-50 rounded-lg">
+    <div className="flex h-full items-center justify-center rounded-lg bg-slate-50">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-500 rounded-full animate-spin" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-500" />
         <p className="text-sm text-slate-500">Loading PDF preview...</p>
       </div>
     </div>
@@ -123,15 +123,15 @@ export default function IconsShowcasePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
       {/* Header */}
-      <div className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent">
                   Icons Showcase
                 </h1>
                 <p className="text-sm text-slate-500">
@@ -140,31 +140,31 @@ export default function IconsShowcasePage() {
               </div>
             </div>
             <Button onClick={handleDownload} size="sm" className="gap-2">
-              <Download className="w-4 h-4" />
+              <Download className="h-4 w-4" />
               Download PDF
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature, index) => (
             <Card
               key={index}
-              className="border-slate-200/60 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow"
+              className="border-slate-200/60 bg-white/80 backdrop-blur-sm transition-shadow hover:shadow-lg"
             >
               <CardContent className="p-4">
                 <div
-                  className={`w-10 h-10 rounded-lg ${feature.color} flex items-center justify-center mb-3`}
+                  className={`h-10 w-10 rounded-lg ${feature.color} mb-3 flex items-center justify-center`}
                 >
-                  <feature.icon className="w-5 h-5" />
+                  <feature.icon className="h-5 w-5" />
                 </div>
-                <h3 className="font-semibold text-slate-800 mb-1">
+                <h3 className="mb-1 font-semibold text-slate-800">
                   {feature.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs leading-relaxed text-slate-500">
                   {feature.description}
                 </p>
               </CardContent>
@@ -172,13 +172,13 @@ export default function IconsShowcasePage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left: Icons List */}
-          <div className="lg:col-span-1 space-y-4">
+          <div className="space-y-4 lg:col-span-1">
             <Card className="border-slate-200/60 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Layout className="w-4 h-4 text-indigo-500" />
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Layout className="h-4 w-4 text-indigo-500" />
                   Icons Used
                 </CardTitle>
               </CardHeader>
@@ -187,13 +187,13 @@ export default function IconsShowcasePage() {
                   {ICONS_USED.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors group"
+                      className="group flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50"
                     >
-                      <div className="w-8 h-8 rounded-md bg-slate-100 flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
-                        <item.icon className="w-4 h-4 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 transition-colors group-hover:bg-indigo-50">
+                        <item.icon className="h-4 w-4 text-slate-600 transition-colors group-hover:text-indigo-600" />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-700 truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-700">
                           {item.name}
                         </p>
                         <p className="text-xs text-slate-400">{item.usage}</p>
@@ -206,15 +206,15 @@ export default function IconsShowcasePage() {
 
             <Card className="border-slate-200/60 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-pink-500" />
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Palette className="h-4 w-4 text-pink-500" />
                   Color Palette
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md bg-indigo-500 shadow-sm" />
+                    <div className="h-6 w-6 rounded-md bg-indigo-500 shadow-sm" />
                     <div>
                       <p className="text-sm font-medium text-slate-700">
                         Primary
@@ -223,7 +223,7 @@ export default function IconsShowcasePage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md bg-pink-500 shadow-sm" />
+                    <div className="h-6 w-6 rounded-md bg-pink-500 shadow-sm" />
                     <div>
                       <p className="text-sm font-medium text-slate-700">
                         Secondary
@@ -232,7 +232,7 @@ export default function IconsShowcasePage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md bg-teal-500 shadow-sm" />
+                    <div className="h-6 w-6 rounded-md bg-teal-500 shadow-sm" />
                     <div>
                       <p className="text-sm font-medium text-slate-700">
                         Accent
@@ -246,8 +246,8 @@ export default function IconsShowcasePage() {
 
             <Card className="border-slate-200/60 bg-white/80 backdrop-blur-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Type className="w-4 h-4 text-teal-500" />
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Type className="h-4 w-4 text-teal-500" />
                   Icon Props
                 </CardTitle>
               </CardHeader>
@@ -269,7 +269,7 @@ export default function IconsShowcasePage() {
                     style?: object
                   </Badge>
                 </div>
-                <p className="text-xs text-slate-500 mt-3">
+                <p className="mt-3 text-xs text-slate-500">
                   All icons now accept configurable props for maximum
                   flexibility in different contexts.
                 </p>
@@ -279,11 +279,11 @@ export default function IconsShowcasePage() {
 
           {/* Right: PDF Preview */}
           <div className="lg:col-span-2">
-            <Card className="border-slate-200/60 bg-white/80 backdrop-blur-sm h-[calc(100vh-280px)]">
-              <CardHeader className="pb-3 border-b">
+            <Card className="h-[calc(100vh-280px)] border-slate-200/60 bg-white/80 backdrop-blur-sm">
+              <CardHeader className="border-b pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Sparkles className="h-4 w-4 text-amber-500" />
                     Aesthetic Style Preview
                   </CardTitle>
                   <div className="flex items-center gap-2">
@@ -292,16 +292,16 @@ export default function IconsShowcasePage() {
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="text-xs bg-indigo-50 text-indigo-600 border-indigo-200"
+                      className="border-indigo-200 bg-indigo-50 text-xs text-indigo-600"
                     >
                       New Style
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-0 h-[calc(100%-60px)]">
-                <div className="h-full p-4 bg-slate-50/50">
-                  <div className="h-full rounded-lg overflow-hidden shadow-2xl">
+              <CardContent className="h-[calc(100%-60px)] p-0">
+                <div className="h-full bg-slate-50/50 p-4">
+                  <div className="h-full overflow-hidden rounded-lg shadow-2xl">
                     <AestheticPDFViewer data={extendedMockResumeData} />
                   </div>
                 </div>

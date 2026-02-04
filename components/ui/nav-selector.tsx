@@ -66,14 +66,14 @@ export function NavSelector<T extends string = string>({
               tooltip={tooltip ?? label}
               disabled={disabled}
               className={cn(
-                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
-                'group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0',
+                'bg-background border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 border shadow-sm transition-all duration-200 hover:shadow-md',
+                'group-data-[collapsible=icon]:border-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:shadow-none',
                 disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               )}
             >
               <div
                 className={cn(
-                  'flex aspect-square size-10 items-center justify-center rounded-xl shrink-0',
+                  'flex aspect-square size-10 shrink-0 items-center justify-center rounded-xl',
                   'group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg',
                   iconBgColor
                 )}
@@ -82,14 +82,14 @@ export function NavSelector<T extends string = string>({
               </div>
               <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-bold">{label}</span>
-                <span className="truncate text-sm text-muted-foreground font-medium">
+                <span className="text-muted-foreground truncate text-sm font-medium">
                   {displayValue}
                 </span>
               </div>
               {disabled ? (
                 <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               ) : (
-                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+                <ChevronsUpDown className="text-muted-foreground ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -119,7 +119,7 @@ export function NavSelector<T extends string = string>({
                   <div className="flex flex-col">
                     <span>{option.label}</span>
                     {option.description && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         {option.description}
                       </span>
                     )}
@@ -144,7 +144,7 @@ export function GradientCircle({
   return (
     <div
       className={cn(
-        'size-10 rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg items-center justify-center flex',
+        'flex size-10 items-center justify-center rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg',
         className
       )}
       style={{

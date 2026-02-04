@@ -8,23 +8,23 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
 
   return (
     <div
-      className="bg-white text-slate-900 shadow-sm border border-slate-100"
+      className="border border-slate-100 bg-white text-slate-900 shadow-sm"
       style={{ fontFamily }}
     >
       <div className="px-8 py-6">
-        <h1 className="text-xl font-light text-slate-800 tracking-tight">
+        <h1 className="text-xl font-light tracking-tight text-slate-800">
           {personalInfo?.fullName || 'Your Name'}
         </h1>
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[9px] text-slate-500">
+        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[9px] text-slate-500">
           {personalInfo?.email && <span>{personalInfo.email}</span>}
           {personalInfo?.phone && <span>{personalInfo.phone}</span>}
           {personalInfo?.location && <span>{personalInfo.location}</span>}
         </div>
       </div>
 
-      <div className="px-8 pb-6 space-y-5">
+      <div className="space-y-5 px-8 pb-6">
         {personalInfo?.summary && (
-          <p className="text-[10px] text-slate-600 leading-relaxed">
+          <p className="text-[10px] leading-relaxed text-slate-600">
             {personalInfo.summary}
           </p>
         )}
@@ -34,7 +34,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
         {experience && experience.length > 0 && (
           <div>
             <h2
-              className="text-[10px] font-medium uppercase tracking-wider mb-3"
+              className="mb-3 text-[10px] font-medium tracking-wider uppercase"
               style={{ color: palette.experience }}
             >
               Experience
@@ -42,7 +42,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
             <div className="space-y-4">
               {experience.map((exp: TExperience, index: number) => (
                 <div key={index}>
-                  <div className="flex justify-between items-baseline">
+                  <div className="flex items-baseline justify-between">
                     <span className="text-[11px] font-medium text-slate-800">
                       {exp.position}
                     </span>
@@ -53,7 +53,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
                   <p className="text-[9px] text-slate-500">
                     {exp.company}, {exp.location}
                   </p>
-                  <p className="text-[9px] text-slate-500 mt-1 leading-relaxed">
+                  <p className="mt-1 text-[9px] leading-relaxed text-slate-500">
                     {exp.description}
                   </p>
                 </div>
@@ -65,7 +65,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
         {education && education.length > 0 && (
           <div>
             <h2
-              className="text-[10px] font-medium uppercase tracking-wider mb-3"
+              className="mb-3 text-[10px] font-medium tracking-wider uppercase"
               style={{ color: palette.education }}
             >
               Education
@@ -74,7 +74,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
               {education.map((edu: TEducation, index: number) => (
                 <div
                   key={index}
-                  className="flex justify-between items-baseline"
+                  className="flex items-baseline justify-between"
                 >
                   <div>
                     <span className="text-[10px] font-medium text-slate-800">
@@ -97,7 +97,7 @@ export function MinimalStyle({ data, palette, fontFamily }: IStyleProps) {
         {skills && skills.length > 0 && (
           <div>
             <h2
-              className="text-[10px] font-medium uppercase tracking-wider mb-2"
+              className="mb-2 text-[10px] font-medium tracking-wider uppercase"
               style={{ color: palette.skills }}
             >
               Skills
