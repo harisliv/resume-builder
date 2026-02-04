@@ -107,8 +107,8 @@ export const createStyles = (
     sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
-      marginBottom: 12,
+      gap: 12, // Updated to match SectionCardTitle gap-3 (12px)
+      marginBottom: 16,
       marginTop: 0
     },
     sectionIconBox: {
