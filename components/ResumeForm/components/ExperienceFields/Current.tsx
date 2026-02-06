@@ -1,4 +1,4 @@
-import { ResumeFormControlledSingleCheckbox } from '@/components/ControlledFields';
+import { ResumeFormControlledSingleCheckbox } from '@/components/ControlledFields/ControlledSingleCheckbox';
 
 export default function Current({ index }: { index: number }) {
   return (

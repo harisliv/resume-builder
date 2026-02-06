@@ -2,18 +2,16 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import type { TResumeForm } from '@/types';
-import { educationDefaultValues } from '@/types';
+import type { TResumeForm } from '@/types/schema';
+import { educationDefaultValues } from '@/types/schema';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
-import {
-  Institution,
-  Degree,
-  Field,
-  Location,
-  GraduationDate,
-  GPA
-} from './EducationFields';
+import Institution from './EducationFields/Institution';
+import Degree from './EducationFields/Degree';
+import Field from './EducationFields/Field';
+import Location from './EducationFields/Location';
+import GraduationDate from './EducationFields/GraduationDate';
+import GPA from './EducationFields/GPA';
 import {
   StyledAccordion,
   StyledAccordionItem,

@@ -3,7 +3,7 @@ import {
   resumeFormDefaultValues,
   resumeInfoDefaultValues,
   type TResumeData
-} from '@/types';
+} from '@/types/schema';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

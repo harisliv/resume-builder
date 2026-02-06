@@ -1,22 +1,18 @@
 import React from 'react';
 import { Page, Text, View, Link } from '@react-pdf/renderer';
-import type { TResumeData } from '@/types';
+import type { TResumeData } from '@/types/schema';
 import type { createStyles, getColors } from '../ResumeStyles';
-import {
-  MailIcon,
-  PhoneIcon,
-  MapPinIcon,
-  LinkedInIcon,
-  GlobeIcon,
-  BriefcaseIcon,
-  GraduationCapIcon,
-  SparklesIcon
-} from '../icons';
-import {
-  GradientIconBox,
-  ModernExperienceCard,
-  ModernEducationCard
-} from '../components';
+import { MailIcon } from '../icons/MailIcon';
+import { PhoneIcon } from '../icons/PhoneIcon';
+import { MapPinIcon } from '../icons/MapPinIcon';
+import { LinkedInIcon } from '../icons/LinkedInIcon';
+import { GlobeIcon } from '../icons/GlobeIcon';
+import { BriefcaseIcon } from '../icons/BriefcaseIcon';
+import { GraduationCapIcon } from '../icons/GraduationCapIcon';
+import { SparklesIcon } from '../icons/SparklesIcon';
+import { GradientIconBox } from '../components/GradientIconBox';
+import { ModernExperienceCard } from '../components/ModernExperienceCard';
+import { ModernEducationCard } from '../components/ModernEducationCard';
 
 interface IModernDocumentProps {
   data: TResumeData;

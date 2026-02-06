@@ -1,4 +1,4 @@
-import type { TResumeData } from '@/types';
+import type { TResumeData } from '@/types/schema';
 
 export const mockResumeData: TResumeData = {
   title: 'Senior Software Engineer Resume',

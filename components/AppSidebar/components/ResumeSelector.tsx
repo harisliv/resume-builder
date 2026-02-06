@@ -19,7 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar
-} from '@/components/ui/sidebar';
+} from '@/ui/sidebar';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -38,7 +38,7 @@ export function ResumeSelector({
   onCreateNew: (title?: string) => void;
   isLoadingTitles: boolean;
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, isCollapsed, setOpen } = useSidebar();
   const [isCreating, setIsCreating] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState('');
 
@@ -75,37 +75,56 @@ export function ResumeSelector({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={isLoadingTitles}>
+          <DropdownMenuTrigger
+            asChild
+            disabled={isLoadingTitles}
+            onClick={(e) => {
+              if (isCollapsed) {
+                e.preventDefault();
+                setOpen(true);
+              }
+            }}
+          >
             <SidebarMenuButton
               size="lg"
               type="button"
               tooltip="My Resumes"
               disabled={isLoadingTitles}
               className={cn(
-                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0 hover:border-primary/20 hover:shadow-md transition-all duration-200',
-                isLoadingTitles
-                  ? 'cursor-not-allowed opacity-50'
-                  : 'cursor-pointer'
+                !isCollapsed && 'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
+                isCollapsed && 'p-0 bg-transparent shadow-none border-0 h-auto hover:bg-transparent',
+                isLoadingTitles ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               )}
             >
-              <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+              {isCollapsed ? (
                 <HugeiconsIcon
                   icon={LeftToRightListBulletIcon}
                   size={24}
-                  color="white"
                   strokeWidth={1.5}
+                  className="text-blue-500"
                 />
-              </div>
-              <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-bold">My Resumes</span>
-                <span className="truncate text-sm text-muted-foreground font-medium">
-                  {currentTitle}
-                </span>
-              </div>
-              {isLoadingTitles ? (
-                <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
               ) : (
-                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+                <>
+                  <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+                    <HugeiconsIcon
+                      icon={LeftToRightListBulletIcon}
+                      size={24}
+                      strokeWidth={1.5}
+                      className="text-white"
+                    />
+                  </div>
+                  <div className="grid flex-1 text-left text-base leading-tight">
+                    <span className="truncate font-bold">My Resumes</span>
+                    <span className="truncate text-sm text-muted-foreground font-medium">
+                      {currentTitle}
+                    </span>
+                  </div>
+                  {isLoadingTitles ? (
+                    <Spinner className="ml-auto size-4" />
+                  ) : (
+                    <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                  )}
+                </>
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>

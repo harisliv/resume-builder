@@ -2,7 +2,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { useId } from 'react';
-import type { TResumeForm } from '@/types';
+import type { TResumeForm } from '@/types/schema';
 
 export default function Phone() {
   const form = useFormContext<TResumeForm>();

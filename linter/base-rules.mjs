@@ -1,5 +1,6 @@
 export const baseRules = {
   'function-paren-newline': 0,
+  'import/no-cycle': 2,
   'operator-linebreak': 0,
   'comma-dangle': 1,
   'no-shadow': 0,
@@ -42,8 +43,36 @@ export const baseRules = {
   'no-restricted-imports': [
     'error',
     {
-      name: 'xxxx',
-      message: 'xxxxxx'
+      paths: [
+        {
+          name: '@/components',
+          message: 'No root barrel. Use module index or direct file.'
+        },
+        {
+          name: '@/components/ui',
+          message: 'No UI barrels. Import specific files.'
+        },
+        {
+          name: '@/ui',
+          message: 'No UI barrels. Import specific files.'
+        },
+        {
+          name: '@/providers',
+          message: 'No providers barrel. Use direct file paths.'
+        },
+        {
+          name: '@/hooks',
+          message: 'No hooks barrel. Use direct file paths.'
+        },
+        {
+          name: '@/types',
+          message: 'No types barrel. Use direct file paths.'
+        },
+        {
+          name: '@/lib/ResumePDF',
+          message: 'No ResumePDF barrel. Use direct file paths.'
+        }
+      ]
     }
   ]
 };

@@ -1,4 +1,4 @@
-import { ResumeFormControlledTextarea } from '@/components/ControlledFields';
+import { ResumeFormControlledTextarea } from '@/components/ControlledFields/ControlledTextarea';
 
 export default function Description({ index }: { index: number }) {
   return (

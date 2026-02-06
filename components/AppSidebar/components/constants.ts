@@ -5,7 +5,7 @@ import {
   type TPaletteId,
   type TFontId,
   type TDocumentStyleId
-} from '@/types';
+} from '@/types/documentStyle';
 import type { NavSelectorOption } from '@/components/ui/nav-selector';
 
 export const paletteNavOptions: NavSelectorOption<TPaletteId>[] = Object.values(

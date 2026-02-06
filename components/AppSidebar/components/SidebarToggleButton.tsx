@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
+import { useSidebar } from '@/ui/sidebar';
 import { cn } from '@/lib/utils';
 
 export function SidebarToggleButton() {

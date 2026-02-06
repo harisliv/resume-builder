@@ -12,18 +12,16 @@ import {
   resumeInfoDefaultValues,
   type TResumeForm,
   type TResumeData
-} from '@/types';
-import {
-  useGetUserResumeTitles,
-  useGetResumeById,
-  useResumeSubmit
-} from '@/hooks';
-import { ResumeForm } from '@/components/ResumeForm';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/ui/app-sidebar';
+} from '@/types/schema';
+import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
+import { useGetResumeById } from '@/hooks/useGetResumeById';
+import { useResumeSubmit } from '@/hooks/useResumeSubmit';
+import { AppSidebar } from '@/components/AppSidebar';
+import ResumeForm from '@/components/ResumeForm';
+import { ResumePreviewWrapper } from '@/components/ResumePreview';
+import { SidebarInset, SidebarProvider } from '@/ui/sidebar';
 import { FormProvider } from 'react-hook-form';
-import ResumePreviewWrapper from '@/components/ResumePreview/ResumePreviewWrapper';
-import { HomeLayout } from '@/components/ui/home-layout';
+import { HomeLayout } from './home-layout';
 
 export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<

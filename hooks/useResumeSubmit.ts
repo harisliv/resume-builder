@@ -1,6 +1,6 @@
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
-import type { TResumeData } from '@/types';
+import type { TResumeData } from '@/types/schema';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useConvex, useConvexAuth } from 'convex/react';
 

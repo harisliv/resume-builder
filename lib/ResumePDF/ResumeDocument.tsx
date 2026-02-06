@@ -1,21 +1,13 @@
 import React from 'react';
 import { Document } from '@react-pdf/renderer';
-import type {
-  TResumeData,
-  TPaletteId,
-  TFontId,
-  TDocumentStyleId,
-  TCombinedResumeData
-} from '@/types';
+import type { TResumeData, TCombinedResumeData } from '@/types/schema';
 import './fonts';
 import { createStyles, getColors } from './ResumeStyles';
 import { PDF_FONTS, FONT_FAMILY } from './fonts';
-import {
-  ModernDocument,
-  ClassicDocument,
-  MinimalDocument,
-  BoldDocument
-} from './documents';
+import { ModernDocument } from './documents/ModernDocument';
+import { ClassicDocument } from './documents/ClassicDocument';
+import { MinimalDocument } from './documents/MinimalDocument';
+import { BoldDocument } from './documents/BoldDocument';
 
 const ResumeDocument: React.FC<TCombinedResumeData> = ({
   formData,

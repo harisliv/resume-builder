@@ -1,8 +1,8 @@
 'use client';
 
 import { Document, PDFViewer } from '@react-pdf/renderer';
-import { AestheticDocument } from '@/lib/ResumePDF/documents';
-import type { TResumeData } from '@/types';
+import { AestheticDocument } from '@/lib/ResumePDF/documents/AestheticDocument';
+import type { TResumeData } from '@/types/schema';
 
 interface AestheticPDFViewerProps {
   data: TResumeData;

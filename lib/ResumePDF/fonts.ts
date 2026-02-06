@@ -1,5 +1,5 @@
 import { Font } from '@react-pdf/renderer';
-import type { TFontId } from '@/types';
+import type { TFontId } from '@/types/documentStyle';
 
 Font.register({
   family: 'Inter',

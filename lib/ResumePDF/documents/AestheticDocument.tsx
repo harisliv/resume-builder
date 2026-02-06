@@ -1,21 +1,19 @@
 import React from 'react';
 import { Page, Text, View, Link, StyleSheet } from '@react-pdf/renderer';
-import type { TResumeData } from '@/types';
+import type { TResumeData } from '@/types/schema';
 import '../fonts';
-import {
-  MailIcon,
-  PhoneIcon,
-  MapPinIcon,
-  LinkedInIcon,
-  GlobeIcon,
-  GitHubIcon,
-  BriefcaseIcon,
-  GraduationCapIcon,
-  SparklesIcon,
-  CalendarIcon,
-  BuildingIcon,
-  ArrowRightIcon
-} from '../icons';
+import { MailIcon } from '../icons/MailIcon';
+import { PhoneIcon } from '../icons/PhoneIcon';
+import { MapPinIcon } from '../icons/MapPinIcon';
+import { LinkedInIcon } from '../icons/LinkedInIcon';
+import { GlobeIcon } from '../icons/GlobeIcon';
+import { GitHubIcon } from '../icons/GitHubIcon';
+import { BriefcaseIcon } from '../icons/BriefcaseIcon';
+import { GraduationCapIcon } from '../icons/GraduationCapIcon';
+import { SparklesIcon } from '../icons/SparklesIcon';
+import { CalendarIcon } from '../icons/CalendarIcon';
+import { BuildingIcon } from '../icons/BuildingIcon';
+import { ArrowRightIcon } from '../icons/ArrowRightIcon';
 
 // Aesthetic color palette - soft, modern tones
 const AESTHETIC_COLORS = {

@@ -1,4 +1,4 @@
-import type { TResumeForm } from '@/types';
+import type { TResumeForm } from '@/types/schema';
 import {
   mockPersonalInfo,
   mockExperience,

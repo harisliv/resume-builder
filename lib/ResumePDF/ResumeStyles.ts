@@ -1,6 +1,10 @@
 import { StyleSheet } from '@react-pdf/renderer';
 import { PDF_FONTS, FONT_FAMILY } from './fonts';
-import { COLOR_PALETTES, type TPaletteId, type TFontId } from '@/types';
+import {
+  COLOR_PALETTES,
+  type TPaletteId,
+  type TFontId
+} from '@/types/documentStyle';
 
 export const BASE_COLORS = {
   background: '#ffffff',

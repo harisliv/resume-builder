@@ -2,10 +2,13 @@
 
 import { TextFontIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields';
+import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields/ControlledNavSelector';
+import { useSidebar } from '@/ui/sidebar';
 import { fontNavOptions, getFontById } from './constants';
 
 export function FontSelector({ disabled }: { disabled?: boolean }) {
+  const { isCollapsed } = useSidebar();
+
   return (
     <ResumeInfoControlledNavSelector
       name="documentStyle.font"
@@ -17,7 +20,7 @@ export function FontSelector({ disabled }: { disabled?: boolean }) {
           icon={TextFontIcon}
           size={20}
           strokeWidth={1.5}
-          color="white"
+          className={isCollapsed ? 'text-emerald-500' : 'text-white'}
         />
       )}
       renderOptionIcon={(option) => {

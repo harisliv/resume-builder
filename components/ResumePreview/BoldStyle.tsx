@@ -1,7 +1,7 @@
 'use client';
 
 import { Mail, Phone, MapPin } from 'lucide-react';
-import type { TEducation, TExperience } from '@/types';
+import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 
 export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {

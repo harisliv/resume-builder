@@ -1,5 +1,5 @@
 import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
-import type { TCombinedResumeData } from '@/types';
+import type { TCombinedResumeData } from '@/types/schema';
 import { pdf } from '@react-pdf/renderer';
 
 export const generateResumePDF = async (

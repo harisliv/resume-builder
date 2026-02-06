@@ -2,20 +2,18 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import type { TResumeForm } from '@/types';
-import { experienceDefaultValues } from '@/types';
+import type { TResumeForm } from '@/types/schema';
+import { experienceDefaultValues } from '@/types/schema';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
-import {
-  Company,
-  Position,
-  Location,
-  StartDate,
-  EndDate,
-  Current,
-  Description,
-  Highlights
-} from './ExperienceFields';
+import Company from './ExperienceFields/Company';
+import Position from './ExperienceFields/Position';
+import Location from './ExperienceFields/Location';
+import StartDate from './ExperienceFields/StartDate';
+import EndDate from './ExperienceFields/EndDate';
+import Current from './ExperienceFields/Current';
+import Description from './ExperienceFields/Description';
+import Highlights from './ExperienceFields/Highlights';
 import {
   StyledAccordion,
   StyledAccordionItem,

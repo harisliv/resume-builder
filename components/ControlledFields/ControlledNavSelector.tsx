@@ -4,7 +4,7 @@ import {
   NavSelector,
   type NavSelectorOption
 } from '@/components/ui/nav-selector';
-import type { TResumeInfo } from '@/types';
+import type { TResumeInfo } from '@/types/schema';
 
 export default function ControlledNavSelector<
   TForm extends FieldValues,

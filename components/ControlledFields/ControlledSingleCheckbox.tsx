@@ -3,7 +3,7 @@ import type { FieldPath, FieldValues } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
 import { Checkbox } from '../ui/checkbox';
 import { useId } from 'react';
-import type { TResumeForm, TResumeInfo } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types/schema';
 
 export default function ControlledSingleCheckbox<
   TForm extends FieldValues

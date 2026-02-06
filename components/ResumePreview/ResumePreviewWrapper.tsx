@@ -2,7 +2,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { FileSearchIcon, Download } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import ResumePreview from './ResumePreview';
-import type { TCombinedResumeData } from '@/types';
+import type { TCombinedResumeData } from '@/types/schema';
 import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import {
   SectionCard,

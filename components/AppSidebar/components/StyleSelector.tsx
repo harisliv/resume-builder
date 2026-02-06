@@ -2,10 +2,13 @@
 
 import { Layout01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields';
+import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields/ControlledNavSelector';
+import { useSidebar } from '@/ui/sidebar';
 import { styleNavOptions, getStyleById } from './constants';
 
 export function StyleSelector({ disabled }: { disabled?: boolean }) {
+  const { isCollapsed } = useSidebar();
+
   return (
     <ResumeInfoControlledNavSelector
       name="documentStyle.style"
@@ -17,7 +20,7 @@ export function StyleSelector({ disabled }: { disabled?: boolean }) {
           icon={Layout01Icon}
           size={20}
           strokeWidth={1.5}
-          color="white"
+          className={isCollapsed ? 'text-violet-500' : 'text-white'}
         />
       )}
       renderOptionIcon={(option) => {

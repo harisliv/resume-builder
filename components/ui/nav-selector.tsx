@@ -16,7 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar
-} from '@/components/ui/sidebar';
+} from '@/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { Spinner } from '@/components/ui/spinner';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -34,7 +34,7 @@ export type NavSelectorProps<T extends string = string> = {
   displayValue: string;
   onChange: (value: T) => void;
   options: NavSelectorOption<T>[];
-  renderIcon: (value: T) => React.ReactNode;
+  renderIcon: (value: T, isCollapsed?: boolean) => React.ReactNode;
   renderOptionIcon?: (option: NavSelectorOption<T>) => React.ReactNode;
   tooltip?: string;
   iconBgColor?: string;
@@ -53,43 +53,52 @@ export function NavSelector<T extends string = string>({
   iconBgColor,
   disabled = false
 }: NavSelectorProps<T>) {
-  const { isMobile } = useSidebar();
+  const { isMobile, isCollapsed, setOpen } = useSidebar();
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={disabled}>
+          <DropdownMenuTrigger
+            asChild
+            disabled={disabled}
+            onClick={(e) => {
+              if (isCollapsed) {
+                e.preventDefault();
+                setOpen(true);
+              }
+            }}
+          >
             <SidebarMenuButton
               size="lg"
               type="button"
               tooltip={tooltip ?? label}
               disabled={disabled}
               className={cn(
-                'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
-                'group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:border-0',
+                !isCollapsed && 'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
+                isCollapsed && 'p-0 bg-transparent shadow-none border-0 h-auto hover:bg-transparent',
                 disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
               )}
             >
-              <div
-                className={cn(
-                  'flex aspect-square size-10 items-center justify-center rounded-xl shrink-0',
-                  'group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg',
-                  iconBgColor
-                )}
-              >
-                {renderIcon(value)}
-              </div>
-              <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-bold">{label}</span>
-                <span className="truncate text-sm text-muted-foreground font-medium">
-                  {displayValue}
-                </span>
-              </div>
-              {disabled ? (
-                <Spinner className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+              {isCollapsed ? (
+                renderIcon(value, true)
               ) : (
-                <ChevronsUpDown className="ml-auto size-4 group-data-[collapsible=icon]:hidden text-muted-foreground" />
+                <>
+                  <div className={cn('flex aspect-square size-10 items-center justify-center rounded-xl shrink-0', iconBgColor)}>
+                    {renderIcon(value, false)}
+                  </div>
+                  <div className="grid flex-1 text-left text-base leading-tight">
+                    <span className="truncate font-bold">{label}</span>
+                    <span className="truncate text-sm text-muted-foreground font-medium">
+                      {displayValue}
+                    </span>
+                  </div>
+                  {disabled ? (
+                    <Spinner className="ml-auto size-4" />
+                  ) : (
+                    <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
+                  )}
+                </>
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -141,10 +150,28 @@ export function GradientCircle({
   colors: [string, string, string];
   className?: string;
 }) {
+  const { isCollapsed } = useSidebar();
+
+  if (isCollapsed) {
+    return (
+      <HugeiconsIcon
+        icon={PaintBoardIcon}
+        size={24}
+        strokeWidth={1.5}
+        style={{
+          background: `linear-gradient(90deg, ${colors[0]} 0%, ${colors[1]} 30%, ${colors[2]} 80%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text'
+        }}
+      />
+    );
+  }
+
   return (
     <div
       className={cn(
-        'size-10 rounded-xl shadow-lg group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:rounded-lg items-center justify-center flex',
+        'size-10 rounded-xl items-center justify-center flex shadow-lg',
         className
       )}
       style={{
@@ -154,8 +181,8 @@ export function GradientCircle({
       <HugeiconsIcon
         icon={PaintBoardIcon}
         size={24}
-        color="white"
         strokeWidth={1.5}
+        color="white"
       />
     </div>
   );
