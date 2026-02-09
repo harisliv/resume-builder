@@ -1,38 +1,13 @@
 'use client';
 
-import { Layout01Icon } from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
 import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields/ControlledNavSelector';
-import { useSidebar } from '@/ui/sidebar';
-import { styleNavOptions, getStyleById } from './constants';
+import { styleNavOptions } from '../constants';
 
 export function StyleSelector({ disabled }: { disabled?: boolean }) {
-  const { isCollapsed } = useSidebar();
-
   return (
     <ResumeInfoControlledNavSelector
       name="documentStyle.style"
-      label="Style"
       options={styleNavOptions}
-      getDisplayValue={(id) => getStyleById(id ?? '')?.name ?? 'Select style'}
-      renderIcon={() => (
-        <HugeiconsIcon
-          icon={Layout01Icon}
-          size={20}
-          strokeWidth={1.5}
-          className={isCollapsed ? 'text-violet-500' : 'text-white'}
-        />
-      )}
-      renderOptionIcon={(option) => {
-        const style = getStyleById(option.id);
-        return style ? (
-          <div className="flex items-center justify-center size-5 rounded border text-[10px] font-bold shrink-0">
-            {style.name[0]}
-          </div>
-        ) : null;
-      }}
-      iconBgColor="bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/30"
-      tooltip="Style"
       disabled={disabled}
     />
   );

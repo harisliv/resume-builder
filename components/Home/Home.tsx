@@ -13,7 +13,6 @@ import {
   type TResumeForm,
   type TResumeData
 } from '@/types/schema';
-import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -27,9 +26,6 @@ export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
-
-  const { data: resumeTitles, isLoading: isLoadingTitles } =
-    useGetUserResumeTitles();
 
   const {
     form: formValues,
@@ -93,11 +89,8 @@ export default function Home() {
     <SidebarProvider>
       <FormProvider {...infoForm}>
         <AppSidebar
-          resumeTitles={resumeTitles}
-          selectedResumeId={selectedResumeId}
           onResumeSelect={handleResumeSelect}
           onCreateNew={handleCreateNew}
-          isLoadingTitles={isLoadingTitles}
           isLoadingResume={isLoadingResume}
         />
       </FormProvider>

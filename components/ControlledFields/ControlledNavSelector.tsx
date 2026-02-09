@@ -1,42 +1,52 @@
 import { Controller, useFormContext } from 'react-hook-form';
-import type { FieldPath, FieldValues } from 'react-hook-form';
-import {
-  NavSelector,
-  type NavSelectorOption
-} from '@/components/ui/nav-selector';
 import type { TResumeInfo } from '@/types/schema';
+import type {
+  TDocumentStyleId,
+  TFontId,
+  TPaletteId
+} from '@/types/documentStyle';
+import type { NavSelectorOption } from '../AppSidebar/types';
+import { NavSelector } from '../AppSidebar/components/nav-selector';
 
-export default function ControlledNavSelector<
-  TForm extends FieldValues,
-  TValue extends string = string
->(props: {
-  name: FieldPath<TForm>;
-  label: string;
-  options: NavSelectorOption<TValue>[];
-  getDisplayValue: (v: TValue | undefined) => string;
-  renderIcon: (v: TValue | undefined) => React.ReactNode;
-  renderOptionIcon?: (option: NavSelectorOption<TValue>) => React.ReactNode;
-  tooltip?: string;
-  iconBgColor?: string;
-  disabled?: boolean;
-}) {
-  const form = useFormContext<TForm>();
+const FORM_NAME_TO_NAV_NAME = {
+  'documentStyle.palette': 'palette',
+  'documentStyle.font': 'font',
+  'documentStyle.style': 'style'
+} as const;
+
+type ControlledNavSelectorProps =
+  | {
+      name: 'documentStyle.palette';
+      options: NavSelectorOption<TPaletteId>[];
+      disabled?: boolean;
+    }
+  | {
+      name: 'documentStyle.font';
+      options: NavSelectorOption<TFontId>[];
+      disabled?: boolean;
+    }
+  | {
+      name: 'documentStyle.style';
+      options: NavSelectorOption<TDocumentStyleId>[];
+      disabled?: boolean;
+    };
+
+export default function ControlledNavSelector(
+  props: ControlledNavSelectorProps
+) {
+  const form = useFormContext<TResumeInfo>();
+  const navName = FORM_NAME_TO_NAV_NAME[props.name];
 
   return (
     <Controller
       name={props.name}
       control={form.control}
       render={({ field }) => (
-        <NavSelector<TValue>
-          label={props.label}
+        <NavSelector
+          name={navName}
           value={field.value ?? props.options[0]?.id}
-          displayValue={props.getDisplayValue(field.value)}
           onChange={field.onChange}
           options={props.options}
-          renderIcon={props.renderIcon}
-          renderOptionIcon={props.renderOptionIcon}
-          tooltip={props.tooltip}
-          iconBgColor={props.iconBgColor}
           disabled={props.disabled}
         />
       )}
@@ -44,7 +54,4 @@ export default function ControlledNavSelector<
   );
 }
 
-export const ResumeInfoControlledNavSelector = ControlledNavSelector<
-  TResumeInfo,
-  string
->;
+export const ResumeInfoControlledNavSelector = ControlledNavSelector;

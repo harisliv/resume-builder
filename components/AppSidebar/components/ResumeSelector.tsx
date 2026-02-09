@@ -1,192 +1,114 @@
 'use client';
 
-import * as React from 'react';
-import { FileText, Plus, ChevronsUpDown, Check, X } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { Plus, Check, X } from 'lucide-react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar
-} from '@/ui/sidebar';
-import { Spinner } from '@/components/ui/spinner';
-import { cn } from '@/lib/utils';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { LeftToRightListBulletIcon } from '@hugeicons/core-free-icons';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { CreateResumeRow } from './ui/create-resume-row';
+import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
+import type { TResumeInfo } from '@/types/schema';
+import { NavSelector } from './nav-selector';
+import type { NavSelectorOption } from '../types';
 
 export function ResumeSelector({
-  resumeTitles,
-  selectedResumeId,
   onResumeSelect,
-  onCreateNew,
-  isLoadingTitles
+  onCreateNew
 }: {
-  resumeTitles: { id: string; title: string }[] | undefined;
-  selectedResumeId: string | undefined;
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
-  isLoadingTitles: boolean;
 }) {
-  const { isMobile, isCollapsed, setOpen } = useSidebar();
-  const [isCreating, setIsCreating] = React.useState(false);
-  const [newTitle, setNewTitle] = React.useState('');
+  const { control } = useFormContext<TResumeInfo>();
+  const currentId = useWatch({ control, name: 'id' }) ?? '';
+  const currentTitle = useWatch({ control, name: 'title' });
 
-  const currentTitle = React.useMemo(
-    () =>
-      resumeTitles?.find((r) => r.id === selectedResumeId)?.title ??
-      'New Resume',
-    [resumeTitles, selectedResumeId]
-  );
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
 
-  const handleConfirmCreate = () => {
-    if (newTitle.trim()) {
-      onCreateNew(newTitle.trim());
-      setNewTitle('');
+  const { data: resumeTitles, isLoading: isLoadingTitles } =
+    useGetUserResumeTitles();
+
+  const handleConfirmCreate = useCallback(() => {
+    const trimmed = newTitle.trim();
+    if (trimmed) {
+      onCreateNew(trimmed);
       setIsCreating(false);
+      setNewTitle('');
     }
-  };
+  }, [newTitle, onCreateNew]);
 
-  const handleCancelCreate = () => {
+  const handleCancelCreate = useCallback(() => {
     setNewTitle('');
     setIsCreating(false);
-  };
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleConfirmCreate();
-    } else if (e.key === 'Escape') {
-      handleCancelCreate();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleConfirmCreate();
+      } else if (e.key === 'Escape') {
+        handleCancelCreate();
+      }
+    },
+    [handleConfirmCreate, handleCancelCreate]
+  );
+
+  const options: NavSelectorOption[] = useMemo(
+    () => resumeTitles?.map((r) => ({ id: r.id, label: r.title })) ?? [],
+    [resumeTitles]
+  );
+
+  const createNewHeader = isCreating ? (
+    <CreateResumeRow>
+      <Input
+        value={newTitle}
+        onChange={(e) => setNewTitle(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Resume title..."
+        className="h-8"
+        autoFocus
+      />
+      <Button
+        size="icon"
+        variant="ghost"
+        className="size-8 shrink-0"
+        onClick={handleConfirmCreate}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <Check className="size-4" />
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="size-8 shrink-0"
+        onClick={handleCancelCreate}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <X className="size-4" />
+      </Button>
+    </CreateResumeRow>
+  ) : (
+    <DropdownMenuItem
+      onClick={() => setIsCreating(true)}
+      onSelect={(e) => e.preventDefault()}
+    >
+      <Plus className="mr-2 size-4" />
+      Create New Resume
+    </DropdownMenuItem>
+  );
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            asChild
-            disabled={isLoadingTitles}
-            onClick={(e) => {
-              if (isCollapsed) {
-                e.preventDefault();
-                setOpen(true);
-              }
-            }}
-          >
-            <SidebarMenuButton
-              size="lg"
-              type="button"
-              tooltip="My Resumes"
-              disabled={isLoadingTitles}
-              className={cn(
-                !isCollapsed && 'bg-background shadow-sm border border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 hover:shadow-md transition-all duration-200',
-                isCollapsed && 'p-0 bg-transparent shadow-none border-0 h-auto hover:bg-transparent',
-                isLoadingTitles ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-              )}
-            >
-              {isCollapsed ? (
-                <HugeiconsIcon
-                  icon={LeftToRightListBulletIcon}
-                  size={24}
-                  strokeWidth={1.5}
-                  className="text-blue-500"
-                />
-              ) : (
-                <>
-                  <div className="flex aspect-square size-10 items-center justify-center rounded-xl shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
-                    <HugeiconsIcon
-                      icon={LeftToRightListBulletIcon}
-                      size={24}
-                      strokeWidth={1.5}
-                      className="text-white"
-                    />
-                  </div>
-                  <div className="grid flex-1 text-left text-base leading-tight">
-                    <span className="truncate font-bold">My Resumes</span>
-                    <span className="truncate text-sm text-muted-foreground font-medium">
-                      {currentTitle}
-                    </span>
-                  </div>
-                  {isLoadingTitles ? (
-                    <Spinner className="ml-auto size-4" />
-                  ) : (
-                    <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
-                  )}
-                </>
-              )}
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? 'bottom' : 'right'}
-            align="start"
-            sideOffset={4}
-          >
-            {isCreating ? (
-              <div className="flex items-center gap-2 p-2">
-                <Input
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Resume title..."
-                  className="h-8"
-                  autoFocus
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-8 shrink-0"
-                  onClick={handleConfirmCreate}
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  <Check className="size-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="size-8 shrink-0"
-                  onClick={handleCancelCreate}
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  <X className="size-4" />
-                </Button>
-              </div>
-            ) : (
-              <DropdownMenuItem
-                onClick={() => setIsCreating(true)}
-                onSelect={(e) => e.preventDefault()}
-              >
-                <Plus className="size-4 mr-2" />
-                Create New Resume
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>My Resumes</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              value={selectedResumeId ?? ''}
-              onValueChange={onResumeSelect}
-            >
-              {resumeTitles?.map((resume) => (
-                <DropdownMenuRadioItem key={resume.id} value={resume.id}>
-                  {resume.title}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <NavSelector
+      name="resume"
+      value={currentId}
+      displayValue={currentTitle || 'New Resume'}
+      onChange={onResumeSelect}
+      options={options}
+      disabled={isLoadingTitles}
+      dropdownHeader={createNewHeader}
+    />
   );
 }
