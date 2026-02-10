@@ -2,27 +2,24 @@
 
 import { useSidebar } from '@/ui/sidebar';
 import {
-  CollapsedSidebarContent,
-  ExpandedSidebarContent
-} from './ui/sidebar-header';
-import {
+  LayoutContent,
   CustomizeGroup,
   CustomizeGroupLabel
-} from './ui/sidebar-customize-group';
+} from '../styles/sidebar-layout.styles';
 
 export function SidebarBody({ children }: { children: React.ReactNode }) {
   const { isCollapsed } = useSidebar();
 
   if (isCollapsed) {
-    return <CollapsedSidebarContent>{children}</CollapsedSidebarContent>;
+    return <LayoutContent collapsed>{children}</LayoutContent>;
   }
 
   return (
-    <ExpandedSidebarContent>
+    <LayoutContent>
       <CustomizeGroup>
         <CustomizeGroupLabel>Customize</CustomizeGroupLabel>
         {children}
       </CustomizeGroup>
-    </ExpandedSidebarContent>
+    </LayoutContent>
   );
 }

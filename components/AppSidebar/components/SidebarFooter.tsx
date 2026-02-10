@@ -1,22 +1,11 @@
 'use client';
 
 import { useSidebar } from '@/ui/sidebar';
-import {
-  CollapsedSidebarFooter,
-  ExpandedSidebarFooter
-} from './ui/sidebar-header';
+import { LayoutFooter } from '../styles/sidebar-layout.styles';
 import type { ReactNode } from 'react';
 
-type Props = {
-  children: ReactNode;
-};
-
-export function SidebarFooter({ children }: Props) {
+export function SidebarFooter({ children }: { children: ReactNode }) {
   const { isCollapsed } = useSidebar();
 
-  if (isCollapsed) {
-    return <CollapsedSidebarFooter>{children}</CollapsedSidebarFooter>;
-  }
-
-  return <ExpandedSidebarFooter>{children}</ExpandedSidebarFooter>;
+  return <LayoutFooter collapsed={isCollapsed}>{children}</LayoutFooter>;
 }

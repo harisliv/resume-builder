@@ -12,19 +12,18 @@ import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/ui/sidebar';
 import { useAuth } from '@workos-inc/authkit-nextjs/components';
 import { handleSignOutAction } from '@/app/actions/signOut';
 import {
-  NavSelectorTrailingIcon,
-  NavSelectorTrailingSpinner
-} from './ui/nav-selector-button';
+  MenuButton,
+  TrailingIcon,
+  TrailingSpinner
+} from '../styles/sidebar-menu-button.styles';
 import {
-  CollapsedNavUserButton,
   CollapsedUserAvatar,
-  ExpandedNavUserButton,
   ExpandedUserAvatar,
-  NavUserDropdownContent,
-  NavUserDropdownLabel,
-  NavUserDropdownLabelContent,
-  NavUserInfo
-} from './ui/nav-user';
+  DropdownContent,
+  DropdownLabel,
+  DropdownLabelContent,
+  UserInfo
+} from '../styles/nav-user.styles';
 import { SignedOutView } from './SignedOutView';
 
 function NavUserTriggerContent({
@@ -61,8 +60,8 @@ function NavUserTriggerContent({
         initials={initials}
         loading={loading}
       />
-      <NavUserInfo name={name} email={email} />
-      {loading ? <NavSelectorTrailingSpinner /> : <NavSelectorTrailingIcon />}
+      <UserInfo name={name} email={email} />
+      {loading ? <TrailingSpinner /> : <TrailingIcon />}
     </>
   );
 }
@@ -84,16 +83,17 @@ export function NavUser() {
         .slice(0, 2)
     : '';
 
-  const NavButton = isCollapsed
-    ? CollapsedNavUserButton
-    : ExpandedNavUserButton;
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild disabled={loading}>
-            <NavButton tooltip={name} disabled={loading} loading={loading}>
+            <MenuButton
+              collapsed={isCollapsed}
+              tooltip={name}
+              disabled={loading}
+              loading={loading}
+            >
               <NavUserTriggerContent
                 src={user?.profilePictureUrl ?? undefined}
                 name={name}
@@ -101,19 +101,19 @@ export function NavUser() {
                 initials={initials}
                 loading={!user}
               />
-            </NavButton>
+            </MenuButton>
           </DropdownMenuTrigger>
-          <NavUserDropdownContent side={isMobile ? 'bottom' : 'right'}>
-            <NavUserDropdownLabel>
-              <NavUserDropdownLabelContent>
+          <DropdownContent side={isMobile ? 'bottom' : 'right'}>
+            <DropdownLabel>
+              <DropdownLabelContent>
                 <ExpandedUserAvatar
                   src={user?.profilePictureUrl ?? undefined}
                   name={name}
                   initials={initials}
                 />
-                <NavUserInfo name={name} email={email} />
-              </NavUserDropdownLabelContent>
-            </NavUserDropdownLabel>
+                <UserInfo name={name} email={email} />
+              </DropdownLabelContent>
+            </DropdownLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
@@ -126,7 +126,7 @@ export function NavUser() {
               <LogOut />
               Sign Out
             </DropdownMenuItem>
-          </NavUserDropdownContent>
+          </DropdownContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

@@ -1,10 +1,3 @@
-import type { NavSelectorName, NavSelectorVariantConfig } from './types';
-import {
-  Layout01Icon,
-  LeftToRightListBulletIcon,
-  PaintBoardIcon,
-  TextFontIcon
-} from '@hugeicons/core-free-icons';
 import {
   COLOR_PALETTES,
   DOCUMENT_STYLES,
@@ -13,12 +6,25 @@ import {
   type TFontId,
   type TPaletteId
 } from '@/types/documentStyle';
-import type { NavSelectorOption } from './types';
+import {
+  Layout01Icon,
+  LeftToRightListBulletIcon,
+  PaintBoardIcon,
+  TextFontIcon
+} from '@hugeicons/core-free-icons';
 import {
   FontOptionIcon,
   PaletteOptionIcon,
   StyleOptionIcon
-} from './components/ui/nav-selector-icons';
+} from './components/NavSelectorIcons';
+import type { NavSelectorName, NavSelectorOption, NavSelectorVariantConfig } from './types';
+
+export const ICON_BACKGROUND_CLASSES: Record<NavSelectorName, string> = {
+  palette: 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg shadow-amber-500/30',
+  font: 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30',
+  style: 'bg-gradient-to-br from-violet-500 to-violet-600 shadow-lg shadow-violet-500/30',
+  resume: 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30',
+};
 
 export const paletteNavOptions: NavSelectorOption<TPaletteId>[] = Object.values(
   COLOR_PALETTES
@@ -41,10 +47,6 @@ export const styleNavOptions: NavSelectorOption<TDocumentStyleId>[] =
     label: s.name,
     description: s.description
   }));
-
-export function getFontById(id: string) {
-  return Object.values(FONT_OPTIONS).find((f) => f.id === id);
-}
 
 export const NAV_SELECTOR_VARIANTS: Record<
   NavSelectorName,

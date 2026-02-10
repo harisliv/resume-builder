@@ -6,7 +6,7 @@ import type {
   TPaletteId
 } from '@/types/documentStyle';
 import type { NavSelectorOption } from '../AppSidebar/types';
-import { NavSelector } from '../AppSidebar/components/nav-selector';
+import { NavSelector } from '../AppSidebar/components/NavSelector';
 
 const FORM_NAME_TO_NAV_NAME = {
   'documentStyle.palette': 'palette',
@@ -44,7 +44,8 @@ export default function ControlledNavSelector(
       render={({ field }) => (
         <NavSelector
           name={navName}
-          value={field.value ?? props.options[0]?.id}
+          value={field.value}
+          displayValue={field.value}
           onChange={field.onChange}
           options={props.options}
           disabled={props.disabled}

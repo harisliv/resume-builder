@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/ui/sidebar';
-import { CollapsedSignInButton } from './ui/nav-user';
+import { CollapsedSignInButton } from '../styles/nav-user.styles';
 
 export function SignedOutView() {
   const { isCollapsed } = useSidebar();

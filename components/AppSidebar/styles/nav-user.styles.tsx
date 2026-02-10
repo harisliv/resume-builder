@@ -8,14 +8,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/ui/sidebar';
 import { Spinner } from '@/components/ui/spinner';
-import { cn } from '@/lib/utils';
-
-interface IUserAvatarProps {
-  src?: string;
-  name: string;
-  initials: string;
-  loading?: boolean;
-}
 
 function CollapsedAvatarFallback(
   props: ComponentProps<typeof AvatarFallback>
@@ -37,6 +29,13 @@ function ExpandedAvatarFallback(
       {...props}
     />
   );
+}
+
+interface IUserAvatarProps {
+  src?: string;
+  name: string;
+  initials: string;
+  loading?: boolean;
 }
 
 export function CollapsedUserAvatar({
@@ -83,7 +82,7 @@ export function ExpandedUserAvatar({
   );
 }
 
-export function NavUserInfo({
+export function UserInfo({
   name,
   email
 }: {
@@ -97,46 +96,6 @@ export function NavUserInfo({
         <span className="text-muted-foreground truncate text-xs">{email}</span>
       )}
     </div>
-  );
-}
-
-interface INavUserButtonProps extends ComponentProps<typeof SidebarMenuButton> {
-  loading?: boolean;
-}
-
-export function CollapsedNavUserButton({
-  loading,
-  className,
-  ...props
-}: INavUserButtonProps) {
-  return (
-    <SidebarMenuButton
-      size="lg"
-      className={cn(
-        'h-auto border-0 bg-transparent p-0 shadow-none hover:bg-transparent',
-        loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-export function ExpandedNavUserButton({
-  loading,
-  className,
-  ...props
-}: INavUserButtonProps) {
-  return (
-    <SidebarMenuButton
-      size="lg"
-      className={cn(
-        'bg-background border-border/60 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground data-[state=open]:border-primary/30 hover:border-primary/20 border shadow-sm transition-all duration-200 hover:shadow-md',
-        loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-        className
-      )}
-      {...props}
-    />
   );
 }
 
@@ -160,7 +119,7 @@ export function CollapsedSignInButton() {
   );
 }
 
-export function NavUserDropdownContent(
+export function DropdownContent(
   props: ComponentProps<typeof DropdownMenuContent>
 ) {
   return (
@@ -173,13 +132,13 @@ export function NavUserDropdownContent(
   );
 }
 
-export function NavUserDropdownLabel(
+export function DropdownLabel(
   props: ComponentProps<typeof DropdownMenuLabel>
 ) {
   return <DropdownMenuLabel className="p-0 font-normal" {...props} />;
 }
 
-export function NavUserDropdownLabelContent(props: ComponentProps<'div'>) {
+export function DropdownLabelContent(props: ComponentProps<'div'>) {
   return (
     <div
       className="flex items-center gap-3 px-2 py-2 text-left text-sm"

@@ -23,7 +23,7 @@ export type NavSelectorProps<T extends string = string> = {
     value: T;
     onChange: (value: T) => void;
     options: NavSelectorOption<T>[];
-    displayValue?: string;
+    displayValue: string;
     disabled?: boolean;
     dropdownHeader?: React.ReactNode;
 };

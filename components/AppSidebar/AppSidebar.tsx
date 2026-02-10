@@ -1,16 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { NavUser } from '@/components/AppSidebar/components/NavUser';
+import { NavUser } from './components/NavUser';
 import { Sidebar, SidebarRail } from '@/ui/sidebar';
 import { ResumeSelector } from './components/ResumeSelector';
 import { SidebarHeader } from './components/SidebarHeader';
-import { SidebarHeaderRow } from './components/SidebarHeaderRow';
 import { SidebarBody } from './components/SidebarBody';
 import { SidebarFooter } from './components/SidebarFooter';
-import { FontSelector } from './components/FontSelector';
-import { PaletteSelector } from './components/PaletteSelector';
-import { StyleSelector } from './components/StyleSelector';
+import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields/ControlledNavSelector';
+import { paletteNavOptions, fontNavOptions, styleNavOptions } from './constants';
 
 export type TAppSidebarResumeProps = {
   onResumeSelect: (id: string) => void;
@@ -27,16 +25,27 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarHeaderRow />
         <ResumeSelector
           onResumeSelect={onResumeSelect}
           onCreateNew={onCreateNew}
         />
       </SidebarHeader>
       <SidebarBody>
-        <PaletteSelector disabled={isLoadingResume} />
-        <FontSelector disabled={isLoadingResume} />
-        <StyleSelector disabled={isLoadingResume} />
+        <ResumeInfoControlledNavSelector
+          name="documentStyle.palette"
+          options={paletteNavOptions}
+          disabled={isLoadingResume}
+        />
+        <ResumeInfoControlledNavSelector
+          name="documentStyle.font"
+          options={fontNavOptions}
+          disabled={isLoadingResume}
+        />
+        <ResumeInfoControlledNavSelector
+          name="documentStyle.style"
+          options={styleNavOptions}
+          disabled={isLoadingResume}
+        />
       </SidebarBody>
       <SidebarFooter>
         <NavUser />

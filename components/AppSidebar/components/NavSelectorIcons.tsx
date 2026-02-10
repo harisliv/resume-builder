@@ -5,7 +5,7 @@ import {
   type TFontId,
   type TPaletteId
 } from '@/types/documentStyle';
-import type { NavSelectorOption } from '../../types';
+import type { NavSelectorOption } from '../types';
 
 export function PaletteOptionIcon({ option }: { option: NavSelectorOption }) {
   const p = COLOR_PALETTES[option.id as TPaletteId];
