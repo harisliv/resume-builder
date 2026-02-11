@@ -13,6 +13,7 @@ import {
   type TResumeForm,
   type TResumeData
 } from '@/types/schema';
+import type { TAiSuggestions } from '@/types/aiSuggestions';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -85,6 +86,58 @@ export default function Home() {
     });
   };
 
+  const mergeSuggestions = (suggestions: TAiSuggestions): TResumeForm => {
+    const currentForm = formForm.getValues();
+    return {
+      ...currentForm,
+      personalInfo: {
+        ...currentForm.personalInfo,
+        ...(suggestions.summary && { summary: suggestions.summary })
+      },
+      experience: currentForm.experience.map((exp, idx) => ({
+        ...exp,
+        ...(suggestions.experience?.[idx]?.description && {
+          description: suggestions.experience[idx].description
+        }),
+        ...(suggestions.experience?.[idx]?.highlights && {
+          highlights: suggestions.experience[idx].highlights
+        })
+      })),
+      skills: suggestions.skills ?? currentForm.skills
+    };
+  };
+
+  const handleApplySuggestions = (suggestions: TAiSuggestions) => {
+    const infoData = infoForm.getValues();
+    const mergedForm = mergeSuggestions(suggestions);
+    submitResume(
+      { ...infoData, ...mergedForm },
+      {
+        onSuccess: (data) => {
+          setSelectedResumeId(data.id);
+        }
+      }
+    );
+  };
+
+  const handleCreateNewVersion = (suggestions: TAiSuggestions) => {
+    const infoData = infoForm.getValues();
+    const mergedForm = mergeSuggestions(suggestions);
+    submitResume(
+      {
+        ...infoData,
+        ...mergedForm,
+        id: undefined,
+        title: `${infoData.title} (AI Tailored)`
+      },
+      {
+        onSuccess: (data) => {
+          setSelectedResumeId(data.id);
+        }
+      }
+    );
+  };
+
   return (
     <SidebarProvider>
       <FormProvider {...infoForm}>
@@ -102,6 +155,9 @@ export default function Home() {
               isPending={isPending}
               isError={isError}
               error={error}
+              resumeId={selectedResumeId}
+              onApplySuggestions={handleApplySuggestions}
+              onCreateNewVersion={handleCreateNewVersion}
             />
           </FormProvider>
           <ResumePreviewWrapper
