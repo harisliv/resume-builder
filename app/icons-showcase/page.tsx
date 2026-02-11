@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Document, pdf } from '@react-pdf/renderer';
-import { AestheticDocument } from '@/lib/ResumePDF/documents';
+import { AestheticDocument } from '@/lib/ResumePDF/documents/AestheticDocument';
 import {
   Palette,
   Type,

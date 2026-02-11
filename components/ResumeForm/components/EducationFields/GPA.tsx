@@ -1,4 +1,4 @@
-import { ResumeFormControlledInput } from '@/components/ControlledFields';
+import { ResumeFormControlledInput } from '@/components/ControlledFields/ControlledInput';
 
 export default function GPA({ index }: { index: number }) {
   return (

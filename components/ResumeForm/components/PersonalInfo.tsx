@@ -1,12 +1,10 @@
-import {
-  FullName,
-  Email,
-  Phone,
-  Location,
-  LinkedIn,
-  Website,
-  Summary
-} from './PersonalInfoFields';
+import FullName from './PersonalInfoFields/FullName';
+import Email from './PersonalInfoFields/Email';
+import Phone from './PersonalInfoFields/Phone';
+import Location from './PersonalInfoFields/Location';
+import LinkedIn from './PersonalInfoFields/LinkedIn';
+import Website from './PersonalInfoFields/Website';
+import Summary from './PersonalInfoFields/Summary';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
 

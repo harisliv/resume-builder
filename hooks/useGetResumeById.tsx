@@ -7,7 +7,7 @@ import {
   resumeFormDefaultValues,
   resumeInfoDefaultValues,
   type TResumeData
-} from '@/types';
+} from '@/types/schema';
 import { useMemo } from 'react';
 
 export function useGetResumeById(resumeId?: Id<'resumes'>) {

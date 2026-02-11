@@ -10,7 +10,7 @@ import {
   FieldSet
 } from '../ui/field';
 import { Checkbox } from '../ui/checkbox';
-import type { TResumeForm, TResumeInfo } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types/schema';
 
 export default function ControlledCheckbox<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;

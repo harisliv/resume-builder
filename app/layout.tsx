@@ -8,14 +8,14 @@ import {
   Playfair_Display,
   Merriweather
 } from 'next/font/google';
-import './globals.css';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import {
   AuthKitProvider,
   Impersonation
 } from '@workos-inc/authkit-nextjs/components';
-import { ConvexClientProvider } from '@/components/providers/ConvexProvider';
-import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ConvexClientProvider } from '@/providers/ConvexProvider';
+import { QueryProvider } from '@/providers/QueryProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const roboto = Roboto({
@@ -70,7 +70,7 @@ export default function RootLayout({
       className={`${inter.className} ${fontVariables}`}
       suppressHydrationWarning
     >
-      <body className="antialiased font-sans">
+      <body className="font-sans antialiased">
         <AuthKitProvider>
           <Impersonation />
           <ConvexClientProvider>

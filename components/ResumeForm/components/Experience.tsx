@@ -1,26 +1,42 @@
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
-
+import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Card } from '@/components/ui/card';
-import type { TResumeForm } from '@/types';
-import { experienceDefaultValues } from '@/types';
+import type { TResumeForm } from '@/types/schema';
+import { experienceDefaultValues } from '@/types/schema';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
+import Company from './ExperienceFields/Company';
+import Position from './ExperienceFields/Position';
+import Location from './ExperienceFields/Location';
+import StartDate from './ExperienceFields/StartDate';
+import EndDate from './ExperienceFields/EndDate';
+import Current from './ExperienceFields/Current';
+import Description from './ExperienceFields/Description';
+import Highlights from './ExperienceFields/Highlights';
 import {
-  Company,
-  Position,
-  Location,
-  StartDate,
-  EndDate,
-  Current,
-  Description,
-  Highlights
-} from './ExperienceFields';
+  StyledAccordion,
+  StyledAccordionItem,
+  StyledAccordionTrigger,
+  StyledAccordionContent
+} from './UI/experience-accordion';
+
+function experienceLabel(
+  company: string | undefined,
+  position: string | undefined,
+  index: number
+) {
+  const c = company?.trim();
+  const p = position?.trim();
+  if (c && p) return `${c} · ${p}`;
+  if (c) return c;
+  if (p) return p;
+  return `Experience ${index + 1}`;
+}
 
 export default function Experience() {
-  const { control } = useFormContext<TResumeForm>();
+  const { control, watch } = useFormContext<TResumeForm>();
+  const experience = watch('experience');
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'experience'
@@ -35,39 +51,34 @@ export default function Experience() {
           Add Experience
         </Button>
       </div>
-      {fields.map((field, index) => (
-        <Card
-          key={field.id}
-          className="p-4 pb-8 space-y-4 shadow-none hover:shadow-none"
-        >
-          <div className="flex items-center justify-between">
-            <h4 className="font-medium">Experience {index + 1}</h4>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => remove(index)}
-            >
-              <HugeiconsIcon
-                icon={Delete02Icon}
-                className="h-4 w-4 text-destructive"
-              />
-            </Button>
-          </div>
-          <FieldRow cols="half">
-            <Company index={index} />
-            <Position index={index} />
-          </FieldRow>
-          <Location index={index} />
-          <FieldRow cols="half">
-            <StartDate index={index} />
-            <EndDate index={index} />
-          </FieldRow>
-          <Current index={index} />
-          <Description index={index} />
-          <Highlights index={index} />
-        </Card>
-      ))}
+      <StyledAccordion>
+        {fields.map((field, index) => (
+          <StyledAccordionItem key={field.id} value={`experience-${index}`}>
+            <StyledAccordionTrigger
+              label={experienceLabel(
+                experience?.[index]?.company,
+                experience?.[index]?.position,
+                index
+              )}
+              onDelete={() => remove(index)}
+            />
+            <StyledAccordionContent>
+              <FieldRow cols="half">
+                <Company index={index} />
+                <Position index={index} />
+              </FieldRow>
+              <Location index={index} />
+              <FieldRow cols="half">
+                <StartDate index={index} />
+                <EndDate index={index} />
+              </FieldRow>
+              <Current index={index} />
+              <Description index={index} />
+              <Highlights index={index} />
+            </StyledAccordionContent>
+          </StyledAccordionItem>
+        ))}
+      </StyledAccordion>
     </div>
   );
 }

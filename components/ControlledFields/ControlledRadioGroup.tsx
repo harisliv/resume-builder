@@ -11,7 +11,7 @@ import {
   FieldTitle
 } from '../ui/field';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import type { TResumeForm, TResumeInfo } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types/schema';
 
 export default function ControlledRadioGroup<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;

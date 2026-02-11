@@ -11,7 +11,7 @@ import {
   GraduationCap,
   Sparkles
 } from 'lucide-react';
-import type { TEducation, TExperience } from '@/types';
+import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 
 export function ModernStyle({ data, palette, fontFamily }: IStyleProps) {

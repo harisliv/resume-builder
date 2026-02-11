@@ -1,5 +1,2 @@
-export { BoldStyle } from './BoldStyle';
-export { ClassicStyle } from './ClassicStyle';
-export { MinimalStyle } from './MinimalStyle';
-export { ModernStyle } from './ModernStyle';
-export { default as ResumePreview } from './ResumePreview';
+export { default } from './ResumePreview';
+export { default as ResumePreviewWrapper } from './ResumePreviewWrapper';

@@ -2,7 +2,7 @@
 
 import { PDFViewer } from '@react-pdf/renderer';
 import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
-import type { TCombinedResumeData } from '@/types';
+import type { TCombinedResumeData } from '@/types/schema';
 
 export default function PDFViewerSection({
   formData,

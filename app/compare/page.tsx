@@ -1,20 +1,20 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { ResumePreview } from '@/components/ResumePreview';
+import ResumePreview from '@/components/ResumePreview';
 import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
-import type { TResumeData } from '@/types';
-import { resumeInfoDefaultValues, resumeFormDefaultValues } from '@/types';
+import type { TResumeData } from '@/types/schema';
+import {
+  resumeInfoDefaultValues,
+  resumeFormDefaultValues
+} from '@/types/schema';
 
 const PDFViewerSection = dynamic(
-  () =>
-    import('@/components/PdfViewer').then((m) => ({
-      default: m.PdfViewerSection
-    })),
+  () => import('@/components/PdfViewer'),
   {
     ssr: false,
     loading: () => (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center">
         Loading PDF...
       </div>
     )
@@ -53,23 +53,23 @@ export default function ComparePage() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">
+      <h1 className="mb-4 text-center text-2xl font-bold">
         PDF vs Preview Comparison
       </h1>
-      <div className="grid grid-cols-2 gap-4 h-[calc(100vh-100px)]">
+      <div className="grid h-[calc(100vh-100px)] grid-cols-2 gap-4">
         <div className="flex flex-col">
-          <h2 className="text-lg font-semibold mb-2 text-center">
+          <h2 className="mb-2 text-center text-lg font-semibold">
             HTML Preview (ResumePreview)
           </h2>
-          <div className="flex-1 overflow-auto bg-white rounded-lg shadow-lg">
+          <div className="flex-1 overflow-auto rounded-lg bg-white shadow-lg">
             <ResumePreview formData={formData} infoData={infoData} />
           </div>
         </div>
         <div className="flex flex-col">
-          <h2 className="text-lg font-semibold mb-2 text-center">
+          <h2 className="mb-2 text-center text-lg font-semibold">
             PDF Preview (PDFViewer)
           </h2>
-          <div className="flex-1 rounded-lg shadow-lg overflow-hidden">
+          <div className="flex-1 overflow-hidden rounded-lg shadow-lg">
             <PDFViewerSection formData={formData} infoData={infoData} />
           </div>
         </div>

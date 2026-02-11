@@ -12,26 +12,20 @@ import {
   resumeInfoDefaultValues,
   type TResumeForm,
   type TResumeData
-} from '@/types';
-import {
-  useGetUserResumeTitles,
-  useGetResumeById,
-  useResumeSubmit
-} from '@/hooks';
-import { ResumeForm } from '@/components/ResumeForm';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/ui/app-sidebar';
+} from '@/types/schema';
+import { useGetResumeById } from '@/hooks/useGetResumeById';
+import { useResumeSubmit } from '@/hooks/useResumeSubmit';
+import { AppSidebar } from '@/components/AppSidebar';
+import ResumeForm from '@/components/ResumeForm';
+import { ResumePreviewWrapper } from '@/components/ResumePreview';
+import { SidebarInset, SidebarProvider } from '@/ui/sidebar';
 import { FormProvider } from 'react-hook-form';
-import ResumePreviewWrapper from '@/components/ResumePreview/ResumePreviewWrapper';
-import { HomeLayout } from '@/components/ui/home-layout';
+import { HomeLayout } from './home-layout';
 
 export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
-
-  const { data: resumeTitles, isLoading: isLoadingTitles } =
-    useGetUserResumeTitles();
 
   const {
     form: formValues,
@@ -95,11 +89,8 @@ export default function Home() {
     <SidebarProvider>
       <FormProvider {...infoForm}>
         <AppSidebar
-          resumeTitles={resumeTitles}
-          selectedResumeId={selectedResumeId}
           onResumeSelect={handleResumeSelect}
           onCreateNew={handleCreateNew}
-          isLoadingTitles={isLoadingTitles}
           isLoadingResume={isLoadingResume}
         />
       </FormProvider>

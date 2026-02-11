@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import type { TResumeData } from '@/types';
+import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 
 interface IMinimalDocumentProps {

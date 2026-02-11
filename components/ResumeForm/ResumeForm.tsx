@@ -5,7 +5,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { FileText, Save } from '@hugeicons/core-free-icons';
 import ResumeFormTabs from './components/ResumeFormTabs';
 import { useFormContext } from 'react-hook-form';
-import type { TResumeForm } from '@/types';
+import type { TResumeForm } from '@/types/schema';
 import {
   SectionCard,
   SectionCardHeader,

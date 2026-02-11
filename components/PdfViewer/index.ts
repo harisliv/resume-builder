@@ -1,1 +1,1 @@
-export { default as PdfViewerSection } from './PdfViewerSection';
+export { default } from './PdfViewerSection';

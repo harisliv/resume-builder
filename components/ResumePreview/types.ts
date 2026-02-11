@@ -1,4 +1,5 @@
-import type { TColorPalette, TResumeForm } from '@/types';
+import type { TColorPalette } from '@/types/documentStyle';
+import type { TResumeForm } from '@/types/schema';
 
 export interface IStyleProps {
   data: TResumeForm;

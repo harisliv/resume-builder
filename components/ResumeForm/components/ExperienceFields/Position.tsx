@@ -1,4 +1,4 @@
-import { ResumeFormControlledInput } from '@/components/ControlledFields';
+import { ResumeFormControlledInput } from '@/components/ControlledFields/ControlledInput';
 
 export default function Position({ index }: { index: number }) {
   return (

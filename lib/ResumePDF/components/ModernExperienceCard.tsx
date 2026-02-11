@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from '@react-pdf/renderer';
 import type { createStyles } from '../ResumeStyles';
-import { ArrowRightIcon } from '../icons';
+import { ArrowRightIcon } from '../icons/ArrowRightIcon';
 
 interface IExperience {
   position?: string;

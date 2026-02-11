@@ -1,7 +1,7 @@
 'use client';
 
-import type { TResumeForm, TResumeInfo } from '@/types';
-import { COLOR_PALETTES, FONT_OPTIONS } from '@/types';
+import type { TResumeForm, TResumeInfo } from '@/types/schema';
+import { COLOR_PALETTES, FONT_OPTIONS } from '@/types/documentStyle';
 import { ModernStyle } from './ModernStyle';
 import { ClassicStyle } from './ClassicStyle';
 import { MinimalStyle } from './MinimalStyle';
