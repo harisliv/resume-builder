@@ -26,7 +26,7 @@ export function ComparisonCard({
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className="space-y-2 pt-2">{children}</CardContent>
     </Card>
   );
 }
@@ -48,7 +48,7 @@ export function HighlightedText({
   return (
     <p
       className={cn(
-        'whitespace-pre-wrap text-xs',
+        'whitespace-pre-wrap text-xs leading-relaxed',
         changed && 'rounded-md bg-emerald-500/10 px-2 py-1',
         className
       )}
@@ -61,7 +61,7 @@ export function MutedText({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
       className={cn(
-        'text-muted-foreground whitespace-pre-wrap text-xs',
+        'text-muted-foreground whitespace-pre-wrap text-xs leading-relaxed',
         className
       )}
       {...props}
@@ -85,7 +85,7 @@ export function ExperienceLabel({
 }
 
 export function BulletList({ className, ...props }: ComponentProps<'ul'>) {
-  return <ul className={cn('mt-2 space-y-1', className)} {...props} />;
+  return <ul className={cn('mt-2 space-y-2', className)} {...props} />;
 }
 
 export function BulletItem({

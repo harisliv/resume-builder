@@ -1,10 +1,10 @@
-This is a Next.js resume builder application with PDF export, preview, and future AI-powered job application suggestions.
+This is a Next.js resume builder application with PDF export, preview, and AI-powered job application suggestions.
 
 ALWAYS be extremely concise. Sacrifice grammar for the sake of concision
 
-At the end of each plan, give me a list of unresolved questions to answer, if any.
+At the end of each plan, give me unresolved questions to answer, if any.
 
-dont add comments if you are not told to
+add jsdoc comments to the code
 
 This project uses pnpm.
 

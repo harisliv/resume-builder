@@ -16,6 +16,7 @@ import {
 import type { TAiSuggestions } from '@/types/aiSuggestions';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
+import { useDeleteResume } from '@/hooks/useDeleteResume';
 import { AppSidebar } from '@/components/AppSidebar';
 import ResumeForm from '@/components/ResumeForm';
 import { ResumePreviewWrapper } from '@/components/ResumePreview';
@@ -49,9 +50,22 @@ export default function Home() {
   });
 
   const { mutate: submitResume, isPending, isError, error } = useResumeSubmit();
+  const { mutate: deleteResume } = useDeleteResume();
 
   const handleResumeSelect = (id: string) => {
     setSelectedResumeId(id as Id<'resumes'>);
+  };
+
+  const handleDeleteResume = (id: string) => {
+    deleteResume(id as Id<'resumes'>, {
+      onSuccess: () => {
+        if (id === selectedResumeId) {
+          setSelectedResumeId(undefined);
+          infoForm.reset(resumeInfoDefaultValues);
+          formForm.reset(resumeFormDefaultValues);
+        }
+      }
+    });
   };
 
   const handleCreateNew = (title?: string) => {
@@ -144,6 +158,7 @@ export default function Home() {
         <AppSidebar
           onResumeSelect={handleResumeSelect}
           onCreateNew={handleCreateNew}
+          onDelete={handleDeleteResume}
           isLoadingResume={isLoadingResume}
         />
       </FormProvider>

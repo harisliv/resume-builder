@@ -107,12 +107,12 @@ export function AiSuggestionsDialog({
         </DialogHeader>
 
         {!suggestions ? (
-          <div className="space-y-3">
+          <div className="-mx-4 flex max-h-[50vh] flex-col gap-3 overflow-y-auto p-4">
             <Textarea
               placeholder="Paste the job description here..."
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              className="min-h-36"
+              className="min-h-36 leading-relaxed"
               disabled={isGenerating}
             />
             {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -135,8 +135,8 @@ export function AiSuggestionsDialog({
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col flex-1 min-h-0 gap-3">
-            <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="flex flex-col gap-3">
+            <div className="-mx-4 max-h-[50vh] overflow-y-auto px-4">
               <AiSuggestionsView
                 suggestions={suggestions}
                 currentData={currentData}

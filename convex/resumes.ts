@@ -68,6 +68,24 @@ export const updateResume = mutation({
   }
 });
 
+/** Rename a resume without requiring all fields. */
+export const renameResume = mutation({
+  args: {
+    id: v.id('resumes'),
+    title: v.string()
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await getAuthenticatedUser(ctx);
+    const resume = await ctx.db.get(args.id);
+    if (!resume || resume.userId !== userId) {
+      throw new Error('Unauthorized: Resume does not belong to user');
+    }
+    await ctx.db.patch(args.id, { title: args.title });
+    return null;
+  }
+});
+
 export const deleteResume = mutation({
   args: {
     id: v.id('resumes')

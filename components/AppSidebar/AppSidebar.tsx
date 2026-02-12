@@ -13,12 +13,14 @@ import { paletteNavOptions, fontNavOptions, styleNavOptions } from './constants'
 export type TAppSidebarResumeProps = {
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
+  onDelete: (id: string) => void;
   isLoadingResume?: boolean;
 };
 
 export function AppSidebar({
   onResumeSelect,
   onCreateNew,
+  onDelete,
   isLoadingResume = false,
   ...props
 }: TAppSidebarResumeProps & React.ComponentProps<typeof Sidebar>) {
@@ -28,6 +30,7 @@ export function AppSidebar({
         <ResumeSelector
           onResumeSelect={onResumeSelect}
           onCreateNew={onCreateNew}
+          onDelete={onDelete}
         />
       </SidebarHeader>
       <SidebarBody>
