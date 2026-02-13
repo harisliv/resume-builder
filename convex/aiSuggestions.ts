@@ -59,9 +59,14 @@ export const generateResumeSuggestions = action({
       throw new Error('Resume not found');
     }
 
-    const google = createGoogleGenerativeAI({
-      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
-    });
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        `GOOGLE_GENERATIVE_AI_API_KEY not found in process.env. Available env keys: ${Object.keys(process.env).filter((k) => k.startsWith('GOOGLE') || k.startsWith('CONVEX')).join(', ')}`
+      );
+    }
+
+    const google = createGoogleGenerativeAI({ apiKey });
 
     const resumeContent = {
       summary: resume.personalInfo?.summary,
