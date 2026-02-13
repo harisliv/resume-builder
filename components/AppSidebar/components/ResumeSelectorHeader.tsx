@@ -5,13 +5,21 @@ import { Plus, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+} from '@/components/ui/tooltip';
 import { CreateResumeRow } from '../styles/nav-selector.styles';
+import usePrivileges from '@/hooks/usePrivileges';
 
 export function ResumeSelectorHeader({
   onCreateNew
 }: {
   onCreateNew: (title?: string) => void;
 }) {
+  const { getDisabledTooltip } = usePrivileges();
+  const createTooltip = getDisabledTooltip(true);
   const [isCreating, setIsCreating] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
@@ -76,12 +84,22 @@ export function ResumeSelectorHeader({
   }
 
   return (
-    <DropdownMenuItem
-      onClick={() => setIsCreating(true)}
-      onSelect={(e) => e.preventDefault()}
-    >
-      <Plus className="mr-2 size-4" />
-      Create New Resume
-    </DropdownMenuItem>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span>
+          <DropdownMenuItem
+            disabled={!!createTooltip}
+            onClick={() => setIsCreating(true)}
+            onSelect={(e) => e.preventDefault()}
+          >
+            <Plus className="mr-2 size-4" />
+            Create New Resume
+          </DropdownMenuItem>
+        </span>
+      </TooltipTrigger>
+      {createTooltip && (
+        <TooltipContent side="right">{createTooltip}</TooltipContent>
+      )}
+    </Tooltip>
   );
 }

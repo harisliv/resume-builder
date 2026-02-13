@@ -47,7 +47,18 @@ export function ResumeSelector({
     [renameResume, currentId, setValue]
   );
 
-  const dropdownHeader = <ResumeSelectorHeader onCreateNew={onCreateNew} />;
+  /** Render function: wraps onCreateNew to also close the dropdown. */
+  const dropdownHeader = useCallback(
+    (close: () => void) => (
+      <ResumeSelectorHeader
+        onCreateNew={(title) => {
+          onCreateNew(title);
+          close();
+        }}
+      />
+    ),
+    [onCreateNew]
+  );
 
   return (
     <NavSelector

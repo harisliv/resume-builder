@@ -45,8 +45,10 @@ export default function ResumeForm({
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
 }) {
   const form = useFormContext<TResumeForm>();
-  const { isBasic } = usePrivileges();
+  const { isBasic, getDisabledTooltip } = usePrivileges();
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const saveTooltip = getDisabledTooltip(!!resumeId);
+  const aiTooltip = getDisabledTooltip(true);
 
   const handleSubmit = form.handleSubmit(onSubmit);
 
@@ -77,15 +79,15 @@ export default function ResumeForm({
                     </Button>
                   </span>
                 </TooltipTrigger>
-                {!isBasic && (
-                  <TooltipContent>Upgrade to use AI suggestions</TooltipContent>
+                {aiTooltip && (
+                  <TooltipContent>{aiTooltip}</TooltipContent>
                 )}
               </Tooltip>
             )}
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="inline-flex">
-                  <Button type="submit" disabled={isPending || !isBasic}>
+                  <Button type="submit" disabled={isPending || !isBasic || !resumeId}>
                     {isPending ? (
                       <>
                         <Spinner className="size-4" />
@@ -100,8 +102,8 @@ export default function ResumeForm({
                   </Button>
                 </span>
               </TooltipTrigger>
-              {!isBasic && (
-                <TooltipContent>Upgrade to save resumes</TooltipContent>
+              {saveTooltip && (
+                <TooltipContent>{saveTooltip}</TooltipContent>
               )}
             </Tooltip>
           </SectionCardActions>

@@ -23,3 +23,5 @@ past chats tag
 native browser dev tools
 by defaault on login untitled resume is created
 tailwind css optimizer agent
+bigger modal warning icon
+disable resume selector not creating a new resume

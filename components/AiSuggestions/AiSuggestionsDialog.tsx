@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Sparkles, Copy } from 'lucide-react';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import {
   DialogContentWrapper,
   DialogTitleRow
@@ -60,6 +61,7 @@ export function AiSuggestionsDialog({
     useState<TAiSuggestions | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const confirm = useWarningDialog();
 
   const generateSuggestions = useAction(
     api.aiSuggestions.generateResumeSuggestions
@@ -101,9 +103,15 @@ export function AiSuggestionsDialog({
     return buildFilteredSuggestions(editedSuggestions, selection);
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
     const filtered = getFiltered();
     if (!filtered) return;
+    const ok = await confirm({
+      title: 'Apply suggestions?',
+      description: 'This will overwrite matching fields on your current resume.',
+      confirmLabel: 'Apply'
+    });
+    if (!ok) return;
     onApply(filtered);
     onOpenChange(false);
     reset();

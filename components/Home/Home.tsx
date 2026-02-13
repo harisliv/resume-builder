@@ -178,6 +178,7 @@ export default function Home() {
           <ResumePreviewWrapper
             formData={formForm.watch()}
             infoData={infoForm.watch()}
+            hasSelectedResume={!!selectedResumeId}
           />
         </HomeLayout>
       </SidebarInset>

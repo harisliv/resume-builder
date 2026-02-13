@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { useState, useCallback } from 'react';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import type { NavSelectorOption } from '../types';
 
 type Props = {
@@ -43,6 +44,7 @@ export function ResumeOptionActions({
   onRename,
   onDelete
 }: Props) {
+  const confirm = useWarningDialog();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(option.label);
 
@@ -123,7 +125,15 @@ export function ResumeOptionActions({
               size="icon"
               variant="ghost"
               className="size-7 shrink-0 !text-destructive/60"
-              onClick={() => onDelete(option.id)}
+              onClick={async () => {
+                const ok = await confirm({
+                  title: 'Delete resume?',
+                  description: 'This action cannot be undone.',
+                  confirmLabel: 'Delete',
+                  variant: 'destructive'
+                });
+                if (ok) onDelete(option.id);
+              }}
             >
               <Trash2 className="size-3.5" />
             </Button>

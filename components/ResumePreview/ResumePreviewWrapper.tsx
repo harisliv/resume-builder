@@ -22,9 +22,11 @@ import usePrivileges from '@/hooks/usePrivileges';
 
 export default function ResumePreviewWrapper({
   formData,
-  infoData
-}: TCombinedResumeData) {
-  const { isBasic } = usePrivileges();
+  infoData,
+  hasSelectedResume
+}: TCombinedResumeData & { hasSelectedResume: boolean }) {
+  const { isBasic, getDisabledTooltip } = usePrivileges();
+  const downloadTooltip = getDisabledTooltip(hasSelectedResume);
 
   const handleDownload = () => {
     generateResumePDF({ formData, infoData });
@@ -43,15 +45,15 @@ export default function ResumePreviewWrapper({
                   type="button"
                   onClick={handleDownload}
                   variant="secondary"
-                  disabled={!isBasic}
+                  disabled={!isBasic || !hasSelectedResume}
                 >
                   <HugeiconsIcon icon={Download} strokeWidth={2.5} />
                   Download
                 </Button>
               </span>
             </TooltipTrigger>
-            {!isBasic && (
-              <TooltipContent>Upgrade to download resumes</TooltipContent>
+            {downloadTooltip && (
+              <TooltipContent>{downloadTooltip}</TooltipContent>
             )}
           </Tooltip>
         </SectionCardActions>
