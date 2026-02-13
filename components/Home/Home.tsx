@@ -142,7 +142,7 @@ export default function Home() {
         ...infoData,
         ...mergedForm,
         id: undefined,
-        title: `${infoData.title} (AI Tailored)`
+        title: suggestions.title ?? `${infoData.title} (AI Tailored)`
       },
       {
         onSuccess: (data) => {
