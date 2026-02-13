@@ -1,5 +1,5 @@
 import type { IconSvgElement } from '@hugeicons/react';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 export type NavSelectorOption<T extends string = string> = {
     id: T;
@@ -17,7 +17,6 @@ export type NavSelectorVariantConfig = {
     OptionIcon?: ComponentType<{ option: NavSelectorOption }>;
 };
 
-
 export type NavSelectorProps<T extends string = string> = {
     name: NavSelectorName;
     value: T;
@@ -25,5 +24,8 @@ export type NavSelectorProps<T extends string = string> = {
     options: NavSelectorOption<T>[];
     displayValue: string;
     disabled?: boolean;
-    dropdownHeader?: React.ReactNode;
+    /** Static node or render function receiving a close callback. */
+    dropdownHeader?: React.ReactNode | ((close: () => void) => React.ReactNode);
+    /** Wraps or replaces the default option content per option. */
+    renderOptionContent?: (option: NavSelectorOption<T>, defaultContent: ReactNode) => ReactNode;
 };

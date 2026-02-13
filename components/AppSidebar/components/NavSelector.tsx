@@ -1,6 +1,6 @@
 'use client';
 
-import type { MouseEvent } from 'react';
+import { type MouseEvent, useCallback, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuLabel,
@@ -23,10 +23,15 @@ export function NavSelector<T extends string = string>({
   onChange,
   options,
   disabled = false,
-  dropdownHeader
+  dropdownHeader,
+  renderOptionContent
 }: NavSelectorProps<T>) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { isMobile, isCollapsed, setOpen } = useSidebar();
   const { label, tooltip, OptionIcon } = NAV_SELECTOR_VARIANTS[name];
+
+  /** Stable callback to close the dropdown programmatically. */
+  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
 
   const handleCollapsedClick = (e: MouseEvent) => {
     if (isCollapsed) {
@@ -38,7 +43,7 @@ export function NavSelector<T extends string = string>({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownMenuTrigger
             asChild
             disabled={disabled}
@@ -60,21 +65,42 @@ export function NavSelector<T extends string = string>({
             </MenuButton>
           </DropdownMenuTrigger>
           <DropdownContent side={isMobile ? 'bottom' : 'right'}>
-            {dropdownHeader}
+            {typeof dropdownHeader === 'function'
+              ? dropdownHeader(closeDropdown)
+              : dropdownHeader}
             <DropdownMenuLabel>{label}</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={value}
-              onValueChange={(v) => onChange(v as T)}
+              onValueChange={(v) => {
+                onChange(v as T);
+                setDropdownOpen(false);
+              }}
             >
-              {options.map((option) => (
-                <DropdownMenuRadioItem
-                  key={option.id}
-                  value={option.id}
-                  className="gap-3"
-                >
+              {options.map((option) => {
+                const defaultContent = (
                   <NavSelectorOptionContent option={option} Icon={OptionIcon} />
-                </DropdownMenuRadioItem>
-              ))}
+                );
+                return (
+                  <DropdownMenuRadioItem
+                    key={option.id}
+                    value={option.id}
+                    className={
+                      renderOptionContent
+                        ? 'gap-3 pl-2.5 pr-2.5 cursor-pointer focus:bg-accent/40 data-[state=checked]:bg-primary/10 data-[state=checked]:font-semibold [&>[data-slot=dropdown-menu-radio-item-indicator]]:hidden'
+                        : 'gap-3 cursor-pointer'
+                    }
+                    onSelect={
+                      renderOptionContent
+                        ? (e) => e.preventDefault()
+                        : undefined
+                    }
+                  >
+                    {renderOptionContent
+                      ? renderOptionContent(option, defaultContent)
+                      : defaultContent}
+                  </DropdownMenuRadioItem>
+                );
+              })}
             </DropdownMenuRadioGroup>
           </DropdownContent>
         </DropdownMenu>

@@ -15,6 +15,7 @@ import {
 import { ConvexClientProvider } from '@/providers/ConvexProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { WarningDialogProvider } from '@/providers/WarningDialogProvider';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -81,7 +82,7 @@ export default function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                {children}
+                <WarningDialogProvider>{children}</WarningDialogProvider>
               </ThemeProvider>
             </QueryProvider>
           </ConvexClientProvider>
