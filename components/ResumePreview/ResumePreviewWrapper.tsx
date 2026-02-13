@@ -1,3 +1,5 @@
+'use client';
+
 import { HugeiconsIcon } from '@hugeicons/react';
 import { FileSearchIcon, Download } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
@@ -11,11 +13,19 @@ import {
   SectionCardActions,
   SectionCardContent
 } from '@/components/ui/section-card';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+} from '@/components/ui/tooltip';
+import usePrivileges from '@/hooks/usePrivileges';
 
 export default function ResumePreviewWrapper({
   formData,
   infoData
 }: TCombinedResumeData) {
+  const { isBasic } = usePrivileges();
+
   const handleDownload = () => {
     generateResumePDF({ formData, infoData });
   };
@@ -26,10 +36,24 @@ export default function ResumePreviewWrapper({
           Preview
         </SectionCardTitle>
         <SectionCardActions>
-          <Button type="button" onClick={handleDownload} variant="secondary">
-            <HugeiconsIcon icon={Download} strokeWidth={2.5} />
-            Download
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                <Button
+                  type="button"
+                  onClick={handleDownload}
+                  variant="secondary"
+                  disabled={!isBasic}
+                >
+                  <HugeiconsIcon icon={Download} strokeWidth={2.5} />
+                  Download
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {!isBasic && (
+              <TooltipContent>Upgrade to download resumes</TooltipContent>
+            )}
+          </Tooltip>
         </SectionCardActions>
       </SectionCardHeader>
       <SectionCardContent>
