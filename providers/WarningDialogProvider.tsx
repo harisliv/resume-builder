@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useCallback, useRef, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useRef,
+  useState
+} from 'react';
 import type { ReactNode } from 'react';
 import {
   AlertDialog,
@@ -12,6 +18,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Alert02Icon } from '@hugeicons/core-free-icons';
+import { cn } from '@/lib/utils';
+import { IconBadge } from '@/styles/icon-badge.styles';
 
 type WarningDialogOptions = {
   title: string;
@@ -65,7 +75,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
     (options) =>
       new Promise<boolean>((resolve) => {
         resolveRef.current = resolve; // stash resolve so settle() can call it later
-        setState(options);            // open the dialog
+        setState(options); // open the dialog
       }),
     []
   );
@@ -74,20 +84,44 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
   const settle = useCallback((value: boolean) => {
     resolveRef.current?.(value); // unblock the consumer's `await`
     resolveRef.current = null;
-    setState(null);              // close the dialog
+    setState(null); // close the dialog
   }, []);
 
   return (
     <WarningDialogContext.Provider value={confirm}>
       {children}
-      <AlertDialog open={!!state} onOpenChange={(open) => !open && settle(false)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{state?.title}</AlertDialogTitle>
-            <AlertDialogDescription>{state?.description}</AlertDialogDescription>
+      <AlertDialog
+        open={!!state}
+        onOpenChange={(open) => !open && settle(false)}
+      >
+        <AlertDialogContent
+          size="default"
+          className="max-w-md overflow-hidden p-0 shadow-[0_4px_24px_oklch(0_0_0_/_0.08),0_12px_48px_oklch(0_0_0_/_0.06)]"
+        >
+          <AlertDialogHeader className="bg-muted/85 flex flex-row place-items-center! gap-3 rounded-t-xl px-6 py-4">
+            <IconBadge
+              data-slot="alert-dialog-media"
+              className={cn(
+                'size-10 shrink-0 rounded-xl shadow-md transition-transform duration-200',
+                state?.variant === 'destructive'
+                  ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/25'
+                  : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-amber-500/30'
+              )}
+            >
+              <HugeiconsIcon icon={Alert02Icon} size={18} strokeWidth={2.5} />
+            </IconBadge>
+            <AlertDialogTitle className="text-base font-semibold tracking-tight">
+              {state?.title}
+            </AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => settle(false)}>
+          <AlertDialogDescription className="text-muted-foreground px-6 py-4 text-sm leading-relaxed">
+            {state?.description}
+          </AlertDialogDescription>
+          <AlertDialogFooter className="flex flex-row justify-end gap-3 px-6 pb-6">
+            <AlertDialogCancel
+              onClick={() => settle(false)}
+              className="bg-muted/90 hover:bg-muted"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -106,6 +140,9 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
 /** Returns a stable `confirm()` function that opens the global warning dialog. */
 export function useWarningDialog(): ConfirmFn {
   const ctx = useContext(WarningDialogContext);
-  if (!ctx) throw new Error('useWarningDialog must be used within WarningDialogProvider');
+  if (!ctx)
+    throw new Error(
+      'useWarningDialog must be used within WarningDialogProvider'
+    );
   return ctx;
 }

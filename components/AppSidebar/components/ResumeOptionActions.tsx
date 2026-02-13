@@ -128,7 +128,8 @@ export function ResumeOptionActions({
               onClick={async () => {
                 const ok = await confirm({
                   title: 'Delete resume?',
-                  description: 'This action cannot be undone.',
+                  description:
+                    'This resume and all its data will be permanently removed. You won’t be able to recover it.',
                   confirmLabel: 'Delete',
                   variant: 'destructive'
                 });

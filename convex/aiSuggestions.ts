@@ -5,7 +5,7 @@ import { action } from './_generated/server';
 import { internal } from './_generated/api';
 import { getAuthenticatedUser } from './auth';
 import { generateText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { suggestionsSchema } from '../types/aiSuggestions';
 
 const suggestionsValidator = v.object({
@@ -58,6 +58,10 @@ export const generateResumeSuggestions = action({
     if (!resume) {
       throw new Error('Resume not found');
     }
+
+    const google = createGoogleGenerativeAI({
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    });
 
     const resumeContent = {
       summary: resume.personalInfo?.summary,

@@ -183,6 +183,8 @@ This app uses WorkOS AuthKit for authentication:
 3. Add environment variables in Vercel dashboard
 4. Deploy!
 
+> ⚠️ **Important:** After deploying to Vercel, you must also deploy Convex separately. Vercel and Convex are independent — changes to Convex functions or environment variables won't take effect until you run `npx convex deploy`.
+
 ### Convex Production
 
 ```bash
