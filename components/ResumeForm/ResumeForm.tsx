@@ -20,6 +20,12 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { Spinner } from '@/components/ui/spinner';
 import { AiSuggestionsDialog } from '@/components/AiSuggestions';
 import { Sparkles } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+} from '@/components/ui/tooltip';
+import usePrivileges from '@/hooks/usePrivileges';
 
 export default function ResumeForm({
   onSubmit,
@@ -39,7 +45,10 @@ export default function ResumeForm({
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
 }) {
   const form = useFormContext<TResumeForm>();
+  const { isBasic, getDisabledTooltip } = usePrivileges();
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const saveTooltip = getDisabledTooltip(!!resumeId);
+  const aiTooltip = getDisabledTooltip(true);
 
   const handleSubmit = form.handleSubmit(onSubmit);
 
@@ -56,28 +65,47 @@ export default function ResumeForm({
               </ErrorMessage>
             )}
             {resumeId && (
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setAiDialogOpen(true)}
-              >
-                <Sparkles className="size-4" />
-                AI Suggestions
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={!isBasic}
+                      onClick={() => setAiDialogOpen(true)}
+                    >
+                      <Sparkles className="size-4" />
+                      AI Suggestions
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                {aiTooltip && (
+                  <TooltipContent>{aiTooltip}</TooltipContent>
+                )}
+              </Tooltip>
             )}
-            <Button type="submit" disabled={isPending}>
-              {isPending ? (
-                <>
-                  <Spinner className="size-4" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <HugeiconsIcon icon={Save} strokeWidth={2} />
-                  Save
-                </>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex">
+                  <Button type="submit" disabled={isPending || !isBasic || !resumeId}>
+                    {isPending ? (
+                      <>
+                        <Spinner className="size-4" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <HugeiconsIcon icon={Save} strokeWidth={2} />
+                        Save
+                      </>
+                    )}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {saveTooltip && (
+                <TooltipContent>{saveTooltip}</TooltipContent>
               )}
-            </Button>
+            </Tooltip>
           </SectionCardActions>
         </SectionCardHeader>
         <SectionCardContent>

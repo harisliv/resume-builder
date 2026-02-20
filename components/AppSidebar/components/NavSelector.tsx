@@ -1,6 +1,6 @@
 'use client';
 
-import type { MouseEvent } from 'react';
+import { type MouseEvent, useCallback, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuLabel,
@@ -23,11 +23,16 @@ export function NavSelector<T extends string = string>({
   onChange,
   options,
   disabled = false,
+  loading = false,
   dropdownHeader,
   renderOptionContent
 }: NavSelectorProps<T>) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const { isMobile, isCollapsed, setOpen } = useSidebar();
   const { label, tooltip, OptionIcon } = NAV_SELECTOR_VARIANTS[name];
+
+  /** Stable callback to close the dropdown programmatically. */
+  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
 
   const handleCollapsedClick = (e: MouseEvent) => {
     if (isCollapsed) {
@@ -39,7 +44,7 @@ export function NavSelector<T extends string = string>({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownMenuTrigger
             asChild
             disabled={disabled}
@@ -56,16 +61,22 @@ export function NavSelector<T extends string = string>({
                   displayValue.charAt(0).toUpperCase() + displayValue.slice(1)
                 }
                 disabled={disabled}
+                loading={loading}
                 navSelectorName={name}
               />
             </MenuButton>
           </DropdownMenuTrigger>
           <DropdownContent side={isMobile ? 'bottom' : 'right'}>
-            {dropdownHeader}
+            {typeof dropdownHeader === 'function'
+              ? dropdownHeader(closeDropdown)
+              : dropdownHeader}
             <DropdownMenuLabel>{label}</DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={value}
-              onValueChange={(v) => onChange(v as T)}
+              onValueChange={(v) => {
+                onChange(v as T);
+                setDropdownOpen(false);
+              }}
             >
               {options.map((option) => {
                 const defaultContent = (

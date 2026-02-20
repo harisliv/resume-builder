@@ -1,6 +1,8 @@
 import type { ComponentProps } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type TComparisonCardProps = ComponentProps<typeof Card> & {
@@ -22,7 +24,7 @@ export function ComparisonCard({
       {...props}
     >
       <CardHeader className="pb-0">
-        <CardTitle className="text-xs font-medium text-muted-foreground">
+        <CardTitle className="text-muted-foreground text-xs font-medium">
           {title}
         </CardTitle>
       </CardHeader>
@@ -31,37 +33,15 @@ export function ComparisonCard({
   );
 }
 
-export function ComparisonGrid({
-  className,
-  ...props
-}: ComponentProps<'div'>) {
-  return (
-    <div className={cn('grid grid-cols-2 gap-4', className)} {...props} />
-  );
-}
-
-export function HighlightedText({
-  changed,
-  className,
-  ...props
-}: ComponentProps<'p'> & { changed?: boolean }) {
-  return (
-    <p
-      className={cn(
-        'whitespace-pre-wrap text-xs leading-relaxed',
-        changed && 'rounded-md bg-emerald-500/10 px-2 py-1',
-        className
-      )}
-      {...props}
-    />
-  );
+export function ComparisonGrid({ className, ...props }: ComponentProps<'div'>) {
+  return <div className={cn('grid grid-cols-2 gap-4', className)} {...props} />;
 }
 
 export function MutedText({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
       className={cn(
-        'text-muted-foreground whitespace-pre-wrap text-xs leading-relaxed',
+        'text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap',
         className
       )}
       {...props}
@@ -69,16 +49,10 @@ export function MutedText({ className, ...props }: ComponentProps<'p'>) {
   );
 }
 
-export function ExperienceLabel({
-  className,
-  ...props
-}: ComponentProps<'p'>) {
+export function ExperienceLabel({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
-      className={cn(
-        'text-xs font-semibold text-muted-foreground',
-        className
-      )}
+      className={cn('text-muted-foreground text-xs font-semibold', className)}
       {...props}
     />
   );
@@ -103,9 +77,7 @@ export function BulletItem({
       )}
       {...props}
     >
-      <span className="text-muted-foreground/50 mt-0.5 shrink-0">
-        &bull;
-      </span>
+      <span className="text-muted-foreground/50 mt-0.5 shrink-0">&bull;</span>
       {children}
     </li>
   );
@@ -126,12 +98,78 @@ export function NewSkillBadge({
       variant={isNew ? 'default' : 'outline'}
       className={cn(
         isNew &&
-          'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
+          'border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
         className
       )}
       {...props}
     >
       {children}
     </Badge>
+  );
+}
+
+type TRemovableSkillBadgeProps = ComponentProps<typeof Badge> & {
+  isNew: boolean;
+  onRemove?: () => void;
+};
+
+/** Skill badge with an X button visible on hover for new skills. */
+export function RemovableSkillBadge({
+  isNew,
+  onRemove,
+  children,
+  className,
+  ...props
+}: TRemovableSkillBadgeProps) {
+  return (
+    <NewSkillBadge
+      isNew={isNew}
+      className={cn('group/skill relative pr-1.5', isNew && 'pr-5', className)}
+      {...props}
+    >
+      {children}
+      {isNew && onRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="absolute right-0.5 cursor-pointer"
+          aria-label={`Remove ${children}`}
+        >
+          <X className="size-3" />
+        </button>
+      )}
+    </NewSkillBadge>
+  );
+}
+
+type TSelectableFieldProps = ComponentProps<'div'> & {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+};
+
+/** Wrapper that adds a checkbox and dims content when unchecked. */
+export function SelectableField({
+  checked,
+  onCheckedChange,
+  children,
+  className,
+  ...props
+}: TSelectableFieldProps) {
+  return (
+    <div className={cn('flex items-start gap-2', className)} {...props}>
+      <Checkbox
+        checked={checked}
+        onCheckedChange={(v) => onCheckedChange(v === true)}
+        className="mt-0.5 shrink-0"
+      />
+      <div
+        className={cn('flex-1 transition-opacity', !checked && 'opacity-40')}
+      >
+        {children}
+      </div>
+    </div>
   );
 }

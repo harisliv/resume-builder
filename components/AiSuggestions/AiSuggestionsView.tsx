@@ -1,37 +1,46 @@
 'use client';
 
-import type { TAiSuggestions } from '@/types/aiSuggestions';
+import type { TAiSuggestions, TSuggestionSelection } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import {
   ComparisonCard,
   ComparisonGrid,
-  HighlightedText,
   MutedText,
   ExperienceLabel,
   BulletList,
   BulletItem,
   BadgeGroup,
-  NewSkillBadge
+  RemovableSkillBadge,
+  SelectableField
 } from './styles/ai-suggestions-view.styles';
-
-function isChanged(current: string | undefined, suggested: string | undefined) {
-  return (
-    suggested !== undefined &&
-    suggested !== current &&
-    suggested !== (current ?? '')
-  );
-}
+import { DiffHighlight } from './utils/diffHighlight';
 
 type TAiSuggestionsViewProps = {
   suggestions: TAiSuggestions;
   currentData: TResumeForm;
+  selection: TSuggestionSelection;
+  onToggleSummary: () => void;
+  onToggleExperienceField: (
+    expIdx: number,
+    field: 'description' | 'highlight',
+    highlightIdx?: number
+  ) => void;
+  onRemoveSkill: (skillIdx: number) => void;
 };
 
+/**
+ * Tabbed comparison view for AI suggestions with per-field selection
+ * and removable skill badges.
+ */
 export function AiSuggestionsView({
   suggestions,
-  currentData
+  currentData,
+  selection,
+  onToggleSummary,
+  onToggleExperienceField,
+  onRemoveSkill
 }: TAiSuggestionsViewProps) {
   const hasSummary = !!suggestions.summary;
   const hasExperience = !!suggestions.experience?.length;
@@ -67,14 +76,15 @@ export function AiSuggestionsView({
                 </MutedText>
               </ComparisonCard>
               <ComparisonCard title="Suggested" suggested>
-                <HighlightedText
-                  changed={isChanged(
-                    currentData.personalInfo.summary,
-                    suggestions.summary
-                  )}
+                <SelectableField
+                  checked={selection.summary}
+                  onCheckedChange={onToggleSummary}
                 >
-                  {suggestions.summary}
-                </HighlightedText>
+                  <DiffHighlight
+                    current={currentData.personalInfo.summary}
+                    suggested={suggestions.summary}
+                  />
+                </SelectableField>
               </ComparisonCard>
             </ComparisonGrid>
           </TabsContent>
@@ -90,6 +100,7 @@ export function AiSuggestionsView({
 
                 const currentHighlights = current.highlights ?? [];
                 const currentHighlightsSet = new Set(currentHighlights);
+                const sel = selection.experience[idx];
 
                 return (
                   <div key={idx} className="space-y-2">
@@ -116,23 +127,33 @@ export function AiSuggestionsView({
                         )}
                       </ComparisonCard>
                       <ComparisonCard title="Suggested" suggested>
-                        <HighlightedText
-                          changed={isChanged(
-                            current.description,
-                            exp.description
-                          )}
-                        >
-                          {exp.description}
-                        </HighlightedText>
+                        {exp.description && (
+                          <SelectableField
+                            checked={sel?.description ?? true}
+                            onCheckedChange={() =>
+                              onToggleExperienceField(idx, 'description')
+                            }
+                          >
+                            <DiffHighlight
+                              current={current.description}
+                              suggested={exp.description}
+                            />
+                          </SelectableField>
+                        )}
                         {exp.highlights && exp.highlights.length > 0 && (
                           <BulletList>
                             {exp.highlights.map((h, i) => (
-                              <BulletItem
+                              <SelectableField
                                 key={i}
-                                changed={!currentHighlightsSet.has(h)}
+                                checked={sel?.highlights[i] ?? true}
+                                onCheckedChange={() =>
+                                  onToggleExperienceField(idx, 'highlight', i)
+                                }
                               >
-                                {h}
-                              </BulletItem>
+                                <BulletItem changed={!currentHighlightsSet.has(h)}>
+                                  {h}
+                                </BulletItem>
+                              </SelectableField>
                             ))}
                           </BulletList>
                         )}
@@ -163,13 +184,14 @@ export function AiSuggestionsView({
               </ComparisonCard>
               <ComparisonCard title="Suggested" suggested>
                 <BadgeGroup>
-                  {suggestions.skills!.map((s) => (
-                    <NewSkillBadge
+                  {suggestions.skills!.map((s, i) => (
+                    <RemovableSkillBadge
                       key={s}
                       isNew={!currentSkillsSet.has(s.toLowerCase())}
+                      onRemove={() => onRemoveSkill(i)}
                     >
                       {s}
-                    </NewSkillBadge>
+                    </RemovableSkillBadge>
                   ))}
                 </BadgeGroup>
               </ComparisonCard>

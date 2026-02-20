@@ -4,6 +4,7 @@ import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { useRenameResume } from '@/hooks/useRenameResume';
+import usePrivileges from '@/hooks/usePrivileges';
 import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeInfo } from '@/types/schema';
 import { NavSelector } from './NavSelector';
@@ -30,6 +31,7 @@ export function ResumeSelector({
   const { data: resumeTitles, isLoading: isLoadingTitles } =
     useGetUserResumeTitles();
 
+  const { isLoggedIn, isBasic } = usePrivileges();
   const { mutate: renameResume } = useRenameResume();
 
   const options: NavSelectorOption[] = useMemo(
@@ -47,7 +49,18 @@ export function ResumeSelector({
     [renameResume, currentId, setValue]
   );
 
-  const dropdownHeader = <ResumeSelectorHeader onCreateNew={onCreateNew} />;
+  /** Render function: wraps onCreateNew to also close the dropdown. */
+  const dropdownHeader = useCallback(
+    (close: () => void) => (
+      <ResumeSelectorHeader
+        onCreateNew={(title) => {
+          onCreateNew(title);
+          close();
+        }}
+      />
+    ),
+    [onCreateNew]
+  );
 
   return (
     <NavSelector
@@ -56,7 +69,8 @@ export function ResumeSelector({
       displayValue={currentTitle || 'New Resume'}
       onChange={onResumeSelect}
       options={options}
-      disabled={isLoadingTitles}
+      loading={isLoadingTitles}
+      disabled={isLoadingTitles || !isLoggedIn || !isBasic}
       dropdownHeader={dropdownHeader}
       renderOptionContent={(option, defaultContent) => (
         <ResumeOptionActions

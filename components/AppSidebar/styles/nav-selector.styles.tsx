@@ -1,15 +1,6 @@
 import { DropdownMenuContent } from '@/components/ui/dropdown-menu';
 import type { ComponentProps } from 'react';
 
-export function IconWrapper({ className, ...props }: ComponentProps<'div'>) {
-  return (
-    <div
-      className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${className ?? ''}`}
-      {...props}
-    />
-  );
-}
-
 export function LabelGroup(props: ComponentProps<'div'>) {
   return (
     <div className="grid flex-1 text-left text-base leading-tight" {...props} />

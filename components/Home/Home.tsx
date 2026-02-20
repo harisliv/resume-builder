@@ -142,7 +142,7 @@ export default function Home() {
         ...infoData,
         ...mergedForm,
         id: undefined,
-        title: `${infoData.title} (AI Tailored)`
+        title: suggestions.title ?? `${infoData.title} (AI Tailored)`
       },
       {
         onSuccess: (data) => {
@@ -178,6 +178,7 @@ export default function Home() {
           <ResumePreviewWrapper
             formData={formForm.watch()}
             infoData={infoForm.watch()}
+            hasSelectedResume={!!selectedResumeId}
           />
         </HomeLayout>
       </SidebarInset>
