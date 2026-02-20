@@ -1,5 +1,5 @@
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { internalQuery, mutation, query } from './_generated/server';
 import { getAuthenticatedUser } from './auth';
 import {
   documentStyleValidator,
@@ -64,6 +64,24 @@ export const updateResume = mutation({
     }
     const { id, ...updates } = args;
     await ctx.db.replace(id, { userId, ...updates });
+    return null;
+  }
+});
+
+/** Rename a resume without requiring all fields. */
+export const renameResume = mutation({
+  args: {
+    id: v.id('resumes'),
+    title: v.string()
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await getAuthenticatedUser(ctx);
+    const resume = await ctx.db.get(args.id);
+    if (!resume || resume.userId !== userId) {
+      throw new Error('Unauthorized: Resume does not belong to user');
+    }
+    await ctx.db.patch(args.id, { title: args.title });
     return null;
   }
 });
@@ -148,6 +166,15 @@ export const getResumeById = query({
     if (!resume || resume.userId !== userId) {
       return null;
     }
+    return resume;
+  }
+});
+
+export const getResumeInternal = internalQuery({
+  args: { resumeId: v.id('resumes'), userId: v.string() },
+  handler: async (ctx, args) => {
+    const resume = await ctx.db.get(args.resumeId);
+    if (!resume || resume.userId !== args.userId) return null;
     return resume;
   }
 });

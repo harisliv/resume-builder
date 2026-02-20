@@ -23,7 +23,8 @@ export function NavSelector<T extends string = string>({
   onChange,
   options,
   disabled = false,
-  dropdownHeader
+  dropdownHeader,
+  renderOptionContent
 }: NavSelectorProps<T>) {
   const { isMobile, isCollapsed, setOpen } = useSidebar();
   const { label, tooltip, OptionIcon } = NAV_SELECTOR_VARIANTS[name];
@@ -66,15 +67,31 @@ export function NavSelector<T extends string = string>({
               value={value}
               onValueChange={(v) => onChange(v as T)}
             >
-              {options.map((option) => (
-                <DropdownMenuRadioItem
-                  key={option.id}
-                  value={option.id}
-                  className="gap-3"
-                >
+              {options.map((option) => {
+                const defaultContent = (
                   <NavSelectorOptionContent option={option} Icon={OptionIcon} />
-                </DropdownMenuRadioItem>
-              ))}
+                );
+                return (
+                  <DropdownMenuRadioItem
+                    key={option.id}
+                    value={option.id}
+                    className={
+                      renderOptionContent
+                        ? 'gap-3 pl-2.5 pr-2.5 cursor-pointer focus:bg-accent/40 data-[state=checked]:bg-primary/10 data-[state=checked]:font-semibold [&>[data-slot=dropdown-menu-radio-item-indicator]]:hidden'
+                        : 'gap-3 cursor-pointer'
+                    }
+                    onSelect={
+                      renderOptionContent
+                        ? (e) => e.preventDefault()
+                        : undefined
+                    }
+                  >
+                    {renderOptionContent
+                      ? renderOptionContent(option, defaultContent)
+                      : defaultContent}
+                  </DropdownMenuRadioItem>
+                );
+              })}
             </DropdownMenuRadioGroup>
           </DropdownContent>
         </DropdownMenu>

@@ -209,6 +209,16 @@ export const BoldDocument = ({
                 <Text style={boldStyles.itemDescription}>
                   {exp.description}
                 </Text>
+                {exp.highlights && exp.highlights.length > 0 && (
+                  <View style={{ marginTop: 4 }}>
+                    {exp.highlights.map((h, i) => (
+                      <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                        <Text style={{ fontSize: 9, color: '#475569', marginRight: 6 }}>•</Text>
+                        <Text style={{ fontSize: 9, color: '#475569', flex: 1, lineHeight: 1.5 }}>{h}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             ))}
           </>

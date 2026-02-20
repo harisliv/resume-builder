@@ -20,7 +20,7 @@ export const BASE_COLORS = {
   slate600: '#475569'
 };
 
-export const getColors = (paletteId: TPaletteId = 'ocean') => {
+export const getColors = (paletteId: TPaletteId = 'aesthetic') => {
   const palette = COLOR_PALETTES[paletteId];
   return {
     ...BASE_COLORS,
@@ -31,10 +31,10 @@ export const getColors = (paletteId: TPaletteId = 'ocean') => {
   };
 };
 
-export const COLORS = getColors('ocean');
+export const COLORS = getColors('aesthetic');
 
 export const createStyles = (
-  paletteId: TPaletteId = 'ocean',
+  paletteId: TPaletteId = 'aesthetic',
   fontId: TFontId = 'inter'
 ) => {
   const colors = getColors(paletteId);

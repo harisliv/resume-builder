@@ -103,7 +103,12 @@ export const extendedMockResumeData: TResumeData = {
       endDate: '',
       current: true,
       description:
-        'Promoted to Front End Lead, overseeing a team of three developers. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo. Built and maintained a reusable component library with Storybook for consistent UI across applications. Led general tasks and bug fixes, ensuring timely resolutions that enhanced platform stability. Implemented web socket functionality enabling real-time data sharing. Optimized performance by offloading large object processing to Web Workers.'
+        'Promoted to Front End Lead, overseeing a team of three developers. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo.',
+      highlights: [
+        'Built and maintained a reusable component library with Storybook for consistent UI across applications',
+        'Implemented WebSocket functionality enabling real-time data sharing across the platform',
+        'Optimized performance by offloading large object processing to Web Workers, reducing main-thread blocking by 60%'
+      ]
     },
     {
       company: 'Upstream',
@@ -113,7 +118,12 @@ export const extendedMockResumeData: TResumeData = {
       endDate: '2023-11',
       current: false,
       description:
-        'Led full-stack development with Next.js and custom Express.js backend, optimizing application performance by implementing React Query for API calls and migrating from Redux Connect to Redux Toolkit. Collaborated closely with innovation and business teams to gather project requirements. Developed an interactive marketing flow builder using React Flow, enabling users to visually design campaigns by dragging, connecting, and organizing actionable nodes.'
+        'Led full-stack development with Next.js and custom Express.js backend, optimizing application performance.',
+      highlights: [
+        'Migrated from Redux Connect to Redux Toolkit, reducing boilerplate by 40%',
+        'Developed an interactive marketing flow builder using React Flow for visual campaign design',
+        'Implemented React Query for API calls, improving caching and data synchronization'
+      ]
     },
     {
       company: 'AGENSO',
@@ -123,7 +133,11 @@ export const extendedMockResumeData: TResumeData = {
       endDate: '2021-10',
       current: false,
       description:
-        'Developed custom React applications for European Union funded research projects, creating interactive visualizations and data-driven interfaces that effectively displayed complex agricultural sustainability data. Implemented responsive designs and ensured cross-browser compatibility across all major platforms.'
+        'Developed custom React applications for European Union funded research projects.',
+      highlights: [
+        'Created interactive data visualizations for complex agricultural sustainability datasets',
+        'Ensured cross-browser compatibility and responsive designs across all major platforms'
+      ]
     },
     {
       company: 'TechStartup Inc.',
