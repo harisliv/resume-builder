@@ -15,6 +15,7 @@ type Props = {
   label: string;
   displayValue: string;
   disabled?: boolean;
+  loading?: boolean;
   navSelectorName: NavSelectorName;
 };
 
@@ -22,6 +23,7 @@ export function NavSelectorTriggerContent({
   label,
   displayValue,
   disabled,
+  loading,
   navSelectorName
 }: Props) {
   const { isCollapsed } = useSidebar();
@@ -53,7 +55,7 @@ export function NavSelectorTriggerContent({
         <Label>{label}</Label>
         <Subtitle>{displayValue}</Subtitle>
       </LabelGroup>
-      {disabled ? <TrailingSpinner /> : <TrailingIcon />}
+      {loading ? <TrailingSpinner /> : !disabled && <TrailingIcon />}
     </>
   );
 }

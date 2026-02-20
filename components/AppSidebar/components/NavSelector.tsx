@@ -23,6 +23,7 @@ export function NavSelector<T extends string = string>({
   onChange,
   options,
   disabled = false,
+  loading = false,
   dropdownHeader,
   renderOptionContent
 }: NavSelectorProps<T>) {
@@ -60,6 +61,7 @@ export function NavSelector<T extends string = string>({
                   displayValue.charAt(0).toUpperCase() + displayValue.slice(1)
                 }
                 disabled={disabled}
+                loading={loading}
                 navSelectorName={name}
               />
             </MenuButton>

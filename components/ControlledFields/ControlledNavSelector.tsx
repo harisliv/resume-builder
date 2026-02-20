@@ -49,6 +49,7 @@ export default function ControlledNavSelector(
           onChange={field.onChange}
           options={props.options}
           disabled={props.disabled}
+          loading={props.disabled}
         />
       )}
     />

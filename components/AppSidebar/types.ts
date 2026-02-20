@@ -24,6 +24,7 @@ export type NavSelectorProps<T extends string = string> = {
     options: NavSelectorOption<T>[];
     displayValue: string;
     disabled?: boolean;
+    loading?: boolean;
     /** Static node or render function receiving a close callback. */
     dropdownHeader?: React.ReactNode | ((close: () => void) => React.ReactNode);
     /** Wraps or replaces the default option content per option. */
