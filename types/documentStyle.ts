@@ -1,6 +1,14 @@
 import * as z from 'zod';
 
 export const COLOR_PALETTES = {
+  aesthetic: {
+    id: 'aesthetic',
+    name: 'Aesthetic',
+    summary: '#6366f1',
+    experience: '#ec4899',
+    education: '#14b8a6',
+    skills: '#818cf8'
+  },
   ocean: {
     id: 'ocean',
     name: 'Ocean Breeze',
@@ -107,16 +115,16 @@ export const DOCUMENT_STYLES = {
     name: 'Classic',
     description: 'Traditional professional layout'
   },
-  minimal: {
-    id: 'minimal',
-    name: 'Minimal',
-    description: 'Simple and elegant'
-  },
   bold: {
     id: 'bold',
     name: 'Bold',
     description: 'Strong visual hierarchy'
-  }
+  },
+  executive: {
+    id: 'executive',
+    name: 'Executive',
+    description: 'Two-column sidebar layout'
+  },
 } as const;
 
 export type TPaletteId = keyof typeof COLOR_PALETTES;
@@ -124,8 +132,28 @@ export type TFontId = keyof typeof FONT_OPTIONS;
 export type TDocumentStyleId = keyof typeof DOCUMENT_STYLES;
 export type TColorPalette = (typeof COLOR_PALETTES)[TPaletteId];
 
+/** Default palette per resume style for style-aware rendering fallbacks. */
+export const DEFAULT_PALETTE_BY_STYLE: Record<TDocumentStyleId, TPaletteId> = {
+  modern: 'ocean',
+  classic: 'ocean',
+  bold: 'ocean',
+  executive: 'ocean'
+};
+
+/**
+ * Resolves palette id from style + optional selected palette.
+ */
+export const resolvePaletteForStyle = (
+  style: TDocumentStyleId | undefined,
+  palette: TPaletteId | undefined
+): TPaletteId => {
+  const safeStyle = style ?? 'modern';
+  return palette ?? DEFAULT_PALETTE_BY_STYLE[safeStyle];
+};
+
 export const documentStyleSchema = z.object({
   palette: z.enum([
+    'aesthetic',
     'ocean',
     'forest',
     'sunset',
@@ -141,11 +169,11 @@ export const documentStyleSchema = z.object({
     'playfair',
     'merriweather'
   ]),
-  style: z.enum(['modern', 'classic', 'minimal', 'bold'])
+  style: z.enum(['modern', 'classic', 'bold', 'executive'])
 });
 
 export const documentStyleDefaultValues: TDocumentStyle = {
-  palette: 'ocean',
+  palette: 'aesthetic',
   font: 'inter',
   style: 'modern'
 };

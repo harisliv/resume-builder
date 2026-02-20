@@ -92,7 +92,7 @@ export const educationDefaultValues = {
 export const resumeInfoDefaultValues = {
   title: '',
   documentStyle: {
-    palette: 'ocean' as const,
+    palette: 'aesthetic' as const,
     font: 'inter' as const,
     style: 'modern' as const
   }

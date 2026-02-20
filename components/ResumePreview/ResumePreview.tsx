@@ -1,11 +1,15 @@
 'use client';
 
 import type { TResumeForm, TResumeInfo } from '@/types/schema';
-import { COLOR_PALETTES, FONT_OPTIONS } from '@/types/documentStyle';
-import { ModernStyle } from './ModernStyle';
+import {
+  COLOR_PALETTES,
+  FONT_OPTIONS,
+  resolvePaletteForStyle
+} from '@/types/documentStyle';
 import { ClassicStyle } from './ClassicStyle';
-import { MinimalStyle } from './MinimalStyle';
 import { BoldStyle } from './BoldStyle';
+import { ExecutiveStyle } from './ExecutiveStyle';
+import { AestheticStyle } from './AestheticStyle';
 import { getPreviewData } from './utils';
 
 interface IResumePreviewProps {
@@ -13,26 +17,21 @@ interface IResumePreviewProps {
   infoData: TResumeInfo;
 }
 
+/** Returns the HTML preview component aligned with PDF style routing. */
 function getPreviewComponent({ formData, infoData }: IResumePreviewProps) {
   const previewData = getPreviewData(formData);
   const { documentStyle } = infoData;
-  const palette = COLOR_PALETTES[documentStyle?.palette ?? 'ocean'];
+  const rawStyle = documentStyle?.style ?? 'modern';
+  const style = ['modern', 'classic', 'bold', 'executive'].includes(rawStyle)
+    ? rawStyle
+    : 'modern';
+  const paletteId = resolvePaletteForStyle(style, documentStyle?.palette);
+  const palette = COLOR_PALETTES[paletteId];
   const font = FONT_OPTIONS[documentStyle?.font ?? 'inter'];
-  const style = documentStyle?.style ?? 'modern';
   const fontFamily = `var(${font.cssVariable}), sans-serif`;
   if (style === 'classic') {
     return (
       <ClassicStyle
-        data={previewData}
-        palette={palette}
-        fontFamily={fontFamily}
-      />
-    );
-  }
-
-  if (style === 'minimal') {
-    return (
-      <MinimalStyle
         data={previewData}
         palette={palette}
         fontFamily={fontFamily}
@@ -46,8 +45,28 @@ function getPreviewComponent({ formData, infoData }: IResumePreviewProps) {
     );
   }
 
+  if (style === 'executive') {
+    return (
+      <ExecutiveStyle
+        data={previewData}
+        palette={palette}
+        fontFamily={fontFamily}
+      />
+    );
+  }
+
+  if (style === 'modern') {
+    return (
+      <AestheticStyle
+        data={previewData}
+        palette={palette}
+        fontFamily={fontFamily}
+      />
+    );
+  }
+
   return (
-    <ModernStyle data={previewData} palette={palette} fontFamily={fontFamily} />
+    <AestheticStyle data={previewData} palette={palette} fontFamily={fontFamily} />
   );
 }
 

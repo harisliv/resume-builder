@@ -97,6 +97,16 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
                   <p className="text-[9px] text-slate-600 leading-relaxed">
                     {exp.description}
                   </p>
+                  {exp.highlights && exp.highlights.length > 0 && (
+                    <ul className="mt-1 space-y-0.5">
+                      {exp.highlights.map((h, i) => (
+                        <li key={i} className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5">
+                          <span>•</span>
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>

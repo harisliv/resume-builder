@@ -32,6 +32,7 @@ export const educationValidator = v.object({
 
 export const documentStyleValidator = v.object({
   palette: v.union(
+    v.literal('aesthetic'),
     v.literal('ocean'),
     v.literal('forest'),
     v.literal('sunset'),
@@ -50,7 +51,7 @@ export const documentStyleValidator = v.object({
   style: v.union(
     v.literal('modern'),
     v.literal('classic'),
-    v.literal('minimal'),
-    v.literal('bold')
+    v.literal('bold'),
+    v.literal('executive')
   )
 });

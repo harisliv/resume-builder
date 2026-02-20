@@ -31,12 +31,16 @@ export const MyDocument = ({ data }: { data: TResumeData }) => (
 
 1. **Font Registration**: Always `import '../fonts';` - without this you get "Font family not registered" errors
 2. **Page Size**: Always use `size="A4"` for standard resumes
-3. **Section Wrapping**: Use `wrap={false}` on section headers to prevent splitting across pages
-4. **SSR**: PDFViewer must use `dynamic` with `ssr: false`
+3. **SSR**: PDFViewer must use `dynamic` with `ssr: false`
+4. **Header + First Item Rule**: Use React-PDF built-ins to prevent orphan titles:
+   - Wrap section header + first item in `<View wrap={false}>...</View>`
+   - Add `minPresenceAhead` on section headers to force next-page break when only title fits
+5. **Preview/PDF Parity**: HTML preview and downloaded PDF are separate code paths (`components/ResumePreview/*` vs `lib/ResumePDF/documents/*`). Any visual change must be mirrored in both, or compare pages will drift.
 
 ## SVG Support
 
 React-PDF supports these SVG elements:
+
 - `<Svg>`, `<Rect>`, `<Circle>`, `<Path>`, `<Line>`, `<Polygon>`, `<G>`, `<Defs>`, `<LinearGradient>`, `<Stop>`
 
 ### SVG Best Practices
@@ -51,11 +55,11 @@ All icons in `lib/ResumePDF/icons/`:
 
 ```typescript
 interface IconProps {
-  size?: number;        // 12 (contact), 14 (section), 10 (utility)
-  color?: string;       // Hex or named color
+  size?: number; // 12 (contact), 14 (section), 10 (utility)
+  color?: string; // Hex or named color
   strokeWidth?: number; // 1.5 (contact), 2 (section)
-  fill?: string;        // 'none' for outline
-  style?: object;       // Additional styles
+  fill?: string; // 'none' for outline
+  style?: object; // Additional styles
 }
 ```
 
@@ -67,26 +71,16 @@ interface IconProps {
 
 ## Color Palettes
 
-### Aesthetic Style
-```typescript
-{
-  background: '#fafafa',
-  surface: '#ffffff',
-  primary: '#6366f1',
-  primaryLight: '#818cf8',
-  secondary: '#ec4899',
-  accent: '#14b8a6',
-  textPrimary: '#1e293b',
-  textSecondary: '#64748b',
-  textMuted: '#94a3b8',
-  border: '#e2e8f0',
-  cardBg: '#f8fafc',
-}
-```
+Palettes are defined in `types/documentStyle.ts` → `COLOR_PALETTES`. Each palette provides four section accent colors: `summary`, `experience`, `education`, `skills`.
+
+Available palettes: `aesthetic`, `ocean`, `forest`, `sunset`, `midnight`, `rose`, `monochrome`.
+
+`getColors(paletteId)` in `lib/ResumePDF/ResumeStyles.ts` resolves a palette ID into the full color object used by documents (primary, secondary, accent, text colors, borders, etc.).
 
 ## Layout Patterns
 
 ### Card
+
 ```typescript
 {
   backgroundColor: colors.surface,
@@ -99,6 +93,7 @@ interface IconProps {
 ```
 
 ### Contact Badge
+
 ```typescript
 {
   flexDirection: 'row',
@@ -114,6 +109,7 @@ interface IconProps {
 ```
 
 ### Skill Pill
+
 ```typescript
 {
   fontSize: 9,
@@ -128,6 +124,7 @@ interface IconProps {
 ```
 
 ### Section Header
+
 ```typescript
 {
   flexDirection: 'row',
@@ -137,14 +134,68 @@ interface IconProps {
 }
 ```
 
+### Aesthetic (modern) Preview/PDF Parity Notes
+
+```typescript
+{
+  // System behavior
+  defaultPalette: 'aesthetic',
+  stylePaletteRule: 'use selected palette from sidebar for all styles',
+  paletteMapping: {
+    primary: 'summary',
+    secondary: 'experience',
+    accent: 'education',
+    primaryLight: 'skills'
+  },
+
+  // Experience date row
+  calendarIconColor: colors.secondary, // #ec4899
+  dateTextColor: colors.accent, // #14b8a6
+  dateTextWeight: 700,
+  dateSeparator: '→', // arrow must be pink (#ec4899)
+
+  // Experience position marker
+  markerWidth: 1,
+  markerHeight: 10, // short accent
+  markerRadius: 0, // no rounded corners
+  markerColor: colors.primary,
+
+  // Education parity with Experience (date column on right)
+  educationDateLayout: 'right-aligned date block',
+  educationDateIconColor: colors.secondary,
+  educationDateTextColor: colors.accent,
+  educationLocationColor: colors.textMuted,
+
+  // Skills parity
+  skillPillBg: colors.primaryLight, // #818cf8
+  skillPillText: '#eef2ff',
+  skillLayout: 'single wrapped container (do not split first item)'
+}
+```
+
+## Style → Document Mapping
+
+| Style ID    | Document Component  | File                                            |
+| ----------- | ------------------- | ----------------------------------------------- |
+| `modern`    | `AestheticDocument` | `lib/ResumePDF/documents/AestheticDocument.tsx` |
+| `classic`   | `ClassicDocument`   | `lib/ResumePDF/documents/ClassicDocument.tsx`   |
+| `bold`      | `BoldDocument`      | `lib/ResumePDF/documents/BoldDocument.tsx`      |
+| `executive` | `ExecutiveDocument` | `lib/ResumePDF/documents/ExecutiveDocument.tsx` |
+
+HTML preview counterparts live in `components/ResumePreview/` (`AestheticStyle.tsx`, `ClassicStyle.tsx`, `BoldStyle.tsx`, `ExecutiveStyle.tsx`).
+
+Routing is handled in `lib/ResumePDF/ResumeDocument.tsx` — the switch maps `documentStyle.style` to the correct component.
+
 ## Creating New Styles
 
-1. Create file: `lib/ResumePDF/documents/{Style}Document.tsx`
+1. Create PDF document: `lib/ResumePDF/documents/{Style}Document.tsx`
 2. Import fonts: `import '../fonts';`
 3. Define color palette
 4. Create styles with `StyleSheet.create()`
-5. Export from `lib/ResumePDF/documents/index.ts`
-6. Create showcase: `app/{style}-showcase/`
+5. Create HTML preview: `components/ResumePreview/{Style}Style.tsx`
+6. Add switch cases in `lib/ResumePDF/ResumeDocument.tsx` and `components/ResumePreview/ResumePreview.tsx`
+7. Add style ID to `DOCUMENT_STYLES` in `types/documentStyle.ts`
+8. Use `/compare` to verify preview/PDF parity across palettes and fonts
 
 ## Icon Conventions
 
@@ -165,16 +216,25 @@ export const BriefcaseIcon = ({
   size = 14,
   color = '#ffffff',
   strokeWidth = 2,
-  fill = 'none',
+  fill = 'none'
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24">
     <Rect
-      x="2" y="7" width="20" height="14" rx="2" ry="2"
-      stroke={color} strokeWidth={strokeWidth} fill={fill}
+      x="2"
+      y="7"
+      width="20"
+      height="14"
+      rx="2"
+      ry="2"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      fill={fill}
     />
     <Path
       d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"
-      stroke={color} strokeWidth={strokeWidth} fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      fill="none"
     />
   </Svg>
 );
@@ -182,6 +242,10 @@ export const BriefcaseIcon = ({
 
 ## File Locations
 
-- `lib/ResumePDF/icons/` - All PDF icons
-- `lib/ResumePDF/documents/` - All document styles
-- `app/icons-showcase/` - Showcase pages
+- `lib/ResumePDF/icons/` - PDF SVG icons
+- `lib/ResumePDF/documents/` - PDF document components (Aesthetic, Classic, Bold, Executive)
+- `lib/ResumePDF/ResumeDocument.tsx` - Style router / switch
+- `components/ResumePreview/` - HTML preview components per style
+- `types/documentStyle.ts` - Palettes, fonts, style IDs
+- `app/compare/` - Side-by-side preview vs PDF comparison (tabbed, all styles/palettes/fonts)
+- `app/icons-showcase/` - Icon showcase page
