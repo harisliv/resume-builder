@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import ResumePreview from '@/components/ResumePreview';
@@ -78,10 +78,9 @@ function syncParams(
   window.history.replaceState({}, '', url.toString());
 }
 
-/** Compare page — tabbed all-styles preview vs PDF side-by-side. */
-export default function ComparePage() {
+/** Compare page content — uses useSearchParams, must be inside Suspense. */
+function ComparePageContent() {
   const searchParams = useSearchParams();
-
   const [activeStyle, setActiveStyle] = useState<TDocumentStyleId>(
     () => (searchParams.get('style') as TDocumentStyleId) || 'modern'
   );
@@ -219,5 +218,20 @@ export default function ComparePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Compare page — tabbed all-styles preview vs PDF side-by-side. */
+export default function ComparePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-100">
+          <p className="text-slate-600">Loading compare...</p>
+        </div>
+      }
+    >
+      <ComparePageContent />
+    </Suspense>
   );
 }
