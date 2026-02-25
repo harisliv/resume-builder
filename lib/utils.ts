@@ -11,6 +11,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Bullet and symbol characters to strip from user input */
+const UNWANTED_CHARS = /[•◦▪▸▹►▻★☆✦✧✓✗✘⁃‣⦿⦾●○◆◇■□–—·]/g;
+
+/**
+ * Sanitizes input by stripping bullet/symbol characters and trimming whitespace.
+ * Applied on every keystroke in controlled form fields.
+ */
+export function sanitizeInput(value: string): string {
+  return value.replace(UNWANTED_CHARS, '').trim();
+}
+
 export const convertConvexIdToId = (
   data: Doc<'resumes'> | null
 ): TResumeData | null => {

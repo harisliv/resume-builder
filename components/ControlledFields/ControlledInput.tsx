@@ -4,6 +4,7 @@ import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import { useId } from 'react';
 import type { TResumeForm, TResumeInfo } from '@/types/schema';
+import { sanitizeInput } from '@/lib/utils';
 
 export default function ControlledInput<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
@@ -25,6 +26,7 @@ export default function ControlledInput<TForm extends FieldValues>(props: {
           <Input
             {...field}
             value={field.value ?? ''}
+            onChange={(e) => field.onChange(sanitizeInput(e.target.value))}
             id={id}
             aria-invalid={fieldState.invalid}
             placeholder={props.placeholder}

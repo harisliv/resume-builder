@@ -5,6 +5,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import type { TResumeForm } from '@/types/schema';
+import { sanitizeInput } from '@/lib/utils';
 
 export default function Highlights({ index }: { index: number }) {
   const { control } = useFormContext<TResumeForm>();
@@ -27,6 +28,9 @@ export default function Highlights({ index }: { index: number }) {
                 <Input
                   {...inputField}
                   value={inputField.value ?? ''}
+                  onChange={(e) =>
+                    inputField.onChange(sanitizeInput(e.target.value))
+                  }
                   id={`highlight-${index}-${highlightIndex}`}
                   placeholder="Enter a highlight"
                   className="flex-1"
