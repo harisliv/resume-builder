@@ -1,34 +1,26 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useReducer } from 'react';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
-import type {
-  TAiSuggestions,
-  TSuggestionSelection
-} from '@/types/aiSuggestions';
-import { createDefaultSelection } from '@/types/aiSuggestions';
+import type { TAiSuggestions, TRawModelResult } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import {
   Dialog,
   DialogDescription,
-  DialogFooter,
   DialogHeader
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Spinner } from '@/components/ui/spinner';
-import { ErrorMessage } from '@/components/ui/error-message';
-import { Sparkles, Copy } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import {
   DialogContentWrapper,
   DialogTitleRow
 } from './styles/ai-suggestions-dialog.styles';
-import { AiSuggestionsView } from './AiSuggestionsView';
 import { buildFilteredSuggestions } from './utils/filterSuggestions';
-import { MOCK_SUGGESTIONS } from './mockSuggestions';
+import { dialogReducer, initialDialogState } from './utils/dialogReducer';
+import { InputPhase } from './components/InputPhase';
+import { ResultsPhase } from './components/ResultsPhase';
 
 type TAiSuggestionsDialogProps = {
   open: boolean;
@@ -37,13 +29,11 @@ type TAiSuggestionsDialogProps = {
   currentData: TResumeForm;
   onApply: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion: (suggestions: TAiSuggestions) => void;
-  /** When true, Generate uses mock data instead of API (for testing) */
-  mockMode?: boolean;
 };
 
 /**
  * Dialog for generating AI resume suggestions with selective acceptance.
- * Manages selection toggles, skill removal, and filtered apply.
+ * Delegates phase rendering to InputPhase and ResultsPhase components.
  */
 export function AiSuggestionsDialog({
   open,
@@ -51,132 +41,145 @@ export function AiSuggestionsDialog({
   resumeId,
   currentData,
   onApply,
-  onCreateNewVersion,
-  mockMode = false
+  onCreateNewVersion
 }: TAiSuggestionsDialogProps) {
-  const [jobDescription, setJobDescription] = useState('');
-  const [suggestions, setSuggestions] = useState<TAiSuggestions | null>(null);
-  const [selection, setSelection] = useState<TSuggestionSelection | null>(null);
-  const [editedSuggestions, setEditedSuggestions] =
-    useState<TAiSuggestions | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
   const confirm = useWarningDialog();
-
-  const generateSuggestions = useAction(
-    api.aiSuggestions.generateResumeSuggestions
+  const generateSuggestionsMultiModel = useAction(
+    api.aiSuggestions.generateResumeSuggestionsMultiModel
   );
 
-  /** Initializes suggestions + selection state from API/mock result. */
-  const initSuggestions = (result: TAiSuggestions) => {
-    setSuggestions(result);
-    setEditedSuggestions(structuredClone(result));
-    setSelection(createDefaultSelection(result));
-  };
-
   const handleGenerate = async () => {
-    if (!mockMode && !jobDescription.trim()) return;
-    setError(null);
-    setIsGenerating(true);
+    if (state.phase !== 'idle' || !state.jobDescription.trim()) return;
+    const jobDescription = state.jobDescription.trim();
+    dispatch({ type: 'GENERATE_START' });
     try {
-      if (mockMode) {
-        initSuggestions(MOCK_SUGGESTIONS);
-      } else {
-        const result = await generateSuggestions({
-          resumeId,
-          jobDescription: jobDescription.trim()
-        });
-        initSuggestions(result);
-      }
+      const results = await generateSuggestionsMultiModel({
+        resumeId,
+        jobDescription
+      });
+      dispatch({
+        type: 'GENERATE_SUCCESS',
+        payload: { results: results as TRawModelResult[], jobDescription }
+      });
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : 'Failed to generate suggestions'
-      );
-    } finally {
-      setIsGenerating(false);
+      dispatch({
+        type: 'GENERATE_ERROR',
+        payload:
+          e instanceof Error ? e.message : 'Failed to generate suggestions'
+      });
     }
   };
 
-  /** Builds filtered suggestions from current selection + edited skills. */
-  const getFiltered = (): TAiSuggestions | null => {
-    if (!editedSuggestions || !selection) return null;
-    return buildFilteredSuggestions(editedSuggestions, selection);
+  const confirmLoseResults = async (
+    title: string,
+    description: string,
+    confirmLabel: string
+  ) =>
+    confirm({
+      title,
+      description,
+      confirmLabel,
+      variant: 'destructive'
+    });
+
+  const handleBack = async () => {
+    if (state.phase !== 'results') return;
+    const ok = await confirmLoseResults(
+      'Go back and discard suggestions?',
+      'This will discard current AI suggestions and your selection choices.',
+      'Discard'
+    );
+    if (!ok) return;
+    dispatch({ type: 'BACK' });
+  };
+
+  /** Re-runs generation from results using the same job description prompt. */
+  const handleRegenerate = async () => {
+    if (state.phase !== 'results' || !state.jobDescription.trim()) return;
+    const ok = await confirmLoseResults(
+      'Regenerate suggestions?',
+      'This will replace current suggestions and reset your current selection choices.',
+      'Regenerate'
+    );
+    if (!ok) return;
+
+    const jobDescription = state.jobDescription.trim();
+    dispatch({ type: 'REGENERATE_START' });
+    try {
+      const results = await generateSuggestionsMultiModel({
+        resumeId,
+        jobDescription
+      });
+      dispatch({
+        type: 'GENERATE_SUCCESS',
+        payload: { results: results as TRawModelResult[], jobDescription }
+      });
+    } catch (e) {
+      dispatch({
+        type: 'REGENERATE_ERROR',
+        payload:
+          e instanceof Error ? e.message : 'Failed to regenerate suggestions'
+      });
+    }
   };
 
   const handleApply = async () => {
-    const filtered = getFiltered();
-    if (!filtered) return;
+    if (state.phase !== 'results') return;
+    const active = state.results[state.activeModelIdx];
+    if (!active.editedSuggestions || !active.selection) return;
+    const filtered = buildFilteredSuggestions(
+      active.editedSuggestions,
+      active.selection
+    );
     const ok = await confirm({
       title: 'Apply suggestions?',
-      description: 'This will overwrite matching fields on your current resume.',
+      description:
+        'This will overwrite matching fields on your current resume.',
       confirmLabel: 'Apply'
     });
     if (!ok) return;
     onApply(filtered);
     onOpenChange(false);
-    reset();
+    dispatch({ type: 'RESET' });
   };
 
   const handleCreateVersion = () => {
-    const filtered = getFiltered();
-    if (!filtered) return;
+    if (state.phase !== 'results') return;
+    const active = state.results[state.activeModelIdx];
+    if (!active.editedSuggestions || !active.selection) return;
+    const filtered = buildFilteredSuggestions(
+      active.editedSuggestions,
+      active.selection
+    );
     onCreateNewVersion(filtered);
     onOpenChange(false);
-    reset();
-  };
-
-  const reset = () => {
-    setSuggestions(null);
-    setEditedSuggestions(null);
-    setSelection(null);
-    setJobDescription('');
-    setError(null);
+    dispatch({ type: 'RESET' });
   };
 
   const handleOpenChange = (next: boolean) => {
-    if (!next) reset();
-    onOpenChange(next);
+    if (!next) {
+      if (state.phase === 'results') {
+        void (async () => {
+          const ok = await confirmLoseResults(
+            'Close suggestions?',
+            'You have unapplied AI suggestions. Closing now will discard them.',
+            'Close'
+          );
+          if (!ok) return;
+          dispatch({ type: 'RESET' });
+          onOpenChange(false);
+        })();
+        return;
+      }
+
+      dispatch({ type: 'RESET' });
+      onOpenChange(false);
+      return;
+    }
+
+    onOpenChange(true);
   };
-
-  /** Toggles summary selection. */
-  const handleToggleSummary = useCallback(() => {
-    setSelection((prev) => (prev ? { ...prev, summary: !prev.summary } : prev));
-  }, []);
-
-  /** Toggles an experience description or highlight selection. */
-  const handleToggleExperienceField = useCallback(
-    (
-      expIdx: number,
-      field: 'description' | 'highlight',
-      highlightIdx?: number
-    ) => {
-      setSelection((prev) => {
-        if (!prev) return prev;
-        const next = { ...prev, experience: [...prev.experience] };
-        const exp = { ...next.experience[expIdx] };
-        if (field === 'description') {
-          exp.description = !exp.description;
-        } else if (highlightIdx !== undefined) {
-          exp.highlights = [...exp.highlights];
-          exp.highlights[highlightIdx] = !exp.highlights[highlightIdx];
-        }
-        next.experience[expIdx] = exp;
-        return next;
-      });
-    },
-    []
-  );
-
-  /** Removes a skill from editedSuggestions by index. */
-  const handleRemoveSkill = useCallback((skillIdx: number) => {
-    setEditedSuggestions((prev) => {
-      if (!prev?.skills) return prev;
-      return {
-        ...prev,
-        skills: prev.skills.filter((_, i) => i !== skillIdx)
-      };
-    });
-  }, []);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -190,67 +193,27 @@ export function AiSuggestionsDialog({
             Paste a job description to get tailored suggestions for your resume.
           </DialogDescription>
         </DialogHeader>
-
-        {!suggestions ? (
-          <div className="-mx-4 flex max-h-[50vh] flex-col gap-3 overflow-y-auto p-4">
-            <Textarea
-              placeholder="Paste the job description here..."
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              className="min-h-36 leading-relaxed"
-              disabled={isGenerating}
-            />
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || (!mockMode && !jobDescription.trim())}
-              className="w-full"
-            >
-              {isGenerating ? (
-                <>
-                  <Spinner className="size-4" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="size-4" />
-                  Generate Suggestions
-                </>
-              )}
-            </Button>
-          </div>
+        {state.phase === 'results' ? (
+          <ResultsPhase
+            results={state.results}
+            activeModelIdx={state.activeModelIdx}
+            currentData={currentData}
+            dispatch={dispatch}
+            isRegenerating={state.isRegenerating}
+            regenerateError={state.regenerateError}
+            onBack={handleBack}
+            onRegenerate={handleRegenerate}
+            onApply={handleApply}
+            onCreateVersion={handleCreateVersion}
+          />
         ) : (
-          <div className="flex flex-col gap-3">
-            <div className="-mx-4 max-h-[50vh] overflow-y-auto px-4">
-              {editedSuggestions && selection && (
-                <AiSuggestionsView
-                  suggestions={editedSuggestions}
-                  currentData={currentData}
-                  selection={selection}
-                  onToggleSummary={handleToggleSummary}
-                  onToggleExperienceField={handleToggleExperienceField}
-                  onRemoveSkill={handleRemoveSkill}
-                />
-              )}
-            </div>
-            <DialogFooter className="shrink-0">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSuggestions(null);
-                  setEditedSuggestions(null);
-                  setSelection(null);
-                }}
-              >
-                Back
-              </Button>
-              <Button variant="secondary" onClick={handleCreateVersion}>
-                <Copy className="size-3.5" />
-                Create New Version
-              </Button>
-              <Button onClick={handleApply}>Apply to Current</Button>
-            </DialogFooter>
-          </div>
+          <InputPhase
+            jobDescription={state.jobDescription}
+            error={state.phase === 'idle' ? state.error : null}
+            isGenerating={state.phase === 'generating'}
+            dispatch={dispatch}
+            onGenerate={handleGenerate}
+          />
         )}
       </DialogContentWrapper>
     </Dialog>

@@ -22,6 +22,23 @@ export type TSuggestionSelection = {
   experience: { description: boolean; highlights: boolean[] }[];
 };
 
+/** Raw result returned from the Convex multi-model action (before UI state is attached). */
+export type TRawModelResult = {
+  modelId: string;
+  label: string;
+  suggestions?: TAiSuggestions;
+  error?: string;
+};
+
+/** Per-model state held in the results phase (editedSuggestions + selection). */
+export type TModelResult = {
+  modelId: string;
+  label: string;
+  editedSuggestions?: TAiSuggestions;
+  selection?: TSuggestionSelection;
+  error?: string;
+};
+
 /** Creates a fully-selected TSuggestionSelection from suggestions. */
 export function createDefaultSelection(
   suggestions: TAiSuggestions

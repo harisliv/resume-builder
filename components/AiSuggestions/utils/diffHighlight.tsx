@@ -1,27 +1,30 @@
-import { diffWords } from 'diff';
+import { diffWordsWithSpace } from 'diff';
 import { cn } from '@/lib/utils';
 
-const HIGHLIGHT_CLASS = 'rounded-sm bg-emerald-500/15 px-0.5';
+const ADDED_HIGHLIGHT_CLASS = 'rounded-sm bg-emerald-500/15 px-0.5 text-emerald-700';
+const REMOVED_HIGHLIGHT_CLASS = 'rounded-sm bg-red-500/15 px-0.5 text-red-700';
 
 type TDiffHighlightProps = {
   current: string | undefined;
   suggested: string | undefined;
   className?: string;
+  view?: 'current' | 'suggested' | 'both';
 };
 
 /**
- * Renders suggested text with only the diff parts (added/changed) highlighted.
- * Uses `diff` package for word-level diff.
+ * Renders inline word diff between current and suggested text.
+ * "suggested" view highlights additions, "current" highlights removals.
  */
 export function DiffHighlight({
   current,
   suggested,
-  className
+  className,
+  view = 'suggested'
 }: TDiffHighlightProps) {
   if (!suggested) return null;
 
   const currentStr = current ?? '';
-  const parts = diffWords(currentStr, suggested);
+  const parts = diffWordsWithSpace(currentStr, suggested);
 
   return (
     <p
@@ -30,15 +33,27 @@ export function DiffHighlight({
         className
       )}
     >
-      {parts.map((part, i) =>
-        part.added ? (
-          <mark key={i} className={HIGHLIGHT_CLASS}>
-            {part.value}
-          </mark>
-        ) : (
-          part.value
-        )
-      )}
+      {parts.map((part, i) => {
+        if (part.added) {
+          if (view === 'current') return null;
+          return (
+            <mark key={i} className={ADDED_HIGHLIGHT_CLASS}>
+              {part.value}
+            </mark>
+          );
+        }
+
+        if (part.removed) {
+          if (view === 'suggested') return null;
+          return (
+            <mark key={i} className={REMOVED_HIGHLIGHT_CLASS}>
+              {part.value}
+            </mark>
+          );
+        }
+
+        return part.value;
+      })}
     </p>
   );
 }

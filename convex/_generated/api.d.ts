@@ -11,6 +11,7 @@
 import type * as aiSuggestions from "../aiSuggestions.js";
 import type * as auth from "../auth.js";
 import type * as resumes from "../resumes.js";
+import type * as systemPropts from "../systemPropts.js";
 import type * as validators from "../validators.js";
 
 import type {
@@ -23,6 +24,7 @@ declare const fullApi: ApiFromModules<{
   aiSuggestions: typeof aiSuggestions;
   auth: typeof auth;
   resumes: typeof resumes;
+  systemPropts: typeof systemPropts;
   validators: typeof validators;
 }>;
 

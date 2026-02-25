@@ -15,7 +15,9 @@
     "compile": "npx tsc -noEmit -w"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.46",
     "@ai-sdk/google": "^3.0.24",
+    "@ai-sdk/openai": "^3.0.31",
     "@base-ui/react": "^1.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@hugeicons/core-free-icons": "^3.1.1",

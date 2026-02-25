@@ -1,6 +1,9 @@
 'use client';
 
-import type { TAiSuggestions, TSuggestionSelection } from '@/types/aiSuggestions';
+import type {
+  TAiSuggestions,
+  TSuggestionSelection
+} from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +12,6 @@ import {
   ComparisonGrid,
   MutedText,
   ExperienceLabel,
-  BulletList,
   BulletItem,
   BadgeGroup,
   RemovableSkillBadge,
@@ -29,6 +31,98 @@ type TAiSuggestionsViewProps = {
   ) => void;
   onRemoveSkill: (skillIdx: number) => void;
 };
+
+/**
+ * Scores rough word overlap similarity between two highlight strings.
+ * Returns 0..1, where 1 means identical word set.
+ */
+function getWordOverlapScore(a: string, b: string): number {
+  const tokenize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean);
+
+  const wordsA = tokenize(a);
+  const wordsB = tokenize(b);
+  if (!wordsA.length && !wordsB.length) return 1;
+  if (!wordsA.length || !wordsB.length) return 0;
+
+  const setA = new Set(wordsA);
+  const setB = new Set(wordsB);
+  let intersection = 0;
+  setA.forEach((word) => {
+    if (setB.has(word)) intersection += 1;
+  });
+
+  const denominator = Math.max(setA.size, setB.size);
+  return denominator === 0 ? 0 : intersection / denominator;
+}
+
+/**
+ * Builds one-to-one match maps between current and suggested highlights.
+ * Prevents one current bullet from being diffed against many suggested bullets.
+ */
+function buildHighlightMatchMaps(current: string[], suggested: string[]) {
+  const suggestedToCurrent = new Array<number>(suggested.length).fill(-1);
+  const currentToSuggested = new Array<number>(current.length).fill(-1);
+  const usedCurrent = new Set<number>();
+
+  suggested.forEach((suggestedHighlight, suggestedIdx) => {
+    let bestCurrentIdx = -1;
+    let bestScore = 0;
+
+    current.forEach((currentHighlight, currentIdx) => {
+      if (usedCurrent.has(currentIdx)) return;
+      const score = getWordOverlapScore(currentHighlight, suggestedHighlight);
+      if (score > bestScore) {
+        bestScore = score;
+        bestCurrentIdx = currentIdx;
+      }
+    });
+
+    if (bestCurrentIdx >= 0 && bestScore > 0) {
+      suggestedToCurrent[suggestedIdx] = bestCurrentIdx;
+      currentToSuggested[bestCurrentIdx] = suggestedIdx;
+      usedCurrent.add(bestCurrentIdx);
+    }
+  });
+
+  return { suggestedToCurrent, currentToSuggested };
+}
+
+type THighlightRow = {
+  currentIdx: number;
+  suggestedIdx: number;
+};
+
+/**
+ * Creates shared visual rows for current/suggested highlight columns.
+ * Keeps suggested order, then appends unmatched current highlights.
+ */
+function buildHighlightRows(
+  current: string[],
+  suggested: string[],
+  suggestedToCurrent: number[]
+): THighlightRow[] {
+  const rows: THighlightRow[] = [];
+  const usedCurrent = new Set<number>();
+
+  suggested.forEach((_, suggestedIdx) => {
+    const currentIdx = suggestedToCurrent[suggestedIdx] ?? -1;
+    rows.push({ currentIdx, suggestedIdx });
+    if (currentIdx >= 0) usedCurrent.add(currentIdx);
+  });
+
+  current.forEach((_, currentIdx) => {
+    if (!usedCurrent.has(currentIdx)) {
+      rows.push({ currentIdx, suggestedIdx: -1 });
+    }
+  });
+
+  return rows;
+}
 
 /**
  * Tabbed comparison view for AI suggestions with per-field selection
@@ -71,9 +165,16 @@ export function AiSuggestionsView({
           <TabsContent value="summary">
             <ComparisonGrid>
               <ComparisonCard title="Current">
-                <MutedText>
-                  {currentData.personalInfo.summary || 'No summary'}
-                </MutedText>
+                {currentData.personalInfo.summary ? (
+                  <DiffHighlight
+                    current={currentData.personalInfo.summary}
+                    suggested={suggestions.summary}
+                    view="current"
+                    className="text-muted-foreground"
+                  />
+                ) : (
+                  <MutedText>No summary</MutedText>
+                )}
               </ComparisonCard>
               <ComparisonCard title="Suggested" suggested>
                 <SelectableField
@@ -83,6 +184,7 @@ export function AiSuggestionsView({
                   <DiffHighlight
                     current={currentData.personalInfo.summary}
                     suggested={suggestions.summary}
+                    view="suggested"
                   />
                 </SelectableField>
               </ComparisonCard>
@@ -99,7 +201,16 @@ export function AiSuggestionsView({
                   return null;
 
                 const currentHighlights = current.highlights ?? [];
-                const currentHighlightsSet = new Set(currentHighlights);
+                const suggestedHighlights = exp.highlights ?? [];
+                const { suggestedToCurrent } = buildHighlightMatchMaps(
+                  currentHighlights,
+                  suggestedHighlights
+                );
+                const highlightRows = buildHighlightRows(
+                  currentHighlights,
+                  suggestedHighlights,
+                  suggestedToCurrent
+                );
                 const sel = selection.experience[idx];
 
                 return (
@@ -108,57 +219,115 @@ export function AiSuggestionsView({
                       {current.company}
                       {current.position ? ` — ${current.position}` : ''}
                     </ExperienceLabel>
-                    <ComparisonGrid>
-                      <ComparisonCard title="Current">
-                        {current.description && (
-                          <MutedText>{current.description}</MutedText>
-                        )}
-                        {currentHighlights.length > 0 && (
-                          <BulletList>
-                            {currentHighlights.map((h, i) => (
-                              <BulletItem
-                                key={i}
-                                className="text-muted-foreground"
-                              >
-                                {h}
-                              </BulletItem>
-                            ))}
-                          </BulletList>
-                        )}
-                      </ComparisonCard>
-                      <ComparisonCard title="Suggested" suggested>
-                        {exp.description && (
-                          <SelectableField
-                            checked={sel?.description ?? true}
-                            onCheckedChange={() =>
-                              onToggleExperienceField(idx, 'description')
-                            }
+                    <div className="relative">
+                      <div className="border-border/50 pointer-events-none absolute inset-y-0 left-0 w-[calc(50%-0.5rem)] rounded-xl border" />
+                      <div className="border-primary/40 pointer-events-none absolute inset-y-0 right-0 w-[calc(50%-0.5rem)] rounded-xl border" />
+
+                      <div className="relative">
+                        <div className="grid grid-cols-2 gap-4 px-2 py-2">
+                          <div>
+                            <p className="text-muted-foreground text-xs font-medium">
+                              Current
+                            </p>
+                            {current.description && (
+                              <div className="pt-1">
+                                {exp.description ? (
+                                  <DiffHighlight
+                                    current={current.description}
+                                    suggested={exp.description}
+                                    view="current"
+                                    className="text-muted-foreground"
+                                  />
+                                ) : (
+                                  <MutedText>{current.description}</MutedText>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground pl-2 text-xs font-medium">
+                              Suggested
+                            </p>
+                            {exp.description && (
+                              <div className="pt-1">
+                                <SelectableField
+                                  className="pl-2"
+                                  checked={sel?.description ?? true}
+                                  onCheckedChange={() =>
+                                    onToggleExperienceField(idx, 'description')
+                                  }
+                                >
+                                  <DiffHighlight
+                                    current={current.description}
+                                    suggested={exp.description}
+                                    view="suggested"
+                                  />
+                                </SelectableField>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {highlightRows.map((row, rowIdx) => (
+                          <div
+                            key={rowIdx}
+                            className="border-border/40 grid grid-cols-2 gap-4 border-t px-2 py-1.5"
                           >
-                            <DiffHighlight
-                              current={current.description}
-                              suggested={exp.description}
-                            />
-                          </SelectableField>
-                        )}
-                        {exp.highlights && exp.highlights.length > 0 && (
-                          <BulletList>
-                            {exp.highlights.map((h, i) => (
-                              <SelectableField
-                                key={i}
-                                checked={sel?.highlights[i] ?? true}
-                                onCheckedChange={() =>
-                                  onToggleExperienceField(idx, 'highlight', i)
-                                }
-                              >
-                                <BulletItem changed={!currentHighlightsSet.has(h)}>
-                                  {h}
-                                </BulletItem>
-                              </SelectableField>
-                            ))}
-                          </BulletList>
-                        )}
-                      </ComparisonCard>
-                    </ComparisonGrid>
+                            <div>
+                              <BulletItem className="text-muted-foreground">
+                                {row.currentIdx >= 0 ? (
+                                  <DiffHighlight
+                                    current={currentHighlights[row.currentIdx]}
+                                    suggested={
+                                      row.suggestedIdx >= 0
+                                        ? suggestedHighlights[row.suggestedIdx]
+                                        : currentHighlights[row.currentIdx]
+                                    }
+                                    view="current"
+                                    className="text-muted-foreground"
+                                  />
+                                ) : (
+                                  <span className="opacity-0">.</span>
+                                )}
+                              </BulletItem>
+                            </div>
+                            <div>
+                              {row.suggestedIdx >= 0 ? (
+                                <SelectableField
+                                  className="pl-2"
+                                  checked={
+                                    sel?.highlights[row.suggestedIdx] ?? true
+                                  }
+                                  onCheckedChange={() =>
+                                    onToggleExperienceField(
+                                      idx,
+                                      'highlight',
+                                      row.suggestedIdx
+                                    )
+                                  }
+                                >
+                                  <BulletItem>
+                                    <DiffHighlight
+                                      current={
+                                        row.currentIdx >= 0
+                                          ? currentHighlights[row.currentIdx]
+                                          : undefined
+                                      }
+                                      suggested={
+                                        suggestedHighlights[row.suggestedIdx]
+                                      }
+                                      view="suggested"
+                                    />
+                                  </BulletItem>
+                                </SelectableField>
+                              ) : (
+                                <div className="h-6" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 );
               })}
