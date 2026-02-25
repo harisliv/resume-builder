@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
@@ -24,6 +25,13 @@ function educationLabel(institution: string | undefined, index: number) {
   return trimmed ? trimmed : `Education ${index + 1}`;
 }
 
+/** Parse "Jan 2020" into a sortable timestamp. Returns 0 for empty/invalid. */
+function parseDate(str: string | undefined): number {
+  if (!str) return 0;
+  const parsed = Date.parse(str.trim());
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export default function Education() {
   const { control, watch } = useFormContext<TResumeForm>();
   const education = watch('education');
@@ -31,6 +39,17 @@ export default function Education() {
     control,
     name: 'education'
   });
+
+  /** Indices sorted by graduationDate descending (newest first). */
+  const sortedIndices = useMemo(() => {
+    return fields
+      .map((_, i) => i)
+      .sort((a, b) => {
+        const dateA = parseDate(education?.[a]?.graduationDate);
+        const dateB = parseDate(education?.[b]?.graduationDate);
+        return dateB - dateA;
+      });
+  }, [fields, education]);
 
   return (
     <div className="space-y-6">
@@ -42,8 +61,8 @@ export default function Education() {
         </Button>
       </div>
       <StyledAccordion>
-        {fields.map((field, index) => (
-          <StyledAccordionItem key={field.id} value={`education-${index}`}>
+        {sortedIndices.map((index) => (
+          <StyledAccordionItem key={fields[index].id} value={`education-${index}`}>
             <StyledAccordionTrigger
               label={educationLabel(education?.[index]?.institution, index)}
               onDelete={() => remove(index)}

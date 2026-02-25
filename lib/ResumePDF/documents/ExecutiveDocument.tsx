@@ -3,6 +3,7 @@ import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
+import { groupExperience } from '@/components/ResumePreview/groupExperience';
 
 interface IExecutiveDocumentProps {
   data: TResumeData;
@@ -189,45 +190,82 @@ export const ExecutiveDocument = ({
             >
               Experience
             </Text>
-            {experience.map((exp, index) => (
+            {groupExperience(experience).map((group, gi) => (
               <View
-                key={index}
+                key={gi}
                 style={[
                   styles.entryContainer,
                   { borderLeftColor: colors.experience }
                 ]}
-                wrap={false}
               >
+                {/* Company header */}
                 <View style={styles.entryRow}>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.entryTitle}>{exp.position}</Text>
+                    <Text style={styles.entryTitle}>{group.company}</Text>
+                  </View>
+                  <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                    <Text style={styles.entryDate}>
+                      {group.startDate} —{' '}
+                      {group.current ? 'Present' : group.endDate}
+                    </Text>
+                    {group.location ? (
+                      <Text style={styles.entryLocation}>
+                        {group.location}
+                      </Text>
+                    ) : null}
+                  </View>
+                </View>
+                {/* Role entries */}
+                {group.entries.map((exp, ei) => (
+                  <View key={ei} style={{ marginTop: 4 }} wrap={false}>
                     <Text
                       style={[
                         styles.entrySubtitle,
                         { color: colors.experience }
                       ]}
                     >
-                      {exp.company}
+                      {exp.position}
                     </Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-                    <Text style={styles.entryLocation}>{exp.location}</Text>
-                    <Text style={styles.entryDate}>
-                      {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.entryDescription}>{exp.description}</Text>
-                {exp.highlights && exp.highlights.length > 0 && (
-                  <View style={{ marginTop: 4 }}>
-                    {exp.highlights.map((h, i) => (
-                      <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-                        <Text style={{ fontSize: 9, color: '#475569', marginRight: 6 }}>•</Text>
-                        <Text style={{ fontSize: 9, color: '#475569', flex: 1, lineHeight: 1.5 }}>{h}</Text>
+                    {exp.description ? (
+                      <Text style={styles.entryDescription}>
+                        {exp.description}
+                      </Text>
+                    ) : null}
+                    {exp.highlights && exp.highlights.length > 0 && (
+                      <View style={{ marginTop: 4 }}>
+                        {exp.highlights.map((h, i) => (
+                          <View
+                            key={i}
+                            style={{
+                              flexDirection: 'row',
+                              marginBottom: 2
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                color: '#475569',
+                                marginRight: 6
+                              }}
+                            >
+                              •
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                color: '#475569',
+                                flex: 1,
+                                lineHeight: 1.5
+                              }}
+                            >
+                              {h}
+                            </Text>
+                          </View>
+                        ))}
                       </View>
-                    ))}
+                    )}
                   </View>
-                )}
+                ))}
               </View>
             ))}
           </View>

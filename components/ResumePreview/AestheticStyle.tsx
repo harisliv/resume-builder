@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { groupExperience } from './groupExperience';
 
 const AESTHETIC_NEUTRALS = {
   textPrimary: '#1e293b',
@@ -180,12 +181,13 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
               </h2>
             </div>
             <div className="space-y-2.5">
-              {experience.map((exp: TExperience, index: number) => (
+              {groupExperience(experience).map((group, gi) => (
                 <div
-                  key={index}
+                  key={gi}
                   className="rounded-xl bg-white p-3.5"
                   style={{ borderWidth: 1, borderColor: AESTHETIC.border }}
                 >
+                  {/* Company header */}
                   <div className="mb-2 flex flex-wrap items-start justify-between gap-1">
                     <div>
                       <div className="mb-1 flex items-center gap-2">
@@ -197,15 +199,9 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="text-[12px] font-semibold"
                           style={{ color: AESTHETIC.textPrimary }}
                         >
-                          {exp.position}
+                          {group.company}
                         </h3>
                       </div>
-                      <p
-                        className="text-[10px] font-semibold"
-                        style={{ color: AESTHETIC.secondary }}
-                      >
-                        {exp.company}
-                      </p>
                     </div>
                     <div className="shrink-0 text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -214,41 +210,56 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="text-[8px] font-bold"
                           style={{ color: AESTHETIC.accent }}
                         >
-                          {exp.startDate}{' '}
+                          {group.startDate}{' '}
                           <span style={{ color: AESTHETIC.secondary }}>→</span>{' '}
-                          {exp.current ? 'Present' : exp.endDate}
+                          {group.current ? 'Present' : group.endDate}
                         </p>
                       </div>
-                      <p
-                        className="text-[8px]"
-                        style={{ color: AESTHETIC.textMuted }}
-                      >
-                        {exp.location}
-                      </p>
+                      {group.location && (
+                        <p
+                          className="text-[8px]"
+                          style={{ color: AESTHETIC.textMuted }}
+                        >
+                          {group.location}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  {exp.description && (
-                    <p
-                      className="mt-2 text-[9px] leading-[1.6]"
-                      style={{ color: AESTHETIC.textSecondary }}
-                    >
-                      {exp.description}
-                    </p>
-                  )}
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="mt-1 space-y-0.5">
-                      {exp.highlights.map((h, i) => (
-                        <li
-                          key={i}
-                          className="flex gap-1.5 text-[9px] leading-[1.6]"
-                          style={{ color: AESTHETIC.textSecondary }}
+                  {/* Role entries */}
+                  <div className="space-y-2">
+                    {group.entries.map((exp, ei) => (
+                      <div key={ei}>
+                        <p
+                          className="text-[10px] font-semibold"
+                          style={{ color: AESTHETIC.secondary }}
                         >
-                          <span>•</span>
-                          <span>{h}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                          {exp.position}
+                        </p>
+                        {exp.description && (
+                          <p
+                            className="mt-0.5 text-[9px] leading-[1.6]"
+                            style={{ color: AESTHETIC.textSecondary }}
+                          >
+                            {exp.description}
+                          </p>
+                        )}
+                        {exp.highlights && exp.highlights.length > 0 && (
+                          <ul className="mt-0.5 space-y-0.5">
+                            {exp.highlights.map((h, i) => (
+                              <li
+                                key={i}
+                                className="flex gap-1.5 text-[9px] leading-[1.6]"
+                                style={{ color: AESTHETIC.textSecondary }}
+                              >
+                                <span>•</span>
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

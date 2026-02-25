@@ -35,6 +35,7 @@ export const MyDocument = ({ data }: { data: TResumeData }) => (
 4. **Header + First Item Rule**: Use React-PDF built-ins to prevent orphan titles:
    - Wrap section header + first item in `<View wrap={false}>...</View>`
    - Add `minPresenceAhead` on section headers to force next-page break when only title fits
+   - For grouped cards (e.g. Experience company header + role list), wrap card header + first row/item in `<View wrap={false}>...</View>` so intra-card headers never orphan across page breaks
 5. **Preview/PDF Parity**: HTML preview and downloaded PDF are separate code paths (`components/ResumePreview/*` vs `lib/ResumePDF/documents/*`). Any visual change must be mirrored in both, or compare pages will drift.
 
 ## SVG Support

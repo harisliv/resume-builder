@@ -9,6 +9,7 @@
 
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { groupExperience } from './groupExperience';
 
 /** Pipe separator between contact items */
 const ContactSep = () => <span className="text-[8px] text-slate-300"> | </span>;
@@ -120,41 +121,58 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
               <div className="h-px bg-slate-200" />
             </div>
             <div className="space-y-3">
-              {experience.map((exp: TExperience, index: number) => (
-                <div key={index}>
+              {groupExperience(experience).map((group, gi) => (
+                <div key={gi}>
+                  {/* Company header */}
                   <div className="flex items-baseline justify-between">
                     <h3
                       className="text-[11px] font-bold"
                       style={{ color: palette.education }}
                     >
-                      {exp.position}
+                      {group.company}
                     </h3>
-                    <span className="font-mono text-[8px] text-slate-500">
-                      {exp.startDate} - {exp.current ? 'Present' : exp.endDate}
-                    </span>
+                    <div className="shrink-0 text-right">
+                      <span className="font-mono text-[8px] text-slate-500">
+                        {group.startDate} -{' '}
+                        {group.current ? 'Present' : group.endDate}
+                      </span>
+                      {group.location && (
+                        <p className="text-[8px] text-slate-500">
+                          {group.location}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-baseline justify-between">
-                    <p className="text-[10px] text-slate-600 italic">
-                      {exp.company}
-                    </p>
-                    <p className="text-[8px] text-slate-500">{exp.location}</p>
-                  </div>
-                  <p className="mt-1 text-[9px] leading-relaxed text-slate-600">
-                    {exp.description}
-                  </p>
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="mt-1 space-y-0.5">
-                      {exp.highlights.map((h, i) => (
-                        <li
-                          key={i}
-                          className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
+                  {/* Role entries */}
+                  <div className="mt-1 space-y-2">
+                    {group.entries.map((exp, ei) => (
+                      <div key={ei}>
+                        <p
+                          className="text-[10px] font-semibold text-slate-600 italic"
                         >
-                          <span>•</span>
-                          <span>{h}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                          {exp.position}
+                        </p>
+                        {exp.description && (
+                          <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
+                            {exp.description}
+                          </p>
+                        )}
+                        {exp.highlights && exp.highlights.length > 0 && (
+                          <ul className="mt-0.5 space-y-0.5">
+                            {exp.highlights.map((h, i) => (
+                              <li
+                                key={i}
+                                className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
+                              >
+                                <span>•</span>
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

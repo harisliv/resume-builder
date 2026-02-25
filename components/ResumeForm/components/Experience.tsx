@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
@@ -9,9 +10,7 @@ import FieldRow from './FieldRow';
 import Company from './ExperienceFields/Company';
 import Position from './ExperienceFields/Position';
 import Location from './ExperienceFields/Location';
-import StartDate from './ExperienceFields/StartDate';
-import EndDate from './ExperienceFields/EndDate';
-import Current from './ExperienceFields/Current';
+import { ResumeFormControlledDateRange } from '@/components/ControlledFields/ControlledDateRange';
 import Description from './ExperienceFields/Description';
 import Highlights from './ExperienceFields/Highlights';
 import {
@@ -34,6 +33,13 @@ function experienceLabel(
   return `Experience ${index + 1}`;
 }
 
+/** Parse "Jan 2020" into a sortable timestamp. Returns 0 for empty/invalid. */
+function parseDate(str: string | undefined): number {
+  if (!str) return 0;
+  const parsed = Date.parse(str.trim());
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export default function Experience() {
   const { control, watch } = useFormContext<TResumeForm>();
   const experience = watch('experience');
@@ -41,6 +47,17 @@ export default function Experience() {
     control,
     name: 'experience'
   });
+
+  /** Indices sorted by startDate descending (newest first). */
+  const sortedIndices = useMemo(() => {
+    return fields
+      .map((_, i) => i)
+      .sort((a, b) => {
+        const dateA = parseDate(experience?.[a]?.startDate);
+        const dateB = parseDate(experience?.[b]?.startDate);
+        return dateB - dateA;
+      });
+  }, [fields, experience]);
 
   return (
     <div className="space-y-6">
@@ -52,8 +69,8 @@ export default function Experience() {
         </Button>
       </div>
       <StyledAccordion>
-        {fields.map((field, index) => (
-          <StyledAccordionItem key={field.id} value={`experience-${index}`}>
+        {sortedIndices.map((index) => (
+          <StyledAccordionItem key={fields[index].id} value={`experience-${index}`}>
             <StyledAccordionTrigger
               label={experienceLabel(
                 experience?.[index]?.company,
@@ -68,11 +85,11 @@ export default function Experience() {
                 <Position index={index} />
               </FieldRow>
               <Location index={index} />
-              <FieldRow cols="half">
-                <StartDate index={index} />
-                <EndDate index={index} />
-              </FieldRow>
-              <Current index={index} />
+              <ResumeFormControlledDateRange
+                startName={`experience.${index}.startDate`}
+                endName={`experience.${index}.endDate`}
+                currentName={`experience.${index}.current`}
+              />
               <Description index={index} />
               <Highlights index={index} />
             </StyledAccordionContent>

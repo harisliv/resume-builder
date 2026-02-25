@@ -3,6 +3,7 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { groupExperience } from './groupExperience';
 
 export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
@@ -63,50 +64,65 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               Experience
             </h2>
             <div className="space-y-3">
-              {experience.map((exp: TExperience, index: number) => (
+              {groupExperience(experience).map((group, gi) => (
                 <div
-                  key={index}
+                  key={gi}
                   className="p-3 rounded-lg border-l-4"
                   style={{
                     borderColor: palette.experience,
                     backgroundColor: `${palette.experience}08`
                   }}
                 >
+                  {/* Company header */}
                   <div className="flex justify-between items-start mb-1">
                     <div>
                       <h3 className="font-bold text-slate-900 text-[12px]">
-                        {exp.position}
+                        {group.company}
                       </h3>
-                      <p
-                        className="text-[11px] font-bold"
-                        style={{ color: palette.experience }}
-                      >
-                        {exp.company}
-                      </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[8px] text-slate-500 font-medium">
-                        {exp.location}
-                      </p>
                       <p className="text-[8px] text-slate-400 font-mono font-bold">
-                        {exp.startDate} →{' '}
-                        {exp.current ? 'Present' : exp.endDate}
+                        {group.startDate} →{' '}
+                        {group.current ? 'Present' : group.endDate}
                       </p>
+                      {group.location && (
+                        <p className="text-[8px] text-slate-500 font-medium">
+                          {group.location}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <p className="text-[9px] text-slate-600 leading-relaxed">
-                    {exp.description}
-                  </p>
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="mt-1 space-y-0.5">
-                      {exp.highlights.map((h, i) => (
-                        <li key={i} className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5">
-                          <span>•</span>
-                          <span>{h}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {/* Role entries */}
+                  <div className="space-y-2">
+                    {group.entries.map((exp, ei) => (
+                      <div key={ei}>
+                        <p
+                          className="font-bold text-[11px]"
+                          style={{ color: palette.experience }}
+                        >
+                          {exp.position}
+                        </p>
+                        {exp.description && (
+                          <p className="text-[9px] text-slate-600 leading-relaxed mt-0.5">
+                            {exp.description}
+                          </p>
+                        )}
+                        {exp.highlights && exp.highlights.length > 0 && (
+                          <ul className="mt-0.5 space-y-0.5">
+                            {exp.highlights.map((h, i) => (
+                              <li
+                                key={i}
+                                className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5"
+                              >
+                                <span>•</span>
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

@@ -3,6 +3,7 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { groupExperience } from './groupExperience';
 
 export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
@@ -85,46 +86,62 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
               Experience
             </h2>
             <div className="space-y-3">
-              {experience.map((exp: TExperience, index: number) => (
+              {groupExperience(experience).map((group, gi) => (
                 <div
-                  key={index}
+                  key={gi}
                   className="border-l-2 pl-3"
                   style={{ borderColor: palette.experience }}
                 >
+                  {/* Company header */}
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold text-slate-900 text-[11px]">
-                        {exp.position}
+                        {group.company}
                       </h3>
-                      <p
-                        className="text-[10px] font-semibold"
-                        style={{ color: palette.experience }}
-                      >
-                        {exp.company}
-                      </p>
                     </div>
                     <div className="text-right flex-shrink-0 ml-2">
-                      <p className="text-[8px] text-slate-500">
-                        {exp.location}
-                      </p>
                       <p className="text-[8px] text-slate-400 font-mono">
-                        {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
+                        {group.startDate} —{' '}
+                        {group.current ? 'Present' : group.endDate}
                       </p>
+                      {group.location && (
+                        <p className="text-[8px] text-slate-500">
+                          {group.location}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <p className="text-[9px] text-slate-600 leading-relaxed mt-1">
-                    {exp.description}
-                  </p>
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <ul className="mt-1 space-y-0.5">
-                      {exp.highlights.map((h, i) => (
-                        <li key={i} className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5">
-                          <span>•</span>
-                          <span>{h}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  {/* Role entries */}
+                  <div className="mt-1.5 space-y-2">
+                    {group.entries.map((exp, ei) => (
+                      <div key={ei}>
+                        <p
+                          className="font-semibold text-[10px]"
+                          style={{ color: palette.experience }}
+                        >
+                          {exp.position}
+                        </p>
+                        {exp.description && (
+                          <p className="text-[9px] text-slate-600 leading-relaxed mt-0.5">
+                            {exp.description}
+                          </p>
+                        )}
+                        {exp.highlights && exp.highlights.length > 0 && (
+                          <ul className="mt-0.5 space-y-0.5">
+                            {exp.highlights.map((h, i) => (
+                              <li
+                                key={i}
+                                className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5"
+                              >
+                                <span>•</span>
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

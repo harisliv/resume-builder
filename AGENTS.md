@@ -4,6 +4,8 @@ ALWAYS be extremely concise. Sacrifice grammar for the sake of concision
 
 At the end of each plan, give me unresolved questions to answer, if any.
 
+Do always the bare minimum
+
 add jsdoc comments to the code
 
 This project uses pnpm.

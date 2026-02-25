@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Link, StyleSheet } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import '../fonts';
+import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { MailIcon } from '../icons/MailIcon';
 import { PhoneIcon } from '../icons/PhoneIcon';
 import { MapPinIcon } from '../icons/MapPinIcon';
@@ -295,12 +296,120 @@ const SECTION_MIN_PRESENCE_AHEAD = {
   skills: 45
 } as const;
 
+/** Renders highlights bullet list for a single experience entry (PDF). */
+const AestheticHighlights = ({
+  highlights,
+  color
+}: {
+  highlights: string[];
+  color: string;
+}) => (
+  <View style={{ marginTop: 4 }}>
+    {highlights.map((h, i) => (
+      <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+        <Text style={{ fontSize: 9, color, marginRight: 6 }}>•</Text>
+        <Text style={{ fontSize: 9, color, flex: 1, lineHeight: 1.6 }}>
+          {h}
+        </Text>
+      </View>
+    ))}
+  </View>
+);
+
+/** Renders a company group card with unified layout. */
+const AestheticExperienceGroup = ({
+  group,
+  colors
+}: {
+  group: import('@/components/ResumePreview/groupExperience').ExperienceGroup;
+  colors: Record<string, string>;
+}) => {
+  const [firstEntry, ...remainingEntries] = group.entries;
+
+  return (
+    <View style={styles.card}>
+      {/* Keep company header coupled with first role entry. */}
+      <View wrap={false}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardLeft}>
+            <View style={styles.positionRow}>
+              <View
+                style={[
+                  styles.positionMarker,
+                  { backgroundColor: colors.primary }
+                ]}
+              />
+              <Text style={styles.position}>{group.company}</Text>
+            </View>
+          </View>
+          <View style={styles.cardRight}>
+            <View style={styles.dateRow}>
+              <CalendarIcon size={8} color={colors.secondary} />
+              <Text
+                style={[
+                  styles.experienceDateText,
+                  { color: colors.accent }
+                ]}
+              >
+                {group.startDate}{' '}
+                <Text style={[styles.dateArrow, { color: colors.secondary }]}>
+                  →
+                </Text>{' '}
+                {group.current ? 'Present' : group.endDate}
+              </Text>
+            </View>
+            {group.location ? (
+              <Text style={styles.locationText}>{group.location}</Text>
+            ) : null}
+          </View>
+        </View>
+
+        {firstEntry && (
+          <View style={{ marginTop: 4 }}>
+            <Text style={[styles.company, { color: colors.secondary }]}>
+              {firstEntry.position}
+            </Text>
+            {firstEntry.description && (
+              <Text style={styles.description}>{firstEntry.description}</Text>
+            )}
+            {firstEntry.highlights && firstEntry.highlights.length > 0 && (
+              <AestheticHighlights
+                highlights={firstEntry.highlights}
+                color={colors.textSecondary}
+              />
+            )}
+          </View>
+        )}
+      </View>
+
+      {remainingEntries.map((exp, ei) => (
+        <View key={`${exp.position}-${ei}`} style={{ marginTop: 4 }} wrap={false}>
+          <Text style={[styles.company, { color: colors.secondary }]}>
+            {exp.position}
+          </Text>
+          {exp.description && (
+            <Text style={styles.description}>{exp.description}</Text>
+          )}
+          {exp.highlights && exp.highlights.length > 0 && (
+            <AestheticHighlights
+              highlights={exp.highlights}
+              color={colors.textSecondary}
+            />
+          )}
+        </View>
+      ))}
+    </View>
+  );
+};
+
 /**
  * Aesthetic PDF template with pagination guards to avoid orphan section titles.
  */
 export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
-  const [firstExperience, ...remainingExperience] = experience ?? [];
+  const experienceGroups = experience ? groupExperience(experience) : [];
+  const [firstExperienceGroup, ...remainingExperienceGroups] =
+    experienceGroups;
   const [firstEducation, ...remainingEducation] = education ?? [];
   const AESTHETIC_COLORS = {
     ...AESTHETIC_NEUTRALS,
@@ -389,7 +498,7 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
       )}
 
       {/* Experience Section with new icons */}
-      {experience && experience.length > 0 && (
+      {experienceGroups.length > 0 && (
         <View style={styles.section}>
           {/* Keep header with first card to avoid orphan section titles */}
           <View wrap={false}>
@@ -405,166 +514,20 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
               <Text style={styles.sectionTitle}>Experience</Text>
             </View>
 
-            {firstExperience && (
-              <View style={styles.card} wrap={false}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.cardLeft}>
-                    <View style={styles.positionRow}>
-                      <View
-                        style={[
-                          styles.positionMarker,
-                          { backgroundColor: AESTHETIC_COLORS.primary }
-                        ]}
-                      />
-                      <Text style={styles.position}>{firstExperience.position}</Text>
-                    </View>
-                    <Text
-                      style={[styles.company, { color: AESTHETIC_COLORS.secondary }]}
-                    >
-                      {firstExperience.company}
-                    </Text>
-                  </View>
-                  <View style={styles.cardRight}>
-                    <View style={styles.dateRow}>
-                      <CalendarIcon
-                        size={8}
-                        color={AESTHETIC_COLORS.secondary}
-                      />
-                      <Text
-                        style={[
-                          styles.experienceDateText,
-                          { color: AESTHETIC_COLORS.accent }
-                        ]}
-                      >
-                        {firstExperience.startDate}{' '}
-                        <Text
-                          style={[styles.dateArrow, { color: AESTHETIC_COLORS.secondary }]}
-                        >
-                          →
-                        </Text>{' '}
-                        {firstExperience.current
-                          ? 'Present'
-                          : firstExperience.endDate}
-                      </Text>
-                    </View>
-                    <Text style={styles.locationText}>
-                      {firstExperience.location}
-                    </Text>
-                  </View>
-                </View>
-                {firstExperience.description && (
-                  <Text style={styles.description}>
-                    {firstExperience.description}
-                  </Text>
-                )}
-                {firstExperience.highlights &&
-                  firstExperience.highlights.length > 0 && (
-                    <View style={{ marginTop: 4 }}>
-                      {firstExperience.highlights.map((h, i) => (
-                        <View
-                          key={i}
-                          style={{ flexDirection: 'row', marginBottom: 2 }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              color: AESTHETIC_COLORS.textSecondary,
-                              marginRight: 6
-                            }}
-                          >
-                            •
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              color: AESTHETIC_COLORS.textSecondary,
-                              flex: 1,
-                              lineHeight: 1.6
-                            }}
-                          >
-                            {h}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-              </View>
+            {firstExperienceGroup && (
+              <AestheticExperienceGroup
+                group={firstExperienceGroup}
+                colors={AESTHETIC_COLORS}
+              />
             )}
           </View>
 
-          {remainingExperience.map((exp, index) => (
-            <View
-              key={`${exp.company}-${index}`}
-              style={styles.card}
-              wrap={false}
-            >
-              <View style={styles.cardHeader}>
-                <View style={styles.cardLeft}>
-                  <View style={styles.positionRow}>
-                    <View
-                      style={[
-                        styles.positionMarker,
-                        { backgroundColor: AESTHETIC_COLORS.primary }
-                      ]}
-                    />
-                    <Text style={styles.position}>{exp.position}</Text>
-                  </View>
-                  <Text style={[styles.company, { color: AESTHETIC_COLORS.secondary }]}>
-                    {exp.company}
-                  </Text>
-                </View>
-                <View style={styles.cardRight}>
-                  <View style={styles.dateRow}>
-                    <CalendarIcon size={8} color={AESTHETIC_COLORS.secondary} />
-                    <Text
-                      style={[styles.experienceDateText, { color: AESTHETIC_COLORS.accent }]}
-                    >
-                      {exp.startDate}{' '}
-                      <Text
-                        style={[styles.dateArrow, { color: AESTHETIC_COLORS.secondary }]}
-                      >
-                        →
-                      </Text>{' '}
-                      {exp.current ? 'Present' : exp.endDate}
-                    </Text>
-                  </View>
-                  <Text style={styles.locationText}>{exp.location}</Text>
-                </View>
-              </View>
-              {exp.description && (
-                <Text style={styles.description}>{exp.description}</Text>
-              )}
-              {exp.highlights && exp.highlights.length > 0 && (
-                <View style={{ marginTop: 4 }}>
-                  {exp.highlights.map((h, i) => (
-                    <View
-                      key={i}
-                      style={{ flexDirection: 'row', marginBottom: 2 }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          color: AESTHETIC_COLORS.textSecondary,
-                          marginRight: 6
-                        }}
-                      >
-                        •
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 9,
-                          color: AESTHETIC_COLORS.textSecondary,
-                          flex: 1,
-                          lineHeight: 1.6
-                        }}
-                      >
-                        {h}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
+          {remainingExperienceGroups.map((group, gi) => (
+            <AestheticExperienceGroup
+              key={gi}
+              group={group}
+              colors={AESTHETIC_COLORS}
+            />
           ))}
         </View>
       )}

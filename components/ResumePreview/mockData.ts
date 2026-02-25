@@ -11,15 +11,46 @@ export const mockPersonalInfo = {
 
 export const mockExperience = [
   {
-    company: 'Acme Corporation',
-    position: 'Senior Software Engineer',
-    location: 'San Francisco, CA',
-    startDate: 'Jan 2020',
-    endDate: 'Present',
+    company: 'NTT DATA Europe & Latam',
+    position: 'Front End Lead, UNFCCC ISS',
+    location: 'Athens, Greece',
+    startDate: 'Jul 2025',
+    endDate: '',
     current: true,
     description:
-      'Led development of microservices architecture serving 1M+ users. Mentored junior developers and implemented CI/CD pipelines.',
-    highlights: ['Reduced API latency by 40%', 'Led team of 5 engineers']
+      'Promoted to Front End Lead for the UNFCCC International Sustainability Standards project.',
+    highlights: [
+      'Led frontend architecture for climate reporting platform',
+      'Managed team of 4 frontend engineers'
+    ]
+  },
+  {
+    company: 'NTT DATA Europe & Latam',
+    position: 'Smart Contract Engineer, IOBSI',
+    location: 'Athens, Greece',
+    startDate: 'Jan 2025',
+    endDate: 'Jul 2025',
+    current: false,
+    description:
+      'Engineered smart contracts and frontend interfaces for blockchain-based identity solutions.',
+    highlights: [
+      'Built Solidity smart contracts for decentralized identity',
+      'Integrated Web3 wallet authentication'
+    ]
+  },
+  {
+    company: 'NTT DATA Europe & Latam',
+    position: 'Deputy Team Leader, UNFCCC ETF',
+    location: 'Athens, Greece',
+    startDate: 'Nov 2023',
+    endDate: 'Nov 2024',
+    current: false,
+    description:
+      'Led general tasks and sprint planning for the UNFCCC Enhanced Transparency Framework.',
+    highlights: [
+      'Coordinated cross-functional team of 8 engineers',
+      'Delivered project milestones ahead of schedule'
+    ]
   },
   {
     company: 'Tech Innovations Inc',
