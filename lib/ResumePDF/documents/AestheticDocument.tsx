@@ -408,9 +408,6 @@ const AestheticExperienceGroup = ({
 export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
   const experienceGroups = experience ? groupExperience(experience) : [];
-  const [firstExperienceGroup, ...remainingExperienceGroups] =
-    experienceGroups;
-  const [firstEducation, ...remainingEducation] = education ?? [];
   const AESTHETIC_COLORS = {
     ...AESTHETIC_NEUTRALS,
     primary: colors?.summary ?? '#6366f1',
@@ -500,29 +497,19 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
       {/* Experience Section with new icons */}
       {experienceGroups.length > 0 && (
         <View style={styles.section}>
-          {/* Keep header with first card to avoid orphan section titles */}
-          <View wrap={false}>
+          <View
+            style={styles.sectionHeader}
+            minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.experience}
+          >
             <View
-              style={styles.sectionHeader}
-              minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.experience}
+              style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
             >
-              <View
-                style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
-              >
-                <BriefcaseIcon size={14} color={AESTHETIC_COLORS.primary} />
-              </View>
-              <Text style={styles.sectionTitle}>Experience</Text>
+              <BriefcaseIcon size={14} color={AESTHETIC_COLORS.primary} />
             </View>
-
-            {firstExperienceGroup && (
-              <AestheticExperienceGroup
-                group={firstExperienceGroup}
-                colors={AESTHETIC_COLORS}
-              />
-            )}
+            <Text style={styles.sectionTitle}>Experience</Text>
           </View>
 
-          {remainingExperienceGroups.map((group, gi) => (
+          {experienceGroups.map((group, gi) => (
             <AestheticExperienceGroup
               key={gi}
               group={group}
@@ -535,68 +522,19 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
       {/* Education Section */}
       {education && education.length > 0 && (
         <View style={styles.section}>
-          {/* Keep header with first card to avoid orphan section titles */}
-          <View wrap={false}>
+          <View
+            style={styles.sectionHeader}
+            minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.education}
+          >
             <View
-              style={styles.sectionHeader}
-              minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.education}
+              style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
             >
-              <View
-                style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
-              >
-                <GraduationCapIcon size={14} color={AESTHETIC_COLORS.primary} />
-              </View>
-              <Text style={styles.sectionTitle}>Education</Text>
+              <GraduationCapIcon size={14} color={AESTHETIC_COLORS.primary} />
             </View>
-
-            {firstEducation && (
-              <View style={styles.educationCard} wrap={false}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.educationContent}>
-                    <Text style={styles.degree}>
-                      {firstEducation.degree} in {firstEducation.field}
-                    </Text>
-                    <Text
-                      style={[styles.institution, { color: AESTHETIC_COLORS.secondary }]}
-                    >
-                      {firstEducation.institution}
-                    </Text>
-                    {firstEducation.gpa && (
-                      <Text
-                        style={[
-                          styles.gpa,
-                          {
-                            color: AESTHETIC_COLORS.accent,
-                            backgroundColor: AESTHETIC_COLORS.accentTint
-                          }
-                        ]}
-                      >
-                        GPA: {firstEducation.gpa}
-                      </Text>
-                    )}
-                  </View>
-                  <View style={styles.cardRight}>
-                    <View style={styles.dateRow}>
-                      <CalendarIcon size={8} color={AESTHETIC_COLORS.secondary} />
-                      <Text
-                        style={[
-                          styles.educationMetaDateText,
-                          { color: AESTHETIC_COLORS.accent }
-                        ]}
-                      >
-                        {firstEducation.graduationDate}
-                      </Text>
-                    </View>
-                    <Text style={styles.locationText}>
-                      {firstEducation.location}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
+            <Text style={styles.sectionTitle}>Education</Text>
           </View>
 
-          {remainingEducation.map((edu, index) => (
+          {(education ?? []).map((edu, index) => (
             <View
               key={`${edu.institution}-${index}`}
               style={styles.educationCard}
@@ -646,37 +584,34 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
 
       {/* Skills Section */}
       {skills && skills.length > 0 && (
-        <View style={styles.section}>
-          {/* Keep header with first row of skills to avoid orphan section titles */}
-          <View wrap={false}>
+        <View style={styles.section} wrap={false}>
+          <View
+            style={styles.sectionHeader}
+            minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.skills}
+          >
             <View
-              style={styles.sectionHeader}
-              minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.skills}
+              style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
             >
-              <View
-                style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
-              >
-                <SparklesIcon size={14} color={AESTHETIC_COLORS.primary} />
-              </View>
-              <Text style={styles.sectionTitle}>Skills</Text>
+              <SparklesIcon size={14} color={AESTHETIC_COLORS.primary} />
             </View>
+            <Text style={styles.sectionTitle}>Skills</Text>
+          </View>
 
-            <View style={styles.skillsContainer}>
-              {skills.map((skill, index) => (
-                <Text
-                  key={`${skill}-${index}`}
-                  style={[
-                    styles.skillPill,
-                    {
-                      backgroundColor: AESTHETIC_COLORS.primaryLight,
-                      color: AESTHETIC_COLORS.cardBg
-                    }
-                  ]}
-                >
-                  {skill}
-                </Text>
-              ))}
-            </View>
+          <View style={styles.skillsContainer}>
+            {skills.map((skill, index) => (
+              <Text
+                key={`${skill}-${index}`}
+                style={[
+                  styles.skillPill,
+                  {
+                    backgroundColor: AESTHETIC_COLORS.primaryLight,
+                    color: AESTHETIC_COLORS.cardBg
+                  }
+                ]}
+              >
+                {skill}
+              </Text>
+            ))}
           </View>
         </View>
       )}

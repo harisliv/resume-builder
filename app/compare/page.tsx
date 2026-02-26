@@ -4,7 +4,11 @@ import { Suspense, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import ResumePreview from '@/components/ResumePreview';
-import { extendedMockResumeData } from '@/lib/ResumePDF/mockdata';
+import { homepageDefaultMockData } from '@/components/ResumePreview/mockData';
+import {
+  extendedMockResumeData,
+  groupedLongMockData
+} from '@/lib/ResumePDF/mockdata';
 import type { TResumeData } from '@/types/schema';
 import {
   resumeInfoDefaultValues,
@@ -65,17 +69,41 @@ function splitResumeData(data: TResumeData) {
 
 const STYLE_IDS = Object.keys(DOCUMENT_STYLES) as TDocumentStyleId[];
 
-/** Syncs style/palette/font into URL search params so they survive reload. */
+type TDataVariant = 'homepage' | 'extended' | 'groupedLong';
+
+const DATA_VARIANTS: Record<TDataVariant, TResumeData> = {
+  homepage: homepageDefaultMockData,
+  extended: extendedMockResumeData,
+  groupedLong: groupedLongMockData
+};
+
+const DATA_VARIANT_LABELS: Record<TDataVariant, string> = {
+  homepage: 'Homepage',
+  extended: 'Extended',
+  groupedLong: 'Grouped roles (long)'
+};
+
+/** Syncs style/palette/font/data into URL search params so they survive reload. */
 function syncParams(
   style: TDocumentStyleId,
   palette: TPaletteId,
-  font: TFontId
+  font: TFontId,
+  data: TDataVariant
 ) {
   const url = new URL(window.location.href);
   url.searchParams.set('style', style);
   url.searchParams.set('palette', palette);
   url.searchParams.set('font', font);
+  url.searchParams.set('data', data);
   window.history.replaceState({}, '', url.toString());
+}
+
+/** Validates data param from URL; falls back to extended if invalid. */
+function parseDataVariant(param: string | null): TDataVariant {
+  if (param === 'homepage' || param === 'extended' || param === 'groupedLong') {
+    return param;
+  }
+  return 'extended';
 }
 
 /** Compare page content — uses useSearchParams, must be inside Suspense. */
@@ -90,7 +118,11 @@ function ComparePageContent() {
   const [activeFont, setActiveFont] = useState<TFontId>(
     () => (searchParams.get('font') as TFontId) || 'inter'
   );
-  const { formData, infoData } = splitResumeData(extendedMockResumeData);
+  const [dataSource, setDataSource] = useState<TDataVariant>(
+    () => parseDataVariant(searchParams.get('data'))
+  );
+  const selectedData = DATA_VARIANTS[dataSource];
+  const { formData, infoData } = splitResumeData(selectedData);
 
   const styledInfoData = {
     ...infoData,
@@ -107,15 +139,19 @@ function ComparePageContent() {
   /** Wrap setter + sync URL params in one call */
   const changeStyle = (s: TDocumentStyleId) => {
     setActiveStyle(s);
-    syncParams(s, activePalette, activeFont);
+    syncParams(s, activePalette, activeFont, dataSource);
   };
   const changePalette = (p: TPaletteId) => {
     setActivePalette(p);
-    syncParams(activeStyle, p, activeFont);
+    syncParams(activeStyle, p, activeFont, dataSource);
   };
   const changeFont = (f: TFontId) => {
     setActiveFont(f);
-    syncParams(activeStyle, activePalette, f);
+    syncParams(activeStyle, activePalette, f, dataSource);
+  };
+  const changeData = (d: TDataVariant) => {
+    setDataSource(d);
+    syncParams(activeStyle, activePalette, activeFont, d);
   };
 
   return (
@@ -184,6 +220,23 @@ function ComparePageContent() {
             {Object.values(FONT_OPTIONS).map((f) => (
               <SelectItem key={f.id} value={f.id}>
                 {f.name} ({f.category})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Data variant dropdown */}
+        <Select
+          value={dataSource}
+          onValueChange={(v) => changeData(v as TDataVariant)}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Data" />
+          </SelectTrigger>
+          <SelectContent>
+            {(Object.keys(DATA_VARIANTS) as TDataVariant[]).map((id) => (
+              <SelectItem key={id} value={id}>
+                {DATA_VARIANT_LABELS[id]}
               </SelectItem>
             ))}
           </SelectContent>
