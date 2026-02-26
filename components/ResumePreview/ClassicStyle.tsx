@@ -7,12 +7,19 @@
  */
 'use client';
 
+import { Calendar } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 import { groupExperience } from './groupExperience';
 
 /** Pipe separator between contact items */
 const ContactSep = () => <span className="text-[8px] text-slate-300"> | </span>;
+
+/** Experience tones aligned with Aesthetic/Modern hierarchy. */
+const CLASSIC_EXPERIENCE_TONES = {
+  company: '#1e293b',
+  location: '#64748b'
+} as const;
 
 export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
@@ -121,60 +128,116 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
               <div className="h-px bg-slate-200" />
             </div>
             <div className="space-y-3">
-              {groupExperience(experience).map((group, gi) => (
-                <div key={gi}>
-                  {/* Company header */}
-                  <div className="flex items-baseline justify-between">
-                    <h3
-                      className="text-[11px] font-bold"
-                      style={{ color: palette.education }}
-                    >
-                      {group.company}
-                    </h3>
-                    <div className="shrink-0 text-right">
-                      <span className="font-mono text-[8px] text-slate-500">
-                        {group.startDate} -{' '}
-                        {group.current ? 'Present' : group.endDate}
-                      </span>
-                      {group.location && (
-                        <p className="text-[8px] text-slate-500">
-                          {group.location}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {/* Role entries */}
-                  <div className="mt-1 space-y-2">
-                    {group.entries.map((exp, ei) => (
-                      <div key={ei}>
-                        <p
-                          className="text-[10px] font-semibold text-slate-600 italic"
-                        >
-                          {exp.position}
-                        </p>
-                        {exp.description && (
-                          <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
-                            {exp.description}
+              {groupExperience(experience).map((group, gi) => {
+                const [firstEntry, ...restEntries] = group.entries;
+                return (
+                  <div key={gi}>
+                    {/* Company header */}
+                    <div className="flex items-baseline justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2.5 w-[2.5px] shrink-0"
+                            style={{ backgroundColor: palette.summary }}
+                          />
+                          <h3
+                            className="text-[11px] font-bold"
+                            style={{ color: CLASSIC_EXPERIENCE_TONES.company }}
+                          >
+                            {group.company}
+                          </h3>
+                        </div>
+                        {firstEntry && (
+                          <p
+                            className="text-[10px] font-semibold"
+                            style={{ color: palette.experience }}
+                          >
+                            {firstEntry.position}
                           </p>
                         )}
-                        {exp.highlights && exp.highlights.length > 0 && (
-                          <ul className="mt-0.5 space-y-0.5">
-                            {exp.highlights.map((h, i) => (
-                              <li
-                                key={i}
-                                className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
-                              >
-                                <span>•</span>
-                                <span>{h}</span>
-                              </li>
-                            ))}
-                          </ul>
+                      </div>
+                      <div
+                        className="shrink-0 text-right"
+                        style={{ marginTop: -1 }}
+                      >
+                        <div className="flex items-center justify-end gap-1">
+                          <Calendar size={8} color={palette.experience} />
+                          <p
+                            className="text-[8px] font-bold"
+                            style={{ color: palette.education }}
+                          >
+                            {group.startDate}{' '}
+                            <span style={{ color: palette.experience }}>→</span>{' '}
+                            {group.current ? 'Present' : group.endDate}
+                          </p>
+                        </div>
+                        {group.location && (
+                          <p
+                            className="text-[8px] font-semibold"
+                            style={{ color: CLASSIC_EXPERIENCE_TONES.location }}
+                          >
+                            {group.location}
+                          </p>
                         )}
                       </div>
-                    ))}
+                    </div>
+                    {/* Role entries */}
+                    <div className="mt-1 space-y-2">
+                      {firstEntry && (
+                        <div>
+                          {firstEntry.description && (
+                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
+                              {firstEntry.description}
+                            </p>
+                          )}
+                          {firstEntry.highlights &&
+                            firstEntry.highlights.length > 0 && (
+                              <ul className="mt-0.5 space-y-0.5">
+                                {firstEntry.highlights.map((h, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
+                                  >
+                                    <span>•</span>
+                                    <span>{h}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                        </div>
+                      )}
+                      {restEntries.map((exp, ei) => (
+                        <div key={`${gi}-${ei}`}>
+                          <p
+                            className="text-[10px] font-semibold"
+                            style={{ color: palette.experience }}
+                          >
+                            {exp.position}
+                          </p>
+                          {exp.description && (
+                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
+                              {exp.description}
+                            </p>
+                          )}
+                          {exp.highlights && exp.highlights.length > 0 && (
+                            <ul className="mt-0.5 space-y-0.5">
+                              {exp.highlights.map((h, i) => (
+                                <li
+                                  key={i}
+                                  className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
+                                >
+                                  <span>•</span>
+                                  <span>{h}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -204,27 +267,65 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
             </div>
             <div className="space-y-2">
               {education.map((edu: TEducation, index: number) => (
-                <div key={index}>
-                  <div className="flex items-baseline justify-between">
-                    <h3
-                      className="text-[11px] font-bold"
-                      style={{ color: palette.education }}
-                    >
-                      {edu.degree} in {edu.field}
-                    </h3>
-                    <span className="font-mono text-[8px] text-slate-500">
-                      {edu.graduationDate}
-                    </span>
+                <div
+                  key={index}
+                  className={index < education.length - 1 ? 'mb-4' : ''}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-2.5 w-[2.5px] shrink-0"
+                          style={{ backgroundColor: palette.summary }}
+                        />
+                        <h3
+                          className="text-[11px] font-bold"
+                          style={{ color: CLASSIC_EXPERIENCE_TONES.company }}
+                        >
+                          {edu.degree} in {edu.field}
+                        </h3>
+                      </div>
+                    </div>
+                    {edu.gpa && (
+                      <p
+                        className="shrink-0 text-[8px] font-semibold"
+                        style={{ color: palette.summary }}
+                      >
+                        GPA: {edu.gpa}
+                      </p>
+                    )}
                   </div>
-                  <div className="flex items-baseline justify-between">
-                    <p className="text-[10px] text-slate-600 italic">
+                  <div className="mt-1 flex items-start justify-between gap-2">
+                    <p
+                      className="text-[10px] font-semibold"
+                      style={{ color: palette.experience }}
+                    >
                       {edu.institution}
                     </p>
-                    <p className="text-[8px] text-slate-500">{edu.location}</p>
+                    <div
+                      className="shrink-0 text-right"
+                      style={{ marginTop: -7 }}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <Calendar size={8} color={palette.experience} />
+                        <p
+                          className="text-[8px] font-bold"
+                          style={{ color: palette.education }}
+                        >
+                          {edu.graduationDate}
+                        </p>
+                      </div>
+                      <p
+                        className="text-[8px] font-semibold"
+                        style={{
+                          color: CLASSIC_EXPERIENCE_TONES.location,
+                          lineHeight: 1.1
+                        }}
+                      >
+                        {edu.location}
+                      </p>
+                    </div>
                   </div>
-                  {edu.gpa && (
-                    <p className="text-[8px] text-slate-600">GPA: {edu.gpa}</p>
-                  )}
                 </div>
               ))}
             </div>

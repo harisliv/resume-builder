@@ -18,6 +18,9 @@ export const ExecutiveDocument = ({
 }: IExecutiveDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
 
+  /** Minimum points of content required ahead to prevent orphaned headers */
+  const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
+
   const styles = StyleSheet.create({
     page: {
       flexDirection: 'row',
@@ -175,7 +178,7 @@ export const ExecutiveDocument = ({
 
       <View style={styles.main}>
         {personalInfo?.summary && (
-          <View>
+          <View wrap={false}>
             <Text style={[styles.sectionTitle, { color: colors.summary }]}>
               Summary
             </Text>
@@ -187,136 +190,233 @@ export const ExecutiveDocument = ({
           <View style={styles.section}>
             <Text
               style={[styles.sectionTitle, { color: colors.experience }]}
+              minPresenceAhead={MIN_PRESENCE.experience}
             >
               Experience
             </Text>
-            {groupExperience(experience).map((group, gi) => (
-              <View
-                key={gi}
-                style={[
-                  styles.entryContainer,
-                  { borderLeftColor: colors.experience }
-                ]}
-              >
-                {/* Company header */}
-                <View style={styles.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.entryTitle}>{group.company}</Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-                    <Text style={styles.entryDate}>
-                      {group.startDate} —{' '}
-                      {group.current ? 'Present' : group.endDate}
-                    </Text>
-                    {group.location ? (
-                      <Text style={styles.entryLocation}>
-                        {group.location}
-                      </Text>
-                    ) : null}
-                  </View>
-                </View>
-                {/* Role entries */}
-                {group.entries.map((exp, ei) => (
-                  <View key={ei} style={{ marginTop: 4 }} wrap={false}>
-                    <Text
-                      style={[
-                        styles.entrySubtitle,
-                        { color: colors.experience }
-                      ]}
-                    >
-                      {exp.position}
-                    </Text>
-                    {exp.description ? (
-                      <Text style={styles.entryDescription}>
-                        {exp.description}
-                      </Text>
-                    ) : null}
-                    {exp.highlights && exp.highlights.length > 0 && (
+            {groupExperience(experience).map((group, gi) => {
+              const [firstEntry, ...restEntries] = group.entries;
+              return (
+                <View
+                  key={gi}
+                  style={[
+                    styles.entryContainer,
+                    { borderLeftColor: colors.experience }
+                  ]}
+                >
+                  {/* Company header + first role coupled */}
+                  <View wrap={false}>
+                    <View style={styles.entryRow}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.entryTitle}>{group.company}</Text>
+                      </View>
+                      <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                        <Text style={styles.entryDate}>
+                          {group.startDate} —{' '}
+                          {group.current ? 'Present' : group.endDate}
+                        </Text>
+                        {group.location ? (
+                          <Text style={styles.entryLocation}>
+                            {group.location}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </View>
+                    {firstEntry && (
                       <View style={{ marginTop: 4 }}>
-                        {exp.highlights.map((h, i) => (
-                          <View
-                            key={i}
-                            style={{
-                              flexDirection: 'row',
-                              marginBottom: 2
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 9,
-                                color: '#475569',
-                                marginRight: 6
-                              }}
-                            >
-                              •
-                            </Text>
-                            <Text
-                              style={{
-                                fontSize: 9,
-                                color: '#475569',
-                                flex: 1,
-                                lineHeight: 1.5
-                              }}
-                            >
-                              {h}
-                            </Text>
+                        <Text
+                          style={[
+                            styles.entrySubtitle,
+                            { color: colors.experience }
+                          ]}
+                        >
+                          {firstEntry.position}
+                        </Text>
+                        {firstEntry.description ? (
+                          <Text style={styles.entryDescription}>
+                            {firstEntry.description}
+                          </Text>
+                        ) : null}
+                        {firstEntry.highlights && firstEntry.highlights.length > 0 && (
+                          <View style={{ marginTop: 4 }}>
+                            {firstEntry.highlights.map((h, i) => (
+                              <View
+                                key={i}
+                                style={{
+                                  flexDirection: 'row',
+                                  marginBottom: 2
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 9,
+                                    color: '#475569',
+                                    marginRight: 6
+                                  }}
+                                >
+                                  •
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 9,
+                                    color: '#475569',
+                                    flex: 1,
+                                    lineHeight: 1.5
+                                  }}
+                                >
+                                  {h}
+                                </Text>
+                              </View>
+                            ))}
                           </View>
-                        ))}
+                        )}
                       </View>
                     )}
                   </View>
-                ))}
-              </View>
-            ))}
+                  {/* Remaining role entries */}
+                  {restEntries.map((exp, ei) => (
+                    <View key={ei} style={{ marginTop: 4 }} wrap={false}>
+                      <Text
+                        style={[
+                          styles.entrySubtitle,
+                          { color: colors.experience }
+                        ]}
+                      >
+                        {exp.position}
+                      </Text>
+                      {exp.description ? (
+                        <Text style={styles.entryDescription}>
+                          {exp.description}
+                        </Text>
+                      ) : null}
+                      {exp.highlights && exp.highlights.length > 0 && (
+                        <View style={{ marginTop: 4 }}>
+                          {exp.highlights.map((h, i) => (
+                            <View
+                              key={i}
+                              style={{
+                                flexDirection: 'row',
+                                marginBottom: 2
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 9,
+                                  color: '#475569',
+                                  marginRight: 6
+                                }}
+                              >
+                                •
+                              </Text>
+                              <Text
+                                style={{
+                                  fontSize: 9,
+                                  color: '#475569',
+                                  flex: 1,
+                                  lineHeight: 1.5
+                                }}
+                              >
+                                {h}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              );
+            })}
           </View>
         )}
 
-        {education && education.length > 0 && (
-          <View style={styles.section}>
-            <Text
-              style={[styles.sectionTitle, { color: colors.education }]}
-            >
-              Education
-            </Text>
-            {education.map((edu, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.entryContainer,
-                  { borderLeftColor: colors.education }
-                ]}
-                wrap={false}
+        {education && education.length > 0 && (() => {
+          const [firstEdu, ...restEdu] = education;
+          return (
+            <View style={styles.section}>
+              <Text
+                style={[styles.sectionTitle, { color: colors.education }]}
+                minPresenceAhead={MIN_PRESENCE.education}
               >
-                <View style={styles.entryRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.entryTitle}>
-                      {edu.degree} in {edu.field}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.entrySubtitle,
-                        { color: colors.education }
-                      ]}
-                    >
-                      {edu.institution}
-                    </Text>
-                  </View>
-                  <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-                    <Text style={styles.entryLocation}>{edu.location}</Text>
-                    <Text style={styles.entryDate}>
-                      {edu.graduationDate}
-                    </Text>
-                    {edu.gpa && (
-                      <Text style={[styles.gpa, { color: colors.skills }]}>
-                        GPA: {edu.gpa}
+                Education
+              </Text>
+              {/* Header + first item coupled */}
+              {firstEdu && (
+                <View
+                  style={[
+                    styles.entryContainer,
+                    { borderLeftColor: colors.education }
+                  ]}
+                  wrap={false}
+                >
+                  <View style={styles.entryRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.entryTitle}>
+                        {firstEdu.degree} in {firstEdu.field}
                       </Text>
-                    )}
+                      <Text
+                        style={[
+                          styles.entrySubtitle,
+                          { color: colors.education }
+                        ]}
+                      >
+                        {firstEdu.institution}
+                      </Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                      <Text style={styles.entryLocation}>{firstEdu.location}</Text>
+                      <Text style={styles.entryDate}>
+                        {firstEdu.graduationDate}
+                      </Text>
+                      {firstEdu.gpa && (
+                        <Text style={[styles.gpa, { color: colors.skills }]}>
+                          GPA: {firstEdu.gpa}
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
-          </View>
-        )}
+              )}
+              {restEdu.map((edu, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.entryContainer,
+                    { borderLeftColor: colors.education }
+                  ]}
+                  wrap={false}
+                >
+                  <View style={styles.entryRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.entryTitle}>
+                        {edu.degree} in {edu.field}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.entrySubtitle,
+                          { color: colors.education }
+                        ]}
+                      >
+                        {edu.institution}
+                      </Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                      <Text style={styles.entryLocation}>{edu.location}</Text>
+                      <Text style={styles.entryDate}>
+                        {edu.graduationDate}
+                      </Text>
+                      {edu.gpa && (
+                        <Text style={[styles.gpa, { color: colors.skills }]}>
+                          GPA: {edu.gpa}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          );
+        })()}
       </View>
     </Page>
   );

@@ -11,6 +11,7 @@ import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
+import { CalendarIcon } from '../icons/CalendarIcon';
 
 interface IClassicDocumentProps {
   data: TResumeData;
@@ -24,6 +25,9 @@ export const ClassicDocument = ({
   fontFamily
 }: IClassicDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
+
+  /** Minimum points of content required ahead to prevent orphaned headers */
+  const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
 
   const classicStyles = StyleSheet.create({
     page: {
@@ -72,7 +76,7 @@ export const ClassicDocument = ({
     },
     contactSeparator: {
       fontSize: 8,
-      color: '#cbd5e1'
+      color: colors.education
     },
     /** Flex row wrapping the colored bar + section title text */
     sectionTitleRow: {
@@ -111,25 +115,107 @@ export const ClassicDocument = ({
     section: {
       marginBottom: 20
     },
+    /** Outer row: left column (title + subtitle) | right column (date + location) */
     itemRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
       marginBottom: 2
     },
+    /** Left column: position/degree + company/institution with normal spacing */
+    itemLeft: {
+      flex: 1,
+      gap: 2
+    },
+    /** Right column: date + location, tighter spacing */
+    itemRight: {
+      alignItems: 'flex-end',
+      gap: 2
+    },
     itemTitle: {
       fontSize: 11,
       fontWeight: 700,
       color: colors.education
     },
+    /** Experience company aligns with Aesthetic neutral heading tone */
+    experienceCompany: {
+      fontSize: 11,
+      fontWeight: 700,
+      color: '#1e293b'
+    },
+    /** Company marker row mirrors Aesthetic left border accent */
+    experienceCompanyRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6
+    },
+    experienceCompanyMarker: {
+      width: 2.5,
+      height: 10,
+      backgroundColor: colors.summary
+    },
     itemSubtitle: {
       fontSize: 10,
       color: '#475569'
+    },
+    /** Experience role aligns with Aesthetic secondary accent */
+    experiencePosition: {
+      fontSize: 10,
+      fontWeight: 600,
+      color: colors.experience
     },
     itemDate: {
       fontSize: 8,
       color: '#64748b',
       fontFamily: FONT_FAMILY.mono
+    },
+    /** Experience date uses accent; location uses muted neutral */
+    experienceDate: {
+      fontSize: 8,
+      color: colors.education,
+      fontWeight: 700
+    },
+    /** Date icon + text row mirrors Aesthetic metadata treatment */
+    experienceDateRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      gap: 4
+    },
+    experienceDateArrow: {
+      color: colors.experience
+    },
+    experienceLocation: {
+      fontSize: 8,
+      color: '#64748b',
+      fontWeight: 600,
+      fontFamily: FONT_FAMILY.mono
+    },
+    /** Full-width institution row with right-side date/location metadata */
+    educationInstitutionRow: {
+      marginTop: 4,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start'
+    },
+    /** Education right meta lifted to align with institute row */
+    educationMetaRight: {
+      alignItems: 'flex-end',
+      gap: 0,
+      marginTop: -7
+    },
+    educationInstitution: {
+      flex: 1,
+      fontSize: 10,
+      fontWeight: 600,
+      color: colors.experience
+    },
+    /** GPA shown at end of degree line in section-accent color */
+    educationGpaInline: {
+      marginLeft: 8,
+      fontSize: 8,
+      color: colors.summary,
+      fontWeight: 600
     },
     itemDescription: {
       fontSize: 9,
@@ -141,6 +227,20 @@ export const ClassicDocument = ({
       fontSize: 9,
       color: '#475569',
       lineHeight: 1.5
+    },
+    /** Fixed footer for multi-page pagination */
+    footer: {
+      position: 'absolute',
+      bottom: 20,
+      left: 50,
+      right: 50,
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center'
+    },
+    footerText: {
+      fontSize: 8,
+      color: '#94a3b8'
     }
   });
 
@@ -200,7 +300,7 @@ export const ClassicDocument = ({
       </View>
 
       {personalInfo?.summary && (
-        <View style={classicStyles.section}>
+        <View style={classicStyles.section} wrap={false}>
           <View style={classicStyles.sectionTitleRow}>
             <View style={classicStyles.sectionBar} />
             <Text style={classicStyles.sectionTitle}>Professional Summary</Text>
@@ -217,7 +317,7 @@ export const ClassicDocument = ({
 
       {experience && experience.length > 0 && (
         <View style={classicStyles.section}>
-          <View style={classicStyles.sectionTitleRow}>
+          <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.experience}>
             <View style={classicStyles.sectionBar} />
             <Text style={classicStyles.sectionTitle}>
               Professional Experience
@@ -227,108 +327,221 @@ export const ClassicDocument = ({
             <View style={classicStyles.dividerColored} />
             <View style={classicStyles.dividerSlate} />
           </View>
-          {groupExperience(experience).map((group, gi) => (
-            <View key={gi} style={{ marginBottom: 10 }}>
-              {/* Company header */}
-              <View style={classicStyles.itemRow}>
-                <Text style={classicStyles.itemTitle}>{group.company}</Text>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={classicStyles.itemDate}>
-                    {group.startDate} -{' '}
-                    {group.current ? 'Present' : group.endDate}
-                  </Text>
-                  {group.location ? (
-                    <Text style={classicStyles.itemDate}>
-                      {group.location}
-                    </Text>
-                  ) : null}
-                </View>
-              </View>
-              {/* Role entries */}
-              {group.entries.map((exp, ei) => (
-                <View key={ei} style={{ marginTop: 4 }} wrap={false}>
-                  <Text style={classicStyles.itemSubtitle}>
-                    {exp.position}
-                  </Text>
-                  {exp.description ? (
-                    <Text style={classicStyles.itemDescription}>
-                      {exp.description}
-                    </Text>
-                  ) : null}
-                  {exp.highlights && exp.highlights.length > 0 && (
+          {groupExperience(experience).map((group, gi) => {
+            const [firstEntry, ...restEntries] = group.entries;
+            return (
+              <View key={gi} style={{ marginBottom: 10 }}>
+                {/* Company header + first role coupled to prevent orphan */}
+                <View wrap={false}>
+                  <View style={classicStyles.itemRow}>
+                    <View style={classicStyles.itemLeft}>
+                      <View style={classicStyles.experienceCompanyRow}>
+                        <View style={classicStyles.experienceCompanyMarker} />
+                        <Text style={classicStyles.experienceCompany}>
+                          {group.company}
+                        </Text>
+                      </View>
+                      {firstEntry ? (
+                        <Text style={classicStyles.experiencePosition}>
+                          {firstEntry.position}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <View style={classicStyles.itemRight}>
+                      <View style={classicStyles.experienceDateRow}>
+                        <CalendarIcon size={8} color={colors.experience} />
+                        <Text style={classicStyles.experienceDate}>
+                          {group.startDate}{' '}
+                          <Text style={classicStyles.experienceDateArrow}>→</Text>{' '}
+                          {group.current ? 'Present' : group.endDate}
+                        </Text>
+                      </View>
+                      {group.location ? (
+                        <Text style={classicStyles.experienceLocation}>
+                          {group.location}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </View>
+                  {firstEntry && (
                     <View style={{ marginTop: 4 }}>
-                      {exp.highlights.map((h, i) => (
-                        <View
-                          key={i}
-                          style={{ flexDirection: 'row', marginBottom: 2 }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              color: '#475569',
-                              marginRight: 6
-                            }}
-                          >
-                            •
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 9,
-                              color: '#475569',
-                              flex: 1,
-                              lineHeight: 1.5
-                            }}
-                          >
-                            {h}
-                          </Text>
+                      {firstEntry.description ? (
+                        <Text style={classicStyles.itemDescription}>
+                          {firstEntry.description}
+                        </Text>
+                      ) : null}
+                      {firstEntry.highlights && firstEntry.highlights.length > 0 && (
+                        <View style={{ marginTop: 4 }}>
+                          {firstEntry.highlights.map((h, i) => (
+                            <View
+                              key={i}
+                              style={{ flexDirection: 'row', marginBottom: 2 }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 9,
+                                  color: '#475569',
+                                  marginRight: 6
+                                }}
+                              >
+                                •
+                              </Text>
+                              <Text
+                                style={{
+                                  fontSize: 9,
+                                  color: '#475569',
+                                  flex: 1,
+                                  lineHeight: 1.5
+                                }}
+                              >
+                                {h}
+                              </Text>
+                            </View>
+                          ))}
                         </View>
-                      ))}
+                      )}
                     </View>
                   )}
                 </View>
-              ))}
-            </View>
-          ))}
+                {/* Remaining role entries */}
+                {restEntries.map((exp, ei) => (
+                  <View key={ei} style={{ marginTop: 4 }} wrap={false}>
+                    <Text style={classicStyles.experiencePosition}>
+                      {exp.position}
+                    </Text>
+                    {exp.description ? (
+                      <Text style={classicStyles.itemDescription}>
+                        {exp.description}
+                      </Text>
+                    ) : null}
+                    {exp.highlights && exp.highlights.length > 0 && (
+                      <View style={{ marginTop: 4 }}>
+                        {exp.highlights.map((h, i) => (
+                          <View
+                            key={i}
+                            style={{ flexDirection: 'row', marginBottom: 2 }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                color: '#475569',
+                                marginRight: 6
+                              }}
+                            >
+                              •
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 9,
+                                color: '#475569',
+                                flex: 1,
+                                lineHeight: 1.5
+                              }}
+                            >
+                              {h}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            );
+          })}
         </View>
       )}
 
-      {education && education.length > 0 && (
-        <View style={classicStyles.section}>
-          <View style={classicStyles.sectionTitleRow}>
-            <View style={classicStyles.sectionBar} />
-            <Text style={classicStyles.sectionTitle}>Education</Text>
-          </View>
-          <View style={classicStyles.dividerWrap}>
-            <View style={classicStyles.dividerColored} />
-            <View style={classicStyles.dividerSlate} />
-          </View>
-          {education.map((edu, index) => (
-            <View key={index} style={{ marginBottom: 8 }} wrap={false}>
-              <View style={classicStyles.itemRow}>
-                <Text style={classicStyles.itemTitle}>
-                  {edu.degree} in {edu.field}
-                </Text>
-                <Text style={classicStyles.itemDate}>{edu.graduationDate}</Text>
+      {education && education.length > 0 && (() => {
+        const [firstEdu, ...restEdu] = education;
+        return (
+          <View style={classicStyles.section}>
+            {/* Keep header/divider coupled with first item to prevent orphaned section title */}
+            <View wrap={false}>
+              <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.education}>
+                <View style={classicStyles.sectionBar} />
+                <Text style={classicStyles.sectionTitle}>Education</Text>
               </View>
-              <View style={classicStyles.itemRow}>
-                <Text style={classicStyles.itemSubtitle}>
-                  {edu.institution}
-                </Text>
-                <Text style={classicStyles.itemDate}>{edu.location}</Text>
+              <View style={classicStyles.dividerWrap}>
+                <View style={classicStyles.dividerColored} />
+                <View style={classicStyles.dividerSlate} />
               </View>
-              {edu.gpa && (
-                <Text style={[classicStyles.itemDate, { marginTop: 2 }]}>
-                  GPA: {edu.gpa}
-                </Text>
+              {firstEdu && (
+                <View style={{ marginBottom: 14 }}>
+                  <View style={classicStyles.itemRow}>
+                    <View style={classicStyles.itemLeft}>
+                      <View style={classicStyles.experienceCompanyRow}>
+                        <View style={classicStyles.experienceCompanyMarker} />
+                        <Text style={classicStyles.experienceCompany}>
+                          {firstEdu.degree} in {firstEdu.field}
+                        </Text>
+                      </View>
+                    </View>
+                    {firstEdu.gpa ? (
+                      <Text style={classicStyles.educationGpaInline}>
+                        GPA: {firstEdu.gpa}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <View style={classicStyles.educationInstitutionRow}>
+                    <Text style={classicStyles.educationInstitution}>
+                      {firstEdu.institution}
+                    </Text>
+                    <View style={classicStyles.educationMetaRight}>
+                      <View style={classicStyles.experienceDateRow}>
+                        <CalendarIcon size={8} color={colors.experience} />
+                        <Text style={classicStyles.experienceDate}>
+                          {firstEdu.graduationDate}
+                        </Text>
+                      </View>
+                      <Text style={classicStyles.experienceLocation}>
+                        {firstEdu.location}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               )}
             </View>
-          ))}
-        </View>
-      )}
+            {restEdu.map((edu, index) => (
+              <View key={index} style={{ marginBottom: 14 }} wrap={false}>
+                <View style={classicStyles.itemRow}>
+                  <View style={classicStyles.itemLeft}>
+                    <View style={classicStyles.experienceCompanyRow}>
+                      <View style={classicStyles.experienceCompanyMarker} />
+                      <Text style={classicStyles.experienceCompany}>
+                        {edu.degree} in {edu.field}
+                      </Text>
+                    </View>
+                  </View>
+                  {edu.gpa ? (
+                    <Text style={classicStyles.educationGpaInline}>
+                      GPA: {edu.gpa}
+                    </Text>
+                  ) : null}
+                </View>
+                <View style={classicStyles.educationInstitutionRow}>
+                  <Text style={classicStyles.educationInstitution}>
+                    {edu.institution}
+                  </Text>
+                  <View style={classicStyles.educationMetaRight}>
+                    <View style={classicStyles.experienceDateRow}>
+                      <CalendarIcon size={8} color={colors.experience} />
+                      <Text style={classicStyles.experienceDate}>
+                        {edu.graduationDate}
+                      </Text>
+                    </View>
+                    <Text style={classicStyles.experienceLocation}>{edu.location}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        );
+      })()}
 
       {skills && skills.length > 0 && (
-        <View style={classicStyles.section}>
-          <View style={classicStyles.sectionTitleRow}>
+        <View style={classicStyles.section} wrap={false}>
+          <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.skills}>
             <View style={classicStyles.sectionBar} />
             <Text style={classicStyles.sectionTitle}>Skills</Text>
           </View>
@@ -339,6 +552,15 @@ export const ClassicDocument = ({
           <Text style={classicStyles.skillsText}>{skills.join('  |  ')}</Text>
         </View>
       )}
+
+      <View style={classicStyles.footer} fixed>
+        <Text
+          style={classicStyles.footerText}
+          render={({ pageNumber, totalPages }) =>
+            totalPages > 1 ? `Page ${pageNumber} of ${totalPages}` : ''
+          }
+        />
+      </View>
     </Page>
   );
 };

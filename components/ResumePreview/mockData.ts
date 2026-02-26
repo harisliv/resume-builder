@@ -1,3 +1,6 @@
+import type { TResumeData } from '@/types/schema';
+import { resumeInfoDefaultValues } from '@/types/schema';
+
 export const mockPersonalInfo = {
   fullName: 'John Doe',
   email: 'john.doe@email.com',
@@ -94,3 +97,13 @@ export const mockSkills = [
   'Docker',
   'AWS'
 ];
+
+/** Homepage default mock as TResumeData — used when no resume selected. */
+export const homepageDefaultMockData: TResumeData = {
+  ...resumeInfoDefaultValues,
+  title: 'John Doe Resume',
+  personalInfo: mockPersonalInfo,
+  experience: mockExperience,
+  education: mockEducation,
+  skills: mockSkills
+};
