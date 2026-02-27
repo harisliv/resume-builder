@@ -6,6 +6,7 @@ import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import type { TResumeForm } from '@/types/schema';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
+import { sanitizeInput } from '@/lib/utils';
 
 export default function Highlights({ index }: { index: number }) {
   const { control } = useFormContext<TResumeForm>();
@@ -41,6 +42,9 @@ export default function Highlights({ index }: { index: number }) {
                 <Input
                   {...inputField}
                   value={inputField.value ?? ''}
+                  onChange={(e) =>
+                    inputField.onChange(sanitizeInput(e.target.value))
+                  }
                   id={`highlight-${index}-${highlightIndex}`}
                   placeholder="Enter a highlight"
                   className="flex-1"
@@ -55,7 +59,7 @@ export default function Highlights({ index }: { index: number }) {
             >
               <HugeiconsIcon
                 icon={Delete02Icon}
-                className="h-4 w-4 text-destructive"
+                className="text-destructive h-4 w-4"
               />
             </Button>
           </div>
@@ -67,7 +71,7 @@ export default function Highlights({ index }: { index: number }) {
           onClick={() => append('')}
           className="w-full"
         >
-          <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4 mr-2" />
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
           Add Highlight
         </Button>
       </div>
