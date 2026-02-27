@@ -32,7 +32,7 @@ Split features into two layers for readability:
 - **Purpose**: Encapsulate all Tailwind classes
 - **Contains**: Pre-styled wrappers with all classes baked in
 - **Does NOT contain**: Business logic
-- **File naming**: kebab-case (e.g., `education-accordion.tsx`, `form-item-card.tsx`)
+- **File naming**: kebab-case (e.g., `section-accordion.tsx`, `form-item-card.tsx`)
 - **Key Rule**: All className strings with 3+ utilities go here
 - **Location**: `styles/` folder in feature directory, or `@/components/styles/` if shared
 
@@ -48,7 +48,7 @@ Split features into two layers for readability:
 
 ```
 Smart Component (Education.tsx) [logic + composition]
-└─> Styled Components (education-accordion.tsx) [all classes]
+└─> Styled Components (section-accordion.tsx) [all classes]
     └─> Base Components (accordion.tsx from shadcn)
 ```
 

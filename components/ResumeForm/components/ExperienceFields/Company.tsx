@@ -54,11 +54,11 @@ export default function Company({ index }: { index: number }) {
   /** Rename company across all experience entries that use it. */
   const handleRename = useCallback(
     (oldName: string, newName: string) => {
-      experience?.forEach((exp, i) => {
-        if (exp.company?.trim() === oldName) {
-          setValue(`experience.${i}.company`, newName);
-        }
-      });
+      if (!experience) return;
+      const updated = experience.map((exp) =>
+        exp.company?.trim() === oldName ? { ...exp, company: newName } : exp
+      );
+      setValue('experience', updated);
     },
     [experience, setValue]
   );
@@ -66,11 +66,11 @@ export default function Company({ index }: { index: number }) {
   /** Clear company from all experience entries that use it. */
   const handleDelete = useCallback(
     (name: string) => {
-      experience?.forEach((exp, i) => {
-        if (exp.company?.trim() === name) {
-          setValue(`experience.${i}.company`, '');
-        }
-      });
+      if (!experience) return;
+      const updated = experience.map((exp) =>
+        exp.company?.trim() === name ? { ...exp, company: '' } : exp
+      );
+      setValue('experience', updated);
     },
     [experience, setValue]
   );
@@ -89,8 +89,8 @@ export default function Company({ index }: { index: number }) {
               !currentCompany && 'text-muted-foreground'
             )}
           >
-            <Building2 className="mr-2 size-4" />
-            {currentCompany || 'Select company'}
+            <Building2 className="mr-2 size-4 shrink-0" />
+            <span className="truncate">{currentCompany || 'Select company'}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-64 p-2" align="start">

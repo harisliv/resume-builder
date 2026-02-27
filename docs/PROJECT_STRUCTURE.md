@@ -11,6 +11,12 @@
 
 React Hook Form manages form state, Zod validates data, Convex mutations persist to database, and TanStack Query handles caching/refetching. Convex provides real-time database and serverless functions.
 
+## Resume Data Shape Notes
+
+- `skills` now uses categorized shape everywhere (form, Convex, AI suggestions, preview, PDF):
+  - `Record<string, string[]>`
+  - Example: `{ "Languages": ["TypeScript"], "AI Tools": ["Cursor"] }`
+
 ## Authentication
 
 WorkOS AuthKit handles authentication via middleware. Protected routes are configured in `proxy.ts`.
@@ -31,8 +37,8 @@ WorkOS AuthKit handles authentication via middleware. Protected routes are confi
   - `PdfViewer/`: PDF viewer components
   - `AiSuggestionsDialog/`: AI resume suggestions dialog (job description → suggested changes)
   - `ResumeForm/`: Form sections and fields
-    - `components/`: Form section components (PersonalInfo, Experience, Education)
-      - `UI/`: Accordion components for sections
+    - `components/`: Form section components (PersonalInfo, Experience, Education, Skills)
+      - `UI/`: section-accordion (shared by Experience, Education, Skills)
       - `EducationFields/`: Education field groups
       - `ExperienceFields/`: Experience field groups
       - `PersonalInfoFields/`: Personal info field groups

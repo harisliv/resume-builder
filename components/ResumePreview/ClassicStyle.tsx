@@ -11,6 +11,7 @@ import { Calendar } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 import { groupExperience } from './groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 /** Pipe separator between contact items */
 const ContactSep = () => <span className="text-[8px] text-slate-300"> | </span>;
@@ -23,6 +24,7 @@ const CLASSIC_EXPERIENCE_TONES = {
 
 export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   return (
     <div
@@ -186,7 +188,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                       {firstEntry && (
                         <div>
                           {firstEntry.description && (
-                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
+                            <p className="mt-0.5 text-[9px] italic leading-relaxed text-slate-600">
                               {firstEntry.description}
                             </p>
                           )}
@@ -215,9 +217,9 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                             {exp.position}
                           </p>
                           {exp.description && (
-                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600">
-                              {exp.description}
-                            </p>
+<p className="mt-0.5 text-[9px] italic leading-relaxed text-slate-600">
+                            {exp.description}
+                          </p>
                           )}
                           {exp.highlights && exp.highlights.length > 0 && (
                             <ul className="mt-0.5 space-y-0.5">
@@ -332,7 +334,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
           </div>
         )}
 
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <div>
             <div
               className="mb-1 flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase"
@@ -355,9 +357,14 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
               />
               <div className="h-px bg-slate-200" />
             </div>
-            <p className="text-[9px] leading-relaxed text-slate-700">
-              {skills.join('  |  ')}
-            </p>
+            <div className="space-y-1.5 text-[9px] leading-relaxed text-slate-700">
+              {skillEntries.map(([category, values]) => (
+                <p key={category}>
+                  <span className="font-bold">{category}:</span>{' '}
+                  {values.join(', ')}
+                </p>
+              ))}
+            </div>
           </div>
         )}
       </div>

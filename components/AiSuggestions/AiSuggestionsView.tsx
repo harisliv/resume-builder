@@ -5,6 +5,10 @@ import type {
   TSuggestionSelection
 } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
+import {
+  flattenCategorizedSkills,
+  getSkillEntries
+} from '@/lib/skills';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -29,7 +33,7 @@ type TAiSuggestionsViewProps = {
     field: 'description' | 'highlight',
     highlightIdx?: number
   ) => void;
-  onRemoveSkill: (skillIdx: number) => void;
+  onRemoveSkill: (category: string, skillIdx: number) => void;
 };
 
 /**
@@ -138,10 +142,11 @@ export function AiSuggestionsView({
 }: TAiSuggestionsViewProps) {
   const hasSummary = !!suggestions.summary;
   const hasExperience = !!suggestions.experience?.length;
-  const hasSkills = !!suggestions.skills?.length;
+  const suggestedSkillEntries = getSkillEntries(suggestions.skills);
+  const hasSkills = suggestedSkillEntries.length > 0;
 
   const currentSkillsSet = new Set(
-    currentData.skills.map((s) => s.toLowerCase())
+    flattenCategorizedSkills(currentData.skills).map((s) => s.toLowerCase())
   );
 
   const defaultTab = hasSummary
@@ -340,12 +345,14 @@ export function AiSuggestionsView({
             <ComparisonGrid>
               <ComparisonCard title="Current">
                 <BadgeGroup>
-                  {currentData.skills.length ? (
-                    currentData.skills.map((s) => (
-                      <Badge key={s} variant="outline">
-                        {s}
-                      </Badge>
-                    ))
+                  {getSkillEntries(currentData.skills).length ? (
+                    getSkillEntries(currentData.skills).flatMap(([category, skills]) =>
+                      skills.map((s) => (
+                        <Badge key={`${category}-${s}`} variant="outline">
+                          {category}: {s}
+                        </Badge>
+                      ))
+                    )
                   ) : (
                     <MutedText>No skills</MutedText>
                   )}
@@ -353,15 +360,17 @@ export function AiSuggestionsView({
               </ComparisonCard>
               <ComparisonCard title="Suggested" suggested>
                 <BadgeGroup>
-                  {suggestions.skills!.map((s, i) => (
-                    <RemovableSkillBadge
-                      key={s}
-                      isNew={!currentSkillsSet.has(s.toLowerCase())}
-                      onRemove={() => onRemoveSkill(i)}
-                    >
-                      {s}
-                    </RemovableSkillBadge>
-                  ))}
+                  {suggestedSkillEntries.flatMap(([category, skills]) =>
+                    skills.map((s, i) => (
+                      <RemovableSkillBadge
+                        key={`${category}-${s}-${i}`}
+                        isNew={!currentSkillsSet.has(s.toLowerCase())}
+                        onRemove={() => onRemoveSkill(category, i)}
+                      >
+                        {category}: {s}
+                      </RemovableSkillBadge>
+                    ))
+                  )}
                 </BadgeGroup>
               </ComparisonCard>
             </ComparisonGrid>

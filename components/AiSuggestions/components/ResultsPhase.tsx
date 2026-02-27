@@ -85,7 +85,9 @@ export function ResultsPhase({
               onToggleExperienceField={(expIdx, field, highlightIdx) =>
                 dispatch({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
               }
-              onRemoveSkill={(skillIdx) => dispatch({ type: 'REMOVE_SKILL', skillIdx })}
+              onRemoveSkill={(category, skillIdx) =>
+                dispatch({ type: 'REMOVE_SKILL', category, skillIdx })
+              }
             />
           )}
         </ModelScrollArea>

@@ -4,6 +4,7 @@ import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 interface IExecutiveDocumentProps {
   data: TResumeData;
@@ -17,6 +18,7 @@ export const ExecutiveDocument = ({
   fontFamily
 }: IExecutiveDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -162,14 +164,23 @@ export const ExecutiveDocument = ({
           )}
         </View>
 
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <View style={styles.skillsSection}>
             <Text style={styles.sidebarSectionTitle}>Skills</Text>
-            <View style={styles.skillsWrap}>
-              {skills.map((skill, index) => (
-                <Text key={index} style={styles.skillTag}>
-                  {skill}
-                </Text>
+            <View>
+              {skillEntries.map(([category, values]) => (
+                <View key={category} style={{ marginBottom: 8 }}>
+                  <Text style={[styles.contactText, { marginBottom: 4 }]}>
+                    {category}
+                  </Text>
+                  <View style={styles.skillsWrap}>
+                    {values.map((skill, index) => (
+                      <Text key={`${category}-${index}`} style={styles.skillTag}>
+                        {skill}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
               ))}
             </View>
           </View>

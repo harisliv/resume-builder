@@ -14,6 +14,7 @@ import {
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 import { groupExperience } from './groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 const AESTHETIC_NEUTRALS = {
   textPrimary: '#1e293b',
@@ -43,6 +44,7 @@ const hexToRgba = (hex: string, alpha: number) => {
 /** Preview component matching AestheticDocument PDF layout */
 export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
   const AESTHETIC = {
     ...AESTHETIC_NEUTRALS,
     primary: palette.summary,
@@ -341,7 +343,7 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
         )}
 
         {/* Skills */}
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <div>
             <div className="mb-3 flex items-center gap-2.5">
               <div
@@ -357,15 +359,27 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                 Skills
               </h2>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {skills.map((skill: string, index: number) => (
-                <span
-                  key={index}
-                  className="text-accent rounded-full px-3 py-1.5 text-[9px]"
-                  style={{ backgroundColor: AESTHETIC.primaryLight }}
-                >
-                  {skill}
-                </span>
+            <div className="space-y-2">
+              {skillEntries.map(([category, values]) => (
+                <div key={category}>
+                  <p
+                    className="mb-1 text-[10px] font-semibold"
+                    style={{ color: AESTHETIC.textPrimary }}
+                  >
+                    {category}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((skill: string, index: number) => (
+                      <span
+                        key={`${category}-${index}`}
+                        className="text-accent rounded-full px-3 py-1.5 text-[9px]"
+                        style={{ backgroundColor: AESTHETIC.primaryLight }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

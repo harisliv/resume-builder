@@ -14,7 +14,7 @@ export default defineSchema({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
-    skills: v.optional(v.array(v.string())),
+    skills: v.optional(v.record(v.string(), v.array(v.string()))),
     documentStyle: documentStyleValidator
   }).index('by_user', ['userId'])
 });

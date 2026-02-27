@@ -4,9 +4,11 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 import { groupExperience } from './groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   return (
     <div
@@ -186,7 +188,7 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
           </div>
         )}
 
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <div>
             <h2
               className="text-base font-black uppercase tracking-wide mb-3 flex items-center gap-2"
@@ -198,15 +200,27 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
               />
               Skills
             </h2>
-            <div className="flex flex-wrap gap-1.5">
-              {skills.map((skill: string, index: number) => (
-                <span
-                  key={index}
-                  className="text-[9px] px-3 py-1.5 rounded-full text-white font-semibold"
-                  style={{ backgroundColor: palette.skills }}
-                >
-                  {skill}
-                </span>
+            <div className="space-y-2">
+              {skillEntries.map(([category, values]) => (
+                <div key={category}>
+                  <p
+                    className="mb-1 text-[9px] font-bold uppercase tracking-wide"
+                    style={{ color: palette.skills }}
+                  >
+                    {category}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((skill: string, index: number) => (
+                      <span
+                        key={`${category}-${index}`}
+                        className="text-[9px] px-3 py-1.5 rounded-full text-white font-semibold"
+                        style={{ backgroundColor: palette.skills }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

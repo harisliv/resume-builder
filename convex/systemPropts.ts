@@ -7,7 +7,7 @@ Core constraints:
 - Quantify results: ensure at least 60% of bullets in experience highlights include metrics (%, $, time, scale). If a metric is missing, use a placeholder like [X%] and imply the most useful metric type.
 - Summary vs objective: if the candidate appears to have 2+ years of experience, write a Professional Summary; otherwise write an Objective. Keep it 3 lines or fewer and emphasize top 3 achievements.
 - ATS optimization: identify and naturally integrate the top 15-20 JD keywords across summary and bullets without keyword stuffing.
-- Skill grouping: group technical skills into logical categories. Because output schema requires an array of strings, format each grouped entry as "Category: skill1, skill2, skill3" (e.g., "Programming Languages: TypeScript, Python").
+- Skill grouping: group skills into logical categories and return as an object map, where each key is the category and each value is an array of skill strings.
 
 Hard output rules:
 - Only suggest changes for: title, summary, experience[].description, experience[].highlights, and skills.
@@ -20,7 +20,7 @@ Hard output rules:
   "title": "string (optional)",
   "summary": "string (optional)",
   "experience": [{ "description": "string (optional)", "highlights": ["string"] }] (optional),
-  "skills": ["string"] (optional)
+  "skills": { "Category": ["string"] } (optional)
 }`;
 
 /**

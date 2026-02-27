@@ -4,6 +4,7 @@ import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 interface IBoldDocumentProps {
   data: TResumeData;
@@ -17,6 +18,7 @@ export const BoldDocument = ({
   fontFamily
 }: IBoldDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -411,7 +413,7 @@ export const BoldDocument = ({
           );
         })()}
 
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <View wrap={false}>
             <View style={boldStyles.sectionHeader} minPresenceAhead={MIN_PRESENCE.skills}>
               <View
@@ -424,11 +426,25 @@ export const BoldDocument = ({
                 Skills
               </Text>
             </View>
-            <View style={boldStyles.skillsContainer}>
-              {skills.map((skill, index) => (
-                <Text key={index} style={boldStyles.skillTag}>
-                  {skill}
-                </Text>
+            <View>
+              {skillEntries.map(([category, values]) => (
+                <View key={category} style={{ marginBottom: 8 }}>
+                  <Text
+                    style={[
+                      boldStyles.itemSubtitle,
+                      { color: colors.skills, marginBottom: 4 }
+                    ]}
+                  >
+                    {category}
+                  </Text>
+                  <View style={boldStyles.skillsContainer}>
+                    {values.map((skill, index) => (
+                      <Text key={`${category}-${index}`} style={boldStyles.skillTag}>
+                        {skill}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
               ))}
             </View>
           </View>

@@ -13,12 +13,13 @@ import Location from './ExperienceFields/Location';
 import { ResumeFormControlledDateRange } from '@/components/ControlledFields/ControlledDateRange';
 import Description from './ExperienceFields/Description';
 import Highlights from './ExperienceFields/Highlights';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import {
   StyledAccordion,
   StyledAccordionItem,
   StyledAccordionTrigger,
   StyledAccordionContent
-} from './UI/experience-accordion';
+} from './UI/section-accordion';
 
 function experienceLabel(
   company: string | undefined,
@@ -42,6 +43,7 @@ function parseDate(str: string | undefined): number {
 
 export default function Experience() {
   const { control, watch } = useFormContext<TResumeForm>();
+  const confirm = useWarningDialog();
   const experience = watch('experience');
   const { fields, append, remove } = useFieldArray({
     control,
@@ -49,35 +51,57 @@ export default function Experience() {
   });
 
   /** Indices sorted by startDate descending (newest first). */
-  const sortedIndices = useMemo(() => {
-    return fields
-      .map((_, i) => i)
-      .sort((a, b) => {
-        const dateA = parseDate(experience?.[a]?.startDate);
-        const dateB = parseDate(experience?.[b]?.startDate);
-        return dateB - dateA;
-      });
-  }, [fields, experience]);
+  const sortedIndices = useMemo(
+    () =>
+      fields
+        .map((_, i) => i)
+        .sort((a, b) => {
+          const dateA = parseDate(experience?.[a]?.startDate);
+          const dateB = parseDate(experience?.[b]?.startDate);
+          return dateB - dateA;
+        }),
+    [fields, experience]
+  );
+
+  /** Confirms before deleting one experience entry. */
+  const confirmRemoveExperience = async (index: number) => {
+    const label = experienceLabel(
+      experience?.[index]?.company,
+      experience?.[index]?.position,
+      index
+    );
+    const ok = await confirm({
+      title: 'Delete experience?',
+      description: `This will remove "${label}".`,
+      confirmLabel: 'Delete experience',
+      variant: 'destructive'
+    });
+    if (!ok) return;
+    remove(index);
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <SectionTitle>Work Experience</SectionTitle>
         <Button type="button" onClick={() => append(experienceDefaultValues)}>
-          <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4 mr-2" />
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
           Add Experience
         </Button>
       </div>
-      <StyledAccordion>
+      <StyledAccordion defaultValue={['experience-0']}>
         {sortedIndices.map((index) => (
-          <StyledAccordionItem key={fields[index].id} value={`experience-${index}`}>
+          <StyledAccordionItem
+            key={fields[index].id}
+            value={`experience-${index}`}
+          >
             <StyledAccordionTrigger
               label={experienceLabel(
                 experience?.[index]?.company,
                 experience?.[index]?.position,
                 index
               )}
-              onDelete={() => remove(index)}
+              onDelete={() => confirmRemoveExperience(index)}
             />
             <StyledAccordionContent>
               <FieldRow cols="half">

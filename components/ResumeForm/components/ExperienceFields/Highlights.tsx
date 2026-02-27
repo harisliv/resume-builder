@@ -5,13 +5,27 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import type { TResumeForm } from '@/types/schema';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 
 export default function Highlights({ index }: { index: number }) {
   const { control } = useFormContext<TResumeForm>();
+  const confirm = useWarningDialog();
   const { fields, append, remove } = useFieldArray({
     control,
     name: `experience.${index}.highlights` as any
   });
+
+  /** Confirms before removing a highlight row. */
+  const confirmRemoveHighlight = async (highlightIndex: number) => {
+    const ok = await confirm({
+      title: 'Delete highlight?',
+      description: 'This highlight will be removed from this experience entry.',
+      confirmLabel: 'Delete highlight',
+      variant: 'destructive'
+    });
+    if (!ok) return;
+    remove(highlightIndex);
+  };
 
   return (
     <Field>
@@ -37,7 +51,7 @@ export default function Highlights({ index }: { index: number }) {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => remove(highlightIndex)}
+              onClick={() => confirmRemoveHighlight(highlightIndex)}
             >
               <HugeiconsIcon
                 icon={Delete02Icon}

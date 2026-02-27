@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PersonalInfo from './PersonalInfo';
 import Experience from './Experience';
 import Education from './Education';
+import Skills from './Skills';
 
 export default function ResumeFormTabs() {
   const [activeTab, setActiveTab] = useState('form');
@@ -33,7 +34,7 @@ export default function ResumeFormTabs() {
         </TabsContent>
 
         <TabsContent value="skills" className="mt-6 px-1">
-          <div>Skills</div>
+          <Skills />
         </TabsContent>
       </div>
     </Tabs>

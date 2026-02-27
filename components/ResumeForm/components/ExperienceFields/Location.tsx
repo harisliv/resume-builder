@@ -1,11 +1,15 @@
-import { ResumeFormControlledInput } from '@/components/ControlledFields/ControlledInput';
+import { ResumeFormControlledCombobox } from '@/components/ControlledFields/ControlledCombobox';
+import { useFetchCountries } from '@/hooks/useFetchCountries';
 
 export default function Location({ index }: { index: number }) {
+  const { data: countries = [] } = useFetchCountries();
+
   return (
-    <ResumeFormControlledInput
+    <ResumeFormControlledCombobox
       name={`experience.${index}.location`}
       label="Location"
       placeholder="San Francisco, CA"
+      options={countries}
     />
   );
 }

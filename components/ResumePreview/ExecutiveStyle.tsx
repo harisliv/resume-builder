@@ -4,9 +4,11 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
 import { groupExperience } from './groupExperience';
+import { getSkillEntries } from '@/lib/skills';
 
 export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   return (
     <div
@@ -14,7 +16,7 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
       style={{ fontFamily }}
     >
       <div
-        className="w-[30%] px-5 py-6 flex-shrink-0"
+        className="w-[30%] px-5 py-6 shrink-0"
         style={{ backgroundColor: palette.summary }}
       >
         <h1 className="text-xl font-bold text-white tracking-tight leading-tight">
@@ -24,38 +26,47 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
         <div className="mt-5 space-y-2">
           {personalInfo?.email && (
             <div className="flex items-center gap-2 text-[9px] text-white/90">
-              <Mail className="h-3 w-3 text-white/70 flex-shrink-0" />
+              <Mail className="h-3 w-3 text-white/70 shrink-0" />
               <span className="break-all">{personalInfo.email}</span>
             </div>
           )}
           {personalInfo?.phone && (
             <div className="flex items-center gap-2 text-[9px] text-white/90">
-              <Phone className="h-3 w-3 text-white/70 flex-shrink-0" />
+              <Phone className="h-3 w-3 text-white/70 shrink-0" />
               <span>{personalInfo.phone}</span>
             </div>
           )}
           {personalInfo?.location && (
             <div className="flex items-center gap-2 text-[9px] text-white/90">
-              <MapPin className="h-3 w-3 text-white/70 flex-shrink-0" />
+              <MapPin className="h-3 w-3 text-white/70 shrink-0" />
               <span>{personalInfo.location}</span>
             </div>
           )}
         </div>
 
-        {skills && skills.length > 0 && (
+        {skillEntries.length > 0 && (
           <div className="mt-6">
             <h2 className="text-[11px] font-bold text-white/60 uppercase tracking-widest mb-3">
               Skills
             </h2>
-            <div className="flex flex-wrap gap-1.5">
-              {skills.map((skill: string, index: number) => (
-                <span
-                  key={index}
-                  className="text-[8px] px-2.5 py-1 rounded-full text-white font-medium"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
-                >
-                  {skill}
-                </span>
+            <div className="space-y-2">
+              {skillEntries.map(([category, values]) => (
+                <div key={category}>
+                  <p className="mb-1 text-[8px] font-semibold uppercase tracking-wider text-white/70">
+                    {category}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((skill: string, index: number) => (
+                      <span
+                        key={`${category}-${index}`}
+                        className="text-[8px] px-2.5 py-1 rounded-full text-white font-medium"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -99,7 +110,7 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
                         {group.company}
                       </h3>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-2">
+                    <div className="text-right shrink-0 ml-2">
                       <p className="text-[8px] text-slate-400 font-mono">
                         {group.startDate} —{' '}
                         {group.current ? 'Present' : group.endDate}
@@ -175,7 +186,7 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
                         {edu.institution}
                       </p>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-2">
+                    <div className="text-right shrink-0 ml-2">
                       <p className="text-[8px] text-slate-500">
                         {edu.location}
                       </p>

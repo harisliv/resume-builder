@@ -22,7 +22,7 @@ const suggestionsValidator = v.object({
       })
     )
   ),
-  skills: v.optional(v.array(v.string()))
+  skills: v.optional(v.record(v.string(), v.array(v.string())))
 });
 
 

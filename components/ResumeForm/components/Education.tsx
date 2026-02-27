@@ -18,7 +18,7 @@ import {
   StyledAccordionItem,
   StyledAccordionTrigger,
   StyledAccordionContent
-} from './UI/education-accordion';
+} from './UI/section-accordion';
 
 function educationLabel(institution: string | undefined, index: number) {
   const trimmed = institution?.trim();
@@ -60,7 +60,7 @@ export default function Education() {
           Add Education
         </Button>
       </div>
-      <StyledAccordion>
+      <StyledAccordion defaultValue={['education-0']}>
         {sortedIndices.map((index) => (
           <StyledAccordionItem key={fields[index].id} value={`education-${index}`}>
             <StyledAccordionTrigger

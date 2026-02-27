@@ -12,6 +12,7 @@ import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { CalendarIcon } from '../icons/CalendarIcon';
+import { getSkillEntries } from '@/lib/skills';
 
 interface IClassicDocumentProps {
   data: TResumeData;
@@ -25,6 +26,7 @@ export const ClassicDocument = ({
   fontFamily
 }: IClassicDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -223,10 +225,21 @@ export const ClassicDocument = ({
       marginTop: 4,
       lineHeight: 1.5
     },
+    /** Italic for experience position descriptions only */
+    positionDescription: {
+      fontSize: 9,
+      color: '#475569',
+      marginTop: 4,
+      lineHeight: 1.5,
+      fontStyle: 'italic'
+    },
     skillsText: {
       fontSize: 9,
       color: '#475569',
       lineHeight: 1.5
+    },
+    skillCategory: {
+      fontWeight: 700
     },
     /** Fixed footer for multi-page pagination */
     footer: {
@@ -366,7 +379,7 @@ export const ClassicDocument = ({
                   {firstEntry && (
                     <View style={{ marginTop: 4 }}>
                       {firstEntry.description ? (
-                        <Text style={classicStyles.itemDescription}>
+                        <Text style={classicStyles.positionDescription}>
                           {firstEntry.description}
                         </Text>
                       ) : null}
@@ -410,7 +423,7 @@ export const ClassicDocument = ({
                       {exp.position}
                     </Text>
                     {exp.description ? (
-                      <Text style={classicStyles.itemDescription}>
+                      <Text style={classicStyles.positionDescription}>
                         {exp.description}
                       </Text>
                     ) : null}
@@ -539,7 +552,7 @@ export const ClassicDocument = ({
         );
       })()}
 
-      {skills && skills.length > 0 && (
+      {skillEntries.length > 0 && (
         <View style={classicStyles.section} wrap={false}>
           <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.skills}>
             <View style={classicStyles.sectionBar} />
@@ -549,7 +562,13 @@ export const ClassicDocument = ({
             <View style={classicStyles.dividerColored} />
             <View style={classicStyles.dividerSlate} />
           </View>
-          <Text style={classicStyles.skillsText}>{skills.join('  |  ')}</Text>
+          <View>
+            {skillEntries.map(([category, values]) => (
+              <Text key={category} style={classicStyles.skillsText}>
+                {category}: {values.join(', ')}
+              </Text>
+            ))}
+          </View>
         </View>
       )}
 

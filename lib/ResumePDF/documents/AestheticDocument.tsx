@@ -12,6 +12,7 @@ import { BriefcaseIcon } from '../icons/BriefcaseIcon';
 import { GraduationCapIcon } from '../icons/GraduationCapIcon';
 import { SparklesIcon } from '../icons/SparklesIcon';
 import { CalendarIcon } from '../icons/CalendarIcon';
+import { getSkillEntries } from '@/lib/skills';
 
 const AESTHETIC_NEUTRALS = {
   background: '#fafafa',
@@ -407,6 +408,7 @@ const AestheticExperienceGroup = ({
  */
 export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => {
   const { personalInfo, experience, education, skills } = data;
+  const skillEntries = getSkillEntries(skills);
   const experienceGroups = experience ? groupExperience(experience) : [];
   const AESTHETIC_COLORS = {
     ...AESTHETIC_NEUTRALS,
@@ -583,7 +585,7 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
       )}
 
       {/* Skills Section */}
-      {skills && skills.length > 0 && (
+      {skillEntries.length > 0 && (
         <View style={styles.section} wrap={false}>
           <View
             style={styles.sectionHeader}
@@ -597,20 +599,34 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
             <Text style={styles.sectionTitle}>Skills</Text>
           </View>
 
-          <View style={styles.skillsContainer}>
-            {skills.map((skill, index) => (
-              <Text
-                key={`${skill}-${index}`}
-                style={[
-                  styles.skillPill,
-                  {
-                    backgroundColor: AESTHETIC_COLORS.primaryLight,
-                    color: AESTHETIC_COLORS.cardBg
-                  }
-                ]}
-              >
-                {skill}
-              </Text>
+          <View>
+            {skillEntries.map(([category, values]) => (
+              <View key={category} style={{ marginBottom: 8 }}>
+                <Text
+                  style={[
+                    styles.company,
+                    { color: AESTHETIC_COLORS.textPrimary, marginBottom: 4 }
+                  ]}
+                >
+                  {category}
+                </Text>
+                <View style={styles.skillsContainer}>
+                  {values.map((skill, index) => (
+                    <Text
+                      key={`${category}-${index}`}
+                      style={[
+                        styles.skillPill,
+                        {
+                          backgroundColor: AESTHETIC_COLORS.primaryLight,
+                          color: AESTHETIC_COLORS.cardBg
+                        }
+                      ]}
+                    >
+                      {skill}
+                    </Text>
+                  ))}
+                </View>
+              </View>
             ))}
           </View>
         </View>

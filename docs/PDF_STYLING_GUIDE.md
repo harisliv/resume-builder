@@ -37,6 +37,7 @@ export const MyDocument = ({ data }: { data: TResumeData }) => (
    - Add `minPresenceAhead` on section headers to force next-page break when only title fits
    - For grouped cards (e.g. Experience company header + role list), wrap card header + first row/item in `<View wrap={false}>...</View>` so intra-card headers never orphan across page breaks
 5. **Preview/PDF Parity**: HTML preview and downloaded PDF are separate code paths (`components/ResumePreview/*` vs `lib/ResumePDF/documents/*`). Any visual change must be mirrored in both, or compare pages will drift.
+6. **Skills Shape**: Resume `skills` is categorized (`Record<string, string[]>`). Render category labels and category skill pills/text in both preview and PDF.
 
 ## SVG Support
 
@@ -170,7 +171,7 @@ Available palettes: `aesthetic`, `ocean`, `forest`, `sunset`, `midnight`, `rose`
   // Skills parity
   skillPillBg: colors.primaryLight, // #818cf8
   skillPillText: '#eef2ff',
-  skillLayout: 'single wrapped container (do not split first item)'
+  skillLayout: 'grouped by category with wrapped pills'
 }
 ```
 

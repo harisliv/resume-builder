@@ -1,4 +1,5 @@
 import type { TResumeForm } from '@/types/schema';
+import { hasCategorizedSkills } from '@/lib/skills';
 import {
   mockPersonalInfo,
   mockExperience,
@@ -43,7 +44,7 @@ function isFormCompletelyEmpty(formData: TResumeForm): boolean {
         !edu.gpa
     );
 
-  const skillsEmpty = !formData.skills || formData.skills.length === 0;
+  const skillsEmpty = !hasCategorizedSkills(formData.skills);
 
   return personalEmpty && expEmpty && eduEmpty && skillsEmpty;
 }

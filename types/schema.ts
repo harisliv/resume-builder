@@ -54,7 +54,7 @@ export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
-  skills: z.array(z.string())
+  skills: z.record(z.string(), z.array(z.string()))
 });
 
 export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);
@@ -102,7 +102,7 @@ export const resumeFormDefaultValues = {
   personalInfo: personalInfoDefaultValues,
   experience: [experienceDefaultValues],
   education: [educationDefaultValues],
-  skills: []
+  skills: {}
 };
 
 export const resumeDefaultValues = {
