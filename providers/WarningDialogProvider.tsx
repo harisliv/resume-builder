@@ -61,8 +61,11 @@ const WarningDialogContext = createContext<ConfirmFn | null>(null);
  *   refs and state setters are stable by nature in React.
  */
 export function WarningDialogProvider({ children }: { children: ReactNode }) {
-  /** Dialog options when open, `null` when closed. Drives the AlertDialog's `open` prop. */
-  const [state, setState] = useState<WarningDialogOptions | null>(null);
+  /** Whether the dialog is open. Separate from `options` so content persists during close animation. */
+  const [open, setOpen] = useState(false);
+
+  /** Dialog content — kept non-null while animating closed to prevent empty flash. */
+  const [options, setOptions] = useState<WarningDialogOptions | null>(null);
 
   /** Holds the Promise's `resolve` function between `confirm()` and user action. */
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
@@ -72,27 +75,28 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
    * or `false` (cancelled). Stable reference — never changes across renders.
    */
   const confirm = useCallback<ConfirmFn>(
-    (options) =>
+    (opts) =>
       new Promise<boolean>((resolve) => {
-        resolveRef.current = resolve; // stash resolve so settle() can call it later
-        setState(options); // open the dialog
+        resolveRef.current = resolve;
+        setOptions(opts);
+        setOpen(true);
       }),
     []
   );
 
   /** Resolves the pending Promise with `value`, then closes the dialog. */
   const settle = useCallback((value: boolean) => {
-    resolveRef.current?.(value); // unblock the consumer's `await`
+    resolveRef.current?.(value);
     resolveRef.current = null;
-    setState(null); // close the dialog
+    setOpen(false); // triggers close animation; `options` stays intact
   }, []);
 
   return (
     <WarningDialogContext.Provider value={confirm}>
       {children}
       <AlertDialog
-        open={!!state}
-        onOpenChange={(open) => !open && settle(false)}
+        open={open}
+        onOpenChange={(o) => !o && settle(false)}
       >
         <AlertDialogContent
           size="default"
@@ -103,7 +107,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
               data-slot="alert-dialog-media"
               className={cn(
                 'size-10 shrink-0 rounded-xl shadow-md transition-transform duration-200',
-                state?.variant === 'destructive'
+                options?.variant === 'destructive'
                   ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/25'
                   : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-amber-500/30'
               )}
@@ -111,11 +115,11 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
               <HugeiconsIcon icon={Alert02Icon} size={18} strokeWidth={2.5} />
             </IconBadge>
             <AlertDialogTitle className="text-base font-semibold tracking-tight">
-              {state?.title}
+              {options?.title}
             </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription className="text-muted-foreground px-6 py-4 text-sm leading-relaxed">
-            {state?.description}
+            {options?.description}
           </AlertDialogDescription>
           <AlertDialogFooter className="flex flex-row justify-end gap-3 px-6 pb-6">
             <AlertDialogCancel
@@ -125,10 +129,10 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              variant={state?.variant ?? 'default'}
+              variant={options?.variant ?? 'default'}
               onClick={() => settle(true)}
             >
-              {state?.confirmLabel ?? 'Confirm'}
+              {options?.confirmLabel ?? 'Confirm'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
