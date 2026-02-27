@@ -565,7 +565,8 @@ export const ClassicDocument = ({
           <View>
             {skillEntries.map(([category, values]) => (
               <Text key={category} style={classicStyles.skillsText}>
-                {category}: {values.join(', ')}
+                <Text style={classicStyles.skillCategory}>{category}</Text>:{' '}
+                {values.join(', ')}
               </Text>
             ))}
           </View>

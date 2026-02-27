@@ -11,7 +11,14 @@ export const suggestionsSchema = z.object({
       })
     )
     .optional(),
-  skills: z.record(z.string(), z.array(z.string())).optional()
+  skills: z
+    .array(
+      z.object({
+        name: z.string(),
+        skills: z.array(z.string())
+      })
+    )
+    .optional()
 });
 
 export type TAiSuggestions = z.infer<typeof suggestionsSchema>;

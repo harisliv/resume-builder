@@ -16,7 +16,8 @@ import {
 /** Returns next available default category label. */
 function getNextCategoryName(skills: TResumeForm['skills']) {
   let i = 1;
-  while (skills[`New Category ${i}`]) i += 1;
+  const names = new Set(skills.map((category) => category.name));
+  while (names.has(`New Category ${i}`)) i += 1;
   return `New Category ${i}`;
 }
 
@@ -28,91 +29,120 @@ function sanitizeCategory(skills: string[]) {
 export default function Skills() {
   const { watch, setValue } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
-  const skills = watch('skills') ?? {};
-  const entries = Object.entries(skills);
+  const categories = watch('skills') ?? [];
 
   const updateSkills = (next: TResumeForm['skills']) => {
     setValue('skills', next, { shouldDirty: true, shouldTouch: true });
   };
 
   const addCategory = () => {
-    updateSkills({
-      ...skills,
-      [getNextCategoryName(skills)]: ['']
-    });
+    updateSkills([
+      ...categories,
+      { name: getNextCategoryName(categories), skills: [''] }
+    ]);
   };
 
-  const removeCategory = (category: string) => {
-    const next = { ...skills };
-    delete next[category];
+  const removeCategory = (categoryIndex: number) => {
+    const next = categories.filter((_, index) => index !== categoryIndex);
     updateSkills(next);
   };
 
-  const renameCategory = (previous: string, nextCategory: string) => {
+  const renameCategory = (categoryIndex: number, nextCategory: string) => {
     const trimmed = nextCategory.trim();
-    if (!trimmed || trimmed === previous) return;
-    const next = { ...skills };
-    const previousSkills = next[previous] ?? [];
-    const existingTargetSkills = next[trimmed] ?? [];
-    next[trimmed] = [...existingTargetSkills, ...previousSkills];
-    delete next[previous];
-    updateSkills(next);
-  };
+    const previous = categories[categoryIndex];
+    if (!previous || !trimmed || trimmed === previous.name) return;
 
-  const addSkill = (category: string) => {
-    updateSkills({
-      ...skills,
-      [category]: [...(skills[category] ?? []), '']
-    });
-  };
-
-  const updateSkill = (category: string, index: number, value: string) => {
-    const next = { ...skills };
-    const nextCategory = [...(next[category] ?? [])];
-    nextCategory[index] = value;
-    next[category] = nextCategory;
-    updateSkills(next);
-  };
-
-  const removeSkill = (category: string, index: number) => {
-    const next = { ...skills };
-    const nextCategory = [...(next[category] ?? [])].filter(
-      (_, i) => i !== index
+    const existingTargetIndex = categories.findIndex(
+      (category, index) => index !== categoryIndex && category.name === trimmed
     );
+    const next = [...categories];
+
+    if (existingTargetIndex >= 0) {
+      const existing = next[existingTargetIndex];
+      if (!existing) return;
+      next[existingTargetIndex] = {
+        ...existing,
+        skills: [...existing.skills, ...previous.skills]
+      };
+      next.splice(categoryIndex, 1);
+    } else {
+      next[categoryIndex] = { ...previous, name: trimmed };
+    }
+
+    updateSkills(next);
+  };
+
+  const addSkill = (categoryIndex: number) => {
+    const next = [...categories];
+    const category = next[categoryIndex];
+    if (!category) return;
+    next[categoryIndex] = { ...category, skills: [...category.skills, ''] };
+    updateSkills(next);
+  };
+
+  const updateSkill = (categoryIndex: number, skillIndex: number, value: string) => {
+    const next = [...categories];
+    const category = next[categoryIndex];
+    if (!category) return;
+    const nextCategorySkills = [...category.skills];
+    nextCategorySkills[skillIndex] = value;
+    next[categoryIndex] = { ...category, skills: nextCategorySkills };
+    updateSkills(next);
+  };
+
+  const removeSkill = (categoryIndex: number, skillIndex: number) => {
+    const next = [...categories];
+    const category = next[categoryIndex];
+    if (!category) return;
+    const nextCategory = category.skills.filter((_, i) => i !== skillIndex);
     const sanitized = sanitizeCategory(nextCategory);
     if (sanitized.length === 0) {
-      delete next[category];
+      next.splice(categoryIndex, 1);
     } else {
-      next[category] = sanitized;
+      next[categoryIndex] = { ...category, skills: sanitized };
     }
     updateSkills(next);
   };
 
+  /** Moves a category up/down while preserving current category-skill mapping. */
+  const moveCategory = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= categories.length || fromIndex === toIndex) return;
+    const next = [...categories];
+    const [moved] = next.splice(fromIndex, 1);
+    if (!moved) return;
+    next.splice(toIndex, 0, moved);
+    updateSkills(next);
+  };
+
   /** Confirms before deleting an entire category block. */
-  const confirmRemoveCategory = async (category: string) => {
+  const confirmRemoveCategory = async (categoryName: string, categoryIndex: number) => {
     const ok = await confirm({
       title: 'Delete category?',
-      description: `This will remove "${category}" and all skills in it.`,
+      description: `This will remove "${categoryName}" and all skills in it.`,
       confirmLabel: 'Delete category',
       variant: 'destructive'
     });
     if (!ok) return;
-    removeCategory(category);
+    removeCategory(categoryIndex);
   };
 
   /** Confirms before deleting a single skill row. */
-  const confirmRemoveSkill = async (category: string, index: number) => {
-    const skillLabel = (skills[category]?.[index] ?? '').trim();
+  const confirmRemoveSkill = async (
+    categoryName: string,
+    categoryIndex: number,
+    skillIndex: number
+  ) => {
+    const skillLabel = (categories[categoryIndex]?.skills?.[skillIndex] ?? '').trim();
     const ok = await confirm({
       title: 'Delete skill?',
       description: skillLabel
-        ? `This will remove "${skillLabel}" from "${category}".`
-        : `This will remove this skill from "${category}".`,
+        ? `This will remove "${skillLabel}" from "${categoryName}".`
+        : `This will remove this skill from "${categoryName}".`,
       confirmLabel: 'Delete skill',
       variant: 'destructive'
     });
     if (!ok) return;
-    removeSkill(category, index);
+    removeSkill(categoryIndex, skillIndex);
   };
 
   return (
@@ -125,22 +155,26 @@ export default function Skills() {
         </Button>
       </div>
 
-      {entries.length === 0 ? (
+      {categories.length === 0 ? (
         <p className="text-muted-foreground text-sm">
           Add a category like Languages, AI Tools, or Soft Skills.
         </p>
       ) : (
         <StyledAccordion
-          defaultValue={entries.length ? ['skill-category-0'] : []}
+          defaultValue={categories.length ? ['skill-category-0'] : []}
         >
-          {entries.map(([category, categorySkills], index) => (
+          {categories.map((category, index) => (
             <StyledAccordionItem
-              key={category}
+              key={`${category.name}-${index}`}
               value={`skill-category-${index}`}
             >
               <StyledAccordionTrigger
-                label={category || `Category ${index + 1}`}
-                onDelete={() => confirmRemoveCategory(category)}
+                label={category.name || `Category ${index + 1}`}
+                onDelete={() => confirmRemoveCategory(category.name, index)}
+                onMoveUp={() => moveCategory(index, index - 1)}
+                onMoveDown={() => moveCategory(index, index + 1)}
+                disableMoveUp={index === 0}
+                disableMoveDown={index === categories.length - 1}
               />
               <StyledAccordionContent>
                 <div className="space-y-4">
@@ -150,8 +184,8 @@ export default function Skills() {
                     </p>
                     <Input
                       className="h-11 border-dashed text-base font-semibold"
-                      defaultValue={category}
-                      onBlur={(e) => renameCategory(category, e.target.value)}
+                      defaultValue={category.name}
+                      onBlur={(e) => renameCategory(index, e.target.value)}
                       placeholder="e.g. Programming Languages"
                     />
                   </div>
@@ -160,20 +194,16 @@ export default function Skills() {
                     <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
                       Skills
                     </p>
-                    {categorySkills.map((skill, skillIndex) => (
+                    {category.skills.map((skill, skillIndex) => (
                       <div
-                        key={`${category}-${skillIndex}`}
+                        key={`${category.name}-${skillIndex}`}
                         className="flex items-center gap-2"
                       >
                         <Input
                           className="h-11 border-dashed text-base"
                           value={skill}
                           onChange={(e) =>
-                            updateSkill(
-                              category,
-                              skillIndex,
-                              e.target.value
-                            )
+                            updateSkill(index, skillIndex, e.target.value)
                           }
                           placeholder="e.g. React"
                         />
@@ -182,7 +212,7 @@ export default function Skills() {
                           variant="outline"
                           size="icon"
                           onClick={() =>
-                            confirmRemoveSkill(category, skillIndex)
+                            confirmRemoveSkill(category.name, index, skillIndex)
                           }
                         >
                           <HugeiconsIcon
@@ -197,7 +227,7 @@ export default function Skills() {
                   <Button
                     type="button"
                     variant="secondary"
-                    onClick={() => addSkill(category)}
+                    onClick={() => addSkill(index)}
                   >
                     <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
                     Add Skill

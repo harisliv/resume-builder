@@ -54,13 +54,16 @@ export const mockResumeData: TResumeData = {
       gpa: ''
     }
   ],
-  skills: {
-    Frontend: ['React', 'TypeScript', 'Next.js', 'Vite', 'MUI', 'Tailwind CSS'],
-    StateManagement: ['Redux Toolkit', 'React Query', 'Zustand'],
-    Tooling: ['Turborepo', 'Storybook', 'Git'],
-    Backend: ['Node.js', 'Express.js', 'Nest.js'],
-    Quality: ['React Hook Form', 'Zod', 'Jest', 'Vitest']
-  },
+  skills: [
+    {
+      name: 'Frontend',
+      skills: ['React', 'TypeScript', 'Next.js', 'Vite', 'MUI', 'Tailwind CSS']
+    },
+    { name: 'StateManagement', skills: ['Redux Toolkit', 'React Query', 'Zustand'] },
+    { name: 'Tooling', skills: ['Turborepo', 'Storybook', 'Git'] },
+    { name: 'Backend', skills: ['Node.js', 'Express.js', 'Nest.js'] },
+    { name: 'Quality', skills: ['React Hook Form', 'Zod', 'Jest', 'Vitest'] }
+  ],
   documentStyle: {
     palette: 'ocean',
     font: 'inter',
@@ -182,26 +185,52 @@ export const extendedMockResumeData: TResumeData = {
       gpa: ''
     }
   ],
-  skills: {
-    Languages: ['TypeScript', 'JavaScript'],
-    Frontend: [
-      'React',
-      'Next.js',
-      'Vite',
-      'MUI',
-      'Chakra UI',
-      'Tailwind CSS',
-      'Styled Components',
-      'Emotion'
-    ],
-    StateManagement: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai'],
-    FormsAndValidation: ['React Hook Form', 'Formik', 'Zod', 'Yup'],
-    Testing: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library'],
-    BackendAndApis: ['Node.js', 'Express.js', 'Nest.js', 'Fastify', 'GraphQL', 'Apollo Client', 'REST APIs'],
-    Data: ['PostgreSQL', 'MongoDB', 'Redis'],
-    DevOps: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD'],
-    Collaboration: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
-  },
+  skills: [
+    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    {
+      name: 'Frontend',
+      skills: [
+        'React',
+        'Next.js',
+        'Vite',
+        'MUI',
+        'Chakra UI',
+        'Tailwind CSS',
+        'Styled Components',
+        'Emotion'
+      ]
+    },
+    {
+      name: 'StateManagement',
+      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+    },
+    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    {
+      name: 'Testing',
+      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+    },
+    {
+      name: 'BackendAndApis',
+      skills: [
+        'Node.js',
+        'Express.js',
+        'Nest.js',
+        'Fastify',
+        'GraphQL',
+        'Apollo Client',
+        'REST APIs'
+      ]
+    },
+    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    {
+      name: 'DevOps',
+      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+    },
+    {
+      name: 'Collaboration',
+      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+    }
+  ],
   documentStyle: {
     palette: 'ocean',
     font: 'inter',
@@ -364,26 +393,52 @@ export const groupedLongMockData: TResumeData = {
       gpa: ''
     }
   ],
-  skills: {
-    Languages: ['TypeScript', 'JavaScript'],
-    Frontend: [
-      'React',
-      'Next.js',
-      'Vite',
-      'MUI',
-      'Chakra UI',
-      'Tailwind CSS',
-      'Styled Components',
-      'Emotion'
-    ],
-    StateManagement: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai'],
-    FormsAndValidation: ['React Hook Form', 'Formik', 'Zod', 'Yup'],
-    Testing: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library'],
-    BackendAndApis: ['Node.js', 'Express.js', 'Nest.js', 'Fastify', 'GraphQL', 'Apollo Client', 'REST APIs'],
-    Data: ['PostgreSQL', 'MongoDB', 'Redis'],
-    DevOps: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD'],
-    Collaboration: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
-  },
+  skills: [
+    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    {
+      name: 'Frontend',
+      skills: [
+        'React',
+        'Next.js',
+        'Vite',
+        'MUI',
+        'Chakra UI',
+        'Tailwind CSS',
+        'Styled Components',
+        'Emotion'
+      ]
+    },
+    {
+      name: 'StateManagement',
+      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+    },
+    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    {
+      name: 'Testing',
+      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+    },
+    {
+      name: 'BackendAndApis',
+      skills: [
+        'Node.js',
+        'Express.js',
+        'Nest.js',
+        'Fastify',
+        'GraphQL',
+        'Apollo Client',
+        'REST APIs'
+      ]
+    },
+    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    {
+      name: 'DevOps',
+      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+    },
+    {
+      name: 'Collaboration',
+      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+    }
+  ],
   documentStyle: {
     palette: 'ocean',
     font: 'inter',

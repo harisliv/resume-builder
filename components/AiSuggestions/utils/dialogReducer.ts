@@ -129,20 +129,20 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
       if (state.phase !== 'results') return state;
       const active = state.results[state.activeModelIdx];
       if (!active.editedSuggestions) return state;
-      const nextSkills = { ...(active.editedSuggestions.skills ?? {}) };
-      const currentCategory = nextSkills[action.category] ?? [];
-      nextSkills[action.category] = currentCategory.filter(
-        (_, i) => i !== action.skillIdx
-      );
-      if (nextSkills[action.category].length === 0) {
-        delete nextSkills[action.category];
-      }
+      const nextSkills = (active.editedSuggestions.skills ?? []).map((category) => ({
+        ...category,
+        skills:
+          category.name === action.category
+            ? category.skills.filter((_, i) => i !== action.skillIdx)
+            : category.skills
+      }));
+      const filteredSkills = nextSkills.filter((category) => category.skills.length > 0);
       const results = [...state.results];
       results[state.activeModelIdx] = {
         ...active,
         editedSuggestions: {
           ...active.editedSuggestions,
-          skills: Object.keys(nextSkills).length > 0 ? nextSkills : undefined
+          skills: filteredSkills.length > 0 ? filteredSkills : undefined
         }
       };
       return { ...state, results };

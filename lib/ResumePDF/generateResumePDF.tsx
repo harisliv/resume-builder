@@ -2,6 +2,9 @@ import ResumeDocument from '@/lib/ResumePDF/ResumeDocument';
 import type { TCombinedResumeData } from '@/types/schema';
 import { pdf } from '@react-pdf/renderer';
 
+/**
+ * Generates and downloads the resume as PDF. Filename: {title}_{day}_{month}_{year}.pdf
+ */
 export const generateResumePDF = async (
   data: TCombinedResumeData
 ): Promise<void> => {
@@ -11,9 +14,12 @@ export const generateResumePDF = async (
   const instance = pdf(doc);
   const blob = await instance.toBlob();
 
-  const fileName = data.formData.personalInfo?.fullName
-    ? `${data.formData.personalInfo.fullName.replace(/\s+/g, '_')}_Resume.pdf`
-    : 'Resume.pdf';
+  const title = data.infoData.title?.trim().replace(/\s+/g, '_') || 'Resume';
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const fileName = `${title}_${day}_${month}_${year}.pdf`;
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

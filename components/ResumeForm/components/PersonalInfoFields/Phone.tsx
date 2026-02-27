@@ -1,8 +1,15 @@
 import { Controller, useFormContext } from 'react-hook-form';
+import { parsePhoneNumber } from 'react-phone-number-input';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { useId } from 'react';
 import type { TResumeForm } from '@/types/schema';
+
+/** Normalizes phone to E.164 for PhoneInput so country parses correctly from backend. */
+function toE164(value: string): string {
+  if (!value) return '';
+  return parsePhoneNumber(value)?.number ?? value;
+}
 
 export default function Phone() {
   const form = useFormContext<TResumeForm>();
@@ -17,11 +24,11 @@ export default function Phone() {
           <FieldLabel htmlFor={id}>Phone Number</FieldLabel>
           <PhoneInput
             {...field}
-            defaultCountry="GR"
-            value={field.value ?? ''}
+            international={false}
+            value={toE164(field.value ?? '') || undefined}
             id={id}
             aria-invalid={fieldState.invalid}
-            placeholder="+1 (555) 123-4567"
+            placeholder="(555) 123-4567"
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

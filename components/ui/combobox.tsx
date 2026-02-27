@@ -5,12 +5,7 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput
-} from '@/components/ui/input-group';
+import { Input } from '@/components/ui/input';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon,
@@ -49,7 +44,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
   return (
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"
-      render={<InputGroupButton variant="ghost" size="icon-xs" />}
+      render={<Button variant="ghost" size="icon-xs" />}
       className={cn(className)}
       {...props}
     >
@@ -68,34 +63,39 @@ function ComboboxInput({
   disabled = false,
   showTrigger = true,
   showClear = false,
+  inputGroupRef,
   ...props
 }: ComboboxPrimitive.Input.Props & {
   showTrigger?: boolean;
   showClear?: boolean;
+  /** Optional anchor ref so popup aligns to the whole input group. */
+  inputGroupRef?: React.Ref<HTMLDivElement>;
 }) {
   return (
-    <InputGroup className={cn('w-auto', className)}>
+    <div ref={inputGroupRef} className={cn('relative w-full', className)}>
       <ComboboxPrimitive.Input
-        render={<InputGroupInput disabled={disabled} />}
+        render={
+          <Input
+            disabled={disabled}
+            className="h-7 rounded-md border-border/60 bg-input/20 pr-8 text-xs/relaxed focus-visible:border-border focus-visible:ring-0 focus-visible:shadow-none"
+          />
+        }
         {...props}
       />
-      <InputGroupAddon align="inline-end">
-        {showTrigger && (
-          <InputGroupButton
-            size="icon-xs"
-            variant="ghost"
-            asChild
-            data-slot="input-group-button"
-            className="group-has-data-[slot=combobox-clear]/input-group:hidden data-pressed:bg-transparent"
-            disabled={disabled}
-          >
-            <ComboboxTrigger />
-          </InputGroupButton>
-        )}
-        {showClear && <ComboboxClear disabled={disabled} />}
-      </InputGroupAddon>
+      {showTrigger && (
+        <ComboboxTrigger
+          disabled={disabled}
+          className="absolute right-1 top-1/2 h-5 w-5 -translate-y-1/2 rounded-sm p-0 text-muted-foreground hover:bg-transparent focus-visible:ring-0 focus-visible:shadow-none focus-visible:border-transparent"
+        />
+      )}
+      {showClear && (
+        <ComboboxClear
+          disabled={disabled}
+          className="absolute right-7 top-1/2 h-5 w-5 -translate-y-1/2 p-0"
+        />
+      )}
       {children}
-    </InputGroup>
+    </div>
   );
 }
 
@@ -126,7 +126,7 @@ function ComboboxContent({
           data-slot="combobox-content"
           data-chips={!!anchor}
           className={cn(
-            'bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 *:data-[slot=input-group]:bg-input/20 dark:bg-popover max-h-72 min-w-32 overflow-hidden rounded-lg shadow-md ring-1 duration-100 *:data-[slot=input-group]:m-1 *:data-[slot=input-group]:mb-0 *:data-[slot=input-group]:h-7 *:data-[slot=input-group]:border-none *:data-[slot=input-group]:shadow-none group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-[calc(var(--anchor-width)+--spacing(7))] origin-(--transform-origin) data-[chips=true]:min-w-(--anchor-width)',
+            'bg-popover text-popover-foreground border-border dark:bg-popover group/combobox-content relative max-h-(--available-height) w-(--anchor-width) max-w-(--available-width) min-w-(--anchor-width) overflow-hidden rounded-lg border shadow-md',
             className
           )}
           {...props}
