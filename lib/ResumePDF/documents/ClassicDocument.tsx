@@ -6,7 +6,7 @@
  * Must stay visually in sync with components/ResumePreview/ClassicStyle.tsx.
  */
 import React from 'react';
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
@@ -261,15 +261,23 @@ export const ClassicDocument = ({
   const contactItems: React.ReactNode[] = [];
   if (personalInfo?.email)
     contactItems.push(
-      <Text key="email" style={classicStyles.contactText}>
+      <Link
+        key="email"
+        src={`mailto:${personalInfo.email}`}
+        style={classicStyles.contactText}
+      >
         {personalInfo.email}
-      </Text>
+      </Link>
     );
   if (personalInfo?.phone)
     contactItems.push(
-      <Text key="phone" style={classicStyles.contactText}>
+      <Link
+        key="phone"
+        src={`tel:${personalInfo.phone}`}
+        style={classicStyles.contactText}
+      >
         {personalInfo.phone}
-      </Text>
+      </Link>
     );
   if (personalInfo?.location)
     contactItems.push(
@@ -279,15 +287,23 @@ export const ClassicDocument = ({
     );
   if (personalInfo?.linkedIn)
     contactItems.push(
-      <Text key="linkedin" style={classicStyles.contactText}>
+      <Link
+        key="linkedin"
+        src={personalInfo.linkedIn}
+        style={classicStyles.contactText}
+      >
         LinkedIn
-      </Text>
+      </Link>
     );
   if (personalInfo?.website)
     contactItems.push(
-      <Text key="website" style={classicStyles.contactText}>
+      <Link
+        key="website"
+        src={personalInfo.website}
+        style={classicStyles.contactText}
+      >
         Portfolio
-      </Text>
+      </Link>
     );
 
   return (

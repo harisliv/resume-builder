@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
@@ -149,12 +149,33 @@ export const ExecutiveDocument = ({
         <View style={styles.contactSection}>
           {personalInfo?.email && (
             <View style={styles.contactItem}>
-              <Text style={styles.contactText}>{personalInfo.email}</Text>
+              <Link
+                src={`mailto:${personalInfo.email}`}
+                style={styles.contactText}
+              >
+                {personalInfo.email}
+              </Link>
             </View>
           )}
           {personalInfo?.phone && (
             <View style={styles.contactItem}>
-              <Text style={styles.contactText}>{personalInfo.phone}</Text>
+              <Link src={`tel:${personalInfo.phone}`} style={styles.contactText}>
+                {personalInfo.phone}
+              </Link>
+            </View>
+          )}
+          {personalInfo?.linkedIn && (
+            <View style={styles.contactItem}>
+              <Link src={personalInfo.linkedIn} style={styles.contactText}>
+                LinkedIn
+              </Link>
+            </View>
+          )}
+          {personalInfo?.website && (
+            <View style={styles.contactItem}>
+              <Link src={personalInfo.website} style={styles.contactText}>
+                Portfolio
+              </Link>
             </View>
           )}
           {personalInfo?.location && (

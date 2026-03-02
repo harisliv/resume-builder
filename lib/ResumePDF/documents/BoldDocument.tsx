@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
@@ -151,10 +151,27 @@ export const BoldDocument = ({
         </Text>
         <View style={boldStyles.contactRow}>
           {personalInfo?.email && (
-            <Text style={boldStyles.contactText}>{personalInfo.email}</Text>
+            <Link
+              src={`mailto:${personalInfo.email}`}
+              style={boldStyles.contactText}
+            >
+              {personalInfo.email}
+            </Link>
           )}
           {personalInfo?.phone && (
-            <Text style={boldStyles.contactText}>{personalInfo.phone}</Text>
+            <Link src={`tel:${personalInfo.phone}`} style={boldStyles.contactText}>
+              {personalInfo.phone}
+            </Link>
+          )}
+          {personalInfo?.linkedIn && (
+            <Link src={personalInfo.linkedIn} style={boldStyles.contactText}>
+              LinkedIn
+            </Link>
+          )}
+          {personalInfo?.website && (
+            <Link src={personalInfo.website} style={boldStyles.contactText}>
+              Portfolio
+            </Link>
           )}
           {personalInfo?.location && (
             <Text style={boldStyles.contactText}>{personalInfo.location}</Text>

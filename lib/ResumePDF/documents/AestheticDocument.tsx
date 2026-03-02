@@ -452,7 +452,12 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
           {personalInfo?.phone && (
             <View style={styles.contactItem}>
               <PhoneIcon size={10} color={AESTHETIC_COLORS.primary} />
-              <Text style={styles.contactText}>{personalInfo.phone}</Text>
+              <Link
+                src={`tel:${personalInfo.phone}`}
+                style={[styles.contactLink, { color: AESTHETIC_COLORS.primary }]}
+              >
+                {personalInfo.phone}
+              </Link>
             </View>
           )}
           {personalInfo?.location && (
