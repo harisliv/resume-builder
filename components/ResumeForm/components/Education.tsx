@@ -5,6 +5,7 @@ import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import type { TResumeForm } from '@/types/schema';
 import { educationDefaultValues } from '@/types/schema';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import SectionTitle from './SectionTitle';
 import FieldRow from './FieldRow';
 import Institution from './EducationFields/Institution';
@@ -34,6 +35,7 @@ function parseDate(str: string | undefined): number {
 
 export default function Education() {
   const { control, watch } = useFormContext<TResumeForm>();
+  const confirm = useWarningDialog();
   const education = watch('education');
   const { fields, append, remove } = useFieldArray({
     control,
@@ -41,31 +43,49 @@ export default function Education() {
   });
 
   /** Indices sorted by graduationDate descending (newest first). */
-  const sortedIndices = useMemo(() => {
-    return fields
-      .map((_, i) => i)
-      .sort((a, b) => {
-        const dateA = parseDate(education?.[a]?.graduationDate);
-        const dateB = parseDate(education?.[b]?.graduationDate);
-        return dateB - dateA;
-      });
-  }, [fields, education]);
+  const sortedIndices = useMemo(
+    () =>
+      fields
+        .map((_, i) => i)
+        .sort((a, b) => {
+          const dateA = parseDate(education?.[a]?.graduationDate);
+          const dateB = parseDate(education?.[b]?.graduationDate);
+          return dateB - dateA;
+        }),
+    [fields, education]
+  );
+
+  /** Confirms before deleting one education entry. */
+  const confirmRemoveEducation = async (index: number) => {
+    const label = educationLabel(education?.[index]?.institution, index);
+    const ok = await confirm({
+      title: 'Delete education?',
+      description: `This will remove "${label}".`,
+      confirmLabel: 'Delete education',
+      variant: 'destructive'
+    });
+    if (!ok) return;
+    remove(index);
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <SectionTitle>Education</SectionTitle>
         <Button type="button" onClick={() => append(educationDefaultValues)}>
-          <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4 mr-2" />
+          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
           Add Education
         </Button>
       </div>
       <StyledAccordion defaultValue={['education-0']}>
         {sortedIndices.map((index) => (
-          <StyledAccordionItem key={fields[index].id} value={`education-${index}`}>
+          <StyledAccordionItem
+            key={fields[index].id}
+            value={`education-${index}`}
+          >
             <StyledAccordionTrigger
               label={educationLabel(education?.[index]?.institution, index)}
-              onDelete={() => remove(index)}
+              onDelete={() => confirmRemoveEducation(index)}
             />
             <StyledAccordionContent>
               <Institution index={index} />

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Field, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import type { TResumeForm } from '@/types/schema';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import { sanitizeInput } from '@/lib/utils';
@@ -39,7 +39,7 @@ export default function Highlights({ index }: { index: number }) {
               name={`experience.${index}.highlights.${highlightIndex}` as any}
               control={control}
               render={({ field: inputField }) => (
-                <Input
+                <Textarea
                   {...inputField}
                   value={inputField.value ?? ''}
                   onChange={(e) =>
@@ -47,7 +47,8 @@ export default function Highlights({ index }: { index: number }) {
                   }
                   id={`highlight-${index}-${highlightIndex}`}
                   placeholder="Enter a highlight"
-                  className="flex-1"
+                  rows={1}
+                  className="flex-1 min-h-10! max-h-24 resize-none"
                 />
               )}
             />

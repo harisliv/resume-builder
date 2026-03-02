@@ -1,5 +1,12 @@
 import * as z from 'zod';
 
+const suggestionSkillCategorySchema = z.object({
+  name: z.string(),
+  skills: z.array(z.string())
+});
+
+const suggestionSkillsSchema = z.array(suggestionSkillCategorySchema);
+
 export const suggestionsSchema = z.object({
   title: z.string().optional(),
   summary: z.string().optional(),
@@ -11,14 +18,7 @@ export const suggestionsSchema = z.object({
       })
     )
     .optional(),
-  skills: z
-    .array(
-      z.object({
-        name: z.string(),
-        skills: z.array(z.string())
-      })
-    )
-    .optional()
+  skills: suggestionSkillsSchema.optional()
 });
 
 export type TAiSuggestions = z.infer<typeof suggestionsSchema>;
@@ -27,6 +27,8 @@ export type TAiSuggestions = z.infer<typeof suggestionsSchema>;
 export type TSuggestionSelection = {
   summary: boolean;
   experience: { description: boolean; highlights: boolean[] }[];
+  /** Selection state per skill category index and skill index. */
+  skills: { name: string; selected: boolean[] }[];
 };
 
 /** Raw result returned from the Convex multi-model action (before UI state is attached). */
@@ -56,6 +58,11 @@ export function createDefaultSelection(
       suggestions.experience?.map((exp) => ({
         description: true,
         highlights: exp.highlights?.map(() => true) ?? []
+      })) ?? [],
+    skills:
+      suggestions.skills?.map((category) => ({
+        name: category.name,
+        selected: category.skills.map(() => true)
       })) ?? []
   };
 }

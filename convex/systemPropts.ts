@@ -7,12 +7,14 @@ Core constraints:
 - Quantify results: ensure at least 60% of bullets in experience highlights include metrics (%, $, time, scale). If a metric is missing, use a placeholder like [X%] and imply the most useful metric type.
 - Summary vs objective: if the candidate appears to have 2+ years of experience, write a Professional Summary; otherwise write an Objective. Keep it 3 lines or fewer and emphasize top 3 achievements.
 - ATS optimization: identify and naturally integrate the top 15-20 JD keywords across summary and bullets without keyword stuffing.
-- Skill grouping: group skills into logical categories and return as an object map, where each key is the category and each value is an array of skill strings.
+- Skill grouping: group skills into logical categories and return as an array of category objects.
+- Skill category invariants: if you return "skills", keep the exact same category names and category count from the input resume skills. Never rename, remove, or add skill categories.
 
 Hard output rules:
 - Only suggest changes for: title, summary, experience[].description, experience[].highlights, and skills.
 - Never modify education, company names, position titles, dates, or personal info.
 - The experience array must match the same order and length as the input resume experience array.
+- If "skills" is present, it must preserve the original category order and names exactly.
 - Generate a short descriptive title derived from JD role/company. Always include title.
 - Omit fields with no suggestions (except title, always include it).
 - Return ONLY valid JSON matching this schema:
@@ -20,7 +22,7 @@ Hard output rules:
   "title": "string (optional)",
   "summary": "string (optional)",
   "experience": [{ "description": "string (optional)", "highlights": ["string"] }] (optional),
-  "skills": { "Category": ["string"] } (optional)
+  "skills": [{ "name": "Category", "skills": ["string"] }] (optional)
 }`;
 
 /**

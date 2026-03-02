@@ -87,6 +87,51 @@ export function BadgeGroup({ className, ...props }: ComponentProps<'div'>) {
   return <div className={cn('flex flex-wrap gap-1.5', className)} {...props} />;
 }
 
+export function SkillCategorySection({
+  className,
+  ...props
+}: ComponentProps<'section'>) {
+  return <section className={cn('space-y-2', className)} {...props} />;
+}
+
+export function SkillCategoryTitle({
+  className,
+  ...props
+}: ComponentProps<'p'>) {
+  return (
+    <p
+      className={cn('text-muted-foreground text-xs font-semibold', className)}
+      {...props}
+    />
+  );
+}
+
+/** Packs skills into responsive columns to reduce vertical space usage. */
+export function SkillsGrid({ className, ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-1.5',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export function SkillRows({ className, ...props }: ComponentProps<'div'>) {
+  return <div className={cn('space-y-0.5', className)} {...props} />;
+}
+
+export function SkillRow({ className, ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('border-border/40 grid grid-cols-2 gap-4 border-t px-2 py-1.5', className)}
+      {...props}
+    />
+  );
+}
+
 export function NewSkillBadge({
   isNew,
   children,

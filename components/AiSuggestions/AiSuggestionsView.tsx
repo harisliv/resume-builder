@@ -5,10 +5,6 @@ import type {
   TSuggestionSelection
 } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
-import {
-  flattenCategorizedSkills,
-  getSkillEntries
-} from '@/lib/skills';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -17,9 +13,12 @@ import {
   MutedText,
   ExperienceLabel,
   BulletItem,
-  BadgeGroup,
-  RemovableSkillBadge,
-  SelectableField
+  NewSkillBadge,
+  SelectableField,
+  SkillCategorySection,
+  SkillCategoryTitle,
+  SkillRows,
+  SkillRow
 } from './styles/ai-suggestions-view.styles';
 import { DiffHighlight } from './utils/diffHighlight';
 
@@ -33,7 +32,7 @@ type TAiSuggestionsViewProps = {
     field: 'description' | 'highlight',
     highlightIdx?: number
   ) => void;
-  onRemoveSkill: (category: string, skillIdx: number) => void;
+  onToggleSkill: (categoryIdx: number, skillIdx: number) => void;
 };
 
 /**
@@ -101,6 +100,16 @@ type THighlightRow = {
   suggestedIdx: number;
 };
 
+type TSkillCategory = {
+  name: string;
+  skills: string[];
+};
+
+type TSkillRow = {
+  currentIdx: number;
+  suggestedIdx: number;
+};
+
 /**
  * Creates shared visual rows for current/suggested highlight columns.
  * Keeps suggested order, then appends unmatched current highlights.
@@ -128,9 +137,57 @@ function buildHighlightRows(
   return rows;
 }
 
+/** Keeps category names and trims skill values while preserving category order. */
+function normalizeSkillCategories(
+  skills?: { name: string; skills: string[] }[]
+): TSkillCategory[] {
+  return (skills ?? []).map((category) => ({
+    name: category.name.trim(),
+    skills: category.skills.map((skill) => skill.trim()).filter(Boolean)
+  }));
+}
+
+/** Pairs suggested skills to current skills by exact text, then appends unmatched current skills. */
+function buildSkillRows(
+  current: string[],
+  suggested: { value: string; suggestedIdx: number }[]
+): TSkillRow[] {
+  const rows: TSkillRow[] = [];
+  const currentIndexesBySkill = new Map<string, number[]>();
+
+  current.forEach((skill, currentIdx) => {
+    const key = skill.toLowerCase();
+    const existing = currentIndexesBySkill.get(key) ?? [];
+    existing.push(currentIdx);
+    currentIndexesBySkill.set(key, existing);
+  });
+
+  const usedCurrent = new Set<number>();
+  suggested.forEach(({ value, suggestedIdx }) => {
+    const matches = currentIndexesBySkill.get(value.toLowerCase()) ?? [];
+    let currentIdx = -1;
+    while (matches.length) {
+      const candidate = matches.shift();
+      if (candidate === undefined || usedCurrent.has(candidate)) continue;
+      currentIdx = candidate;
+      usedCurrent.add(candidate);
+      break;
+    }
+    rows.push({ currentIdx, suggestedIdx });
+  });
+
+  current.forEach((_, currentIdx) => {
+    if (!usedCurrent.has(currentIdx)) {
+      rows.push({ currentIdx, suggestedIdx: -1 });
+    }
+  });
+
+  return rows;
+}
+
 /**
  * Tabbed comparison view for AI suggestions with per-field selection
- * and removable skill badges.
+ * and grouped selectable skills.
  */
 export function AiSuggestionsView({
   suggestions,
@@ -138,15 +195,23 @@ export function AiSuggestionsView({
   selection,
   onToggleSummary,
   onToggleExperienceField,
-  onRemoveSkill
+  onToggleSkill
 }: TAiSuggestionsViewProps) {
   const hasSummary = !!suggestions.summary;
   const hasExperience = !!suggestions.experience?.length;
-  const suggestedSkillEntries = getSkillEntries(suggestions.skills);
-  const hasSkills = suggestedSkillEntries.length > 0;
-
+  const suggestedSkillEntries = (suggestions.skills ?? []).map((category) => ({
+    name: category.name.trim(),
+    skills: category.skills.map((skill) => skill.trim())
+  }));
+  const hasSkills = suggestedSkillEntries.some((category) =>
+    category.skills.some(Boolean)
+  );
+  const currentSkillEntries = normalizeSkillCategories(currentData.skills);
   const currentSkillsSet = new Set(
-    flattenCategorizedSkills(currentData.skills).map((s) => s.toLowerCase())
+    currentSkillEntries.flatMap((category) => category.skills).map((s) => s.toLowerCase())
+  );
+  const currentSkillMap = new Map(
+    currentSkillEntries.map((category) => [category.name, category.skills])
   );
 
   const defaultTab = hasSummary
@@ -342,38 +407,81 @@ export function AiSuggestionsView({
 
         {hasSkills && (
           <TabsContent value="skills">
-            <ComparisonGrid>
-              <ComparisonCard title="Current">
-                <BadgeGroup>
-                  {getSkillEntries(currentData.skills).length ? (
-                    getSkillEntries(currentData.skills).flatMap(([category, skills]) =>
-                      skills.map((s) => (
-                        <Badge key={`${category}-${s}`} variant="outline">
-                          {category}: {s}
-                        </Badge>
-                      ))
-                    )
-                  ) : (
-                    <MutedText>No skills</MutedText>
-                  )}
-                </BadgeGroup>
-              </ComparisonCard>
-              <ComparisonCard title="Suggested" suggested>
-                <BadgeGroup>
-                  {suggestedSkillEntries.flatMap(([category, skills]) =>
-                    skills.map((s, i) => (
-                      <RemovableSkillBadge
-                        key={`${category}-${s}-${i}`}
-                        isNew={!currentSkillsSet.has(s.toLowerCase())}
-                        onRemove={() => onRemoveSkill(category, i)}
-                      >
-                        {category}: {s}
-                      </RemovableSkillBadge>
-                    ))
-                  )}
-                </BadgeGroup>
-              </ComparisonCard>
-            </ComparisonGrid>
+            <div className="space-y-4">
+              {suggestedSkillEntries.map((category, categoryIdx) => {
+                const currentSkills = currentSkillMap.get(category.name) ?? [];
+                const suggestedRowsBase = category.skills
+                  .map((value, suggestedIdx) => ({ value, suggestedIdx }))
+                  .filter((item) => item.value);
+                const rows = buildSkillRows(currentSkills, suggestedRowsBase);
+                if (!rows.length) return null;
+
+                return (
+                  <SkillCategorySection key={`${category.name}-${categoryIdx}`}>
+                    <SkillCategoryTitle>{category.name}</SkillCategoryTitle>
+                    <div className="relative">
+                      <div className="border-border/50 pointer-events-none absolute inset-y-0 left-0 w-[calc(50%-0.5rem)] rounded-xl border" />
+                      <div className="border-primary/40 pointer-events-none absolute inset-y-0 right-0 w-[calc(50%-0.5rem)] rounded-xl border" />
+                      <div className="relative">
+                        <div className="grid grid-cols-2 gap-4 px-2 py-2">
+                          <p className="text-muted-foreground text-xs font-medium">
+                            Current
+                          </p>
+                          <p className="text-muted-foreground pl-2 text-xs font-medium">
+                            Suggested
+                          </p>
+                        </div>
+                        <SkillRows>
+                          {rows.map((row, rowIdx) => (
+                            <SkillRow key={`${category.name}-row-${rowIdx}`}>
+                              <div>
+                                {row.currentIdx >= 0 ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="justify-start px-2 py-1 text-left"
+                                  >
+                                    {currentSkills[row.currentIdx]}
+                                  </Badge>
+                                ) : (
+                                  <div className="h-6" />
+                                )}
+                              </div>
+                              <div>
+                                {row.suggestedIdx >= 0 ? (
+                                  <SelectableField
+                                    className="pl-2"
+                                    checked={
+                                      selection.skills[categoryIdx]?.selected[row.suggestedIdx] ??
+                                      true
+                                    }
+                                    onCheckedChange={() =>
+                                      onToggleSkill(categoryIdx, row.suggestedIdx)
+                                    }
+                                  >
+                                    <NewSkillBadge
+                                      isNew={
+                                        !currentSkillsSet.has(
+                                          category.skills[row.suggestedIdx].toLowerCase()
+                                        )
+                                      }
+                                      className="inline-flex max-w-full justify-start px-2 py-1 text-left text-xs"
+                                    >
+                                      {category.skills[row.suggestedIdx]}
+                                    </NewSkillBadge>
+                                  </SelectableField>
+                                ) : (
+                                  <div className="h-6" />
+                                )}
+                              </div>
+                            </SkillRow>
+                          ))}
+                        </SkillRows>
+                      </div>
+                    </div>
+                  </SkillCategorySection>
+                );
+              })}
+            </div>
           </TabsContent>
         )}
       </Tabs>

@@ -32,6 +32,34 @@ const suggestionsValidator = v.object({
   )
 });
 
+/** Parses model JSON with strict schema; no fallback conversion is allowed. */
+function parseSuggestionsFromText(text: string) {
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error('Failed to parse AI response');
+  }
+  return suggestionsSchema.parse(JSON.parse(jsonMatch[0]));
+}
+
+/** Ensures model does not rename/add/remove skill categories. */
+function assertSkillCategoriesMatchInput(
+  inputCategoryNames: string[],
+  parsed: ReturnType<typeof parseSuggestionsFromText>
+) {
+  if (!parsed.skills) return;
+  const suggestedCategoryNames = parsed.skills.map((category) => category.name.trim());
+  if (inputCategoryNames.length !== suggestedCategoryNames.length) {
+    throw new Error('Invalid skills categories: category count must match input.');
+  }
+  for (let i = 0; i < inputCategoryNames.length; i += 1) {
+    if (inputCategoryNames[i] !== suggestedCategoryNames[i]) {
+      throw new Error(
+        'Invalid skills categories: category names/order must match input exactly.'
+      );
+    }
+  }
+}
+
 
 
 export const generateResumeSuggestions = action({
@@ -71,6 +99,9 @@ export const generateResumeSuggestions = action({
       })),
       skills: resume.skills
     };
+    const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
+      category.name.trim()
+    );
 
     const { text } = await generateText({
       model: google('gemini-pro-latest'),
@@ -78,12 +109,8 @@ export const generateResumeSuggestions = action({
       prompt: `Resume:\n${JSON.stringify(resumeContent, null, 2)}\n\nJob Description:\n${args.jobDescription}`
     });
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('Failed to parse AI response');
-    }
-
-    const parsed = suggestionsSchema.parse(JSON.parse(jsonMatch[0]));
+    const parsed = parseSuggestionsFromText(text);
+    assertSkillCategoriesMatchInput(inputSkillCategoryNames, parsed);
     return parsed;
   }
 });
@@ -135,6 +162,9 @@ export const generateResumeSuggestionsMultiModel = action({
       })),
       skills: resume.skills
     };
+    const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
+      category.name.trim()
+    );
 
     const prompt = `Resume:\n${JSON.stringify(resumeContent, null, 2)}\n\nJob Description:\n${args.jobDescription}`;
 
@@ -152,13 +182,12 @@ export const generateResumeSuggestionsMultiModel = action({
         } else {
           const apiKey = process.env.OPENAI_API_KEY;
           if (!apiKey) throw new Error('OPENAI_API_KEY not set');
-          model = createOpenAI({ apiKey })(modelDef.id);
+          model = createOpenAI({ apiKey })('gpt-5.2-chat-latest');
         }
 
         const { text } = await generateText({ model, system: SYSTEM_PROMPT_1, prompt });
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error(`Failed to parse response from ${modelDef.label}`);
-        const suggestions = suggestionsSchema.parse(JSON.parse(jsonMatch[0]));
+        const suggestions = parseSuggestionsFromText(text);
+        assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
         return { modelId: modelDef.id, label: modelDef.label, suggestions };
       })
     );

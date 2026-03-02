@@ -29,7 +29,7 @@ export type TDialogAction =
   | { type: 'RESET' }
   | { type: 'TOGGLE_SUMMARY' }
   | { type: 'TOGGLE_EXPERIENCE_FIELD'; expIdx: number; field: 'description' | 'highlight'; highlightIdx?: number }
-  | { type: 'REMOVE_SKILL'; category: string; skillIdx: number };
+  | { type: 'TOGGLE_SKILL'; categoryIdx: number; skillIdx: number };
 
 export const initialDialogState: TDialogState = {
   phase: 'idle',
@@ -125,25 +125,20 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
       return { ...state, results };
     }
 
-    case 'REMOVE_SKILL': {
+    case 'TOGGLE_SKILL': {
       if (state.phase !== 'results') return state;
       const active = state.results[state.activeModelIdx];
-      if (!active.editedSuggestions) return state;
-      const nextSkills = (active.editedSuggestions.skills ?? []).map((category) => ({
-        ...category,
-        skills:
-          category.name === action.category
-            ? category.skills.filter((_, i) => i !== action.skillIdx)
-            : category.skills
-      }));
-      const filteredSkills = nextSkills.filter((category) => category.skills.length > 0);
+      if (!active.selection) return state;
+      const nextSkills = [...active.selection.skills];
+      const category = nextSkills[action.categoryIdx];
+      if (!category || category.selected[action.skillIdx] === undefined) return state;
+      const nextCategory = { ...category, selected: [...category.selected] };
+      nextCategory.selected[action.skillIdx] = !nextCategory.selected[action.skillIdx];
+      nextSkills[action.categoryIdx] = nextCategory;
       const results = [...state.results];
       results[state.activeModelIdx] = {
         ...active,
-        editedSuggestions: {
-          ...active.editedSuggestions,
-          skills: filteredSkills.length > 0 ? filteredSkills : undefined
-        }
+        selection: { ...active.selection, skills: nextSkills }
       };
       return { ...state, results };
     }
