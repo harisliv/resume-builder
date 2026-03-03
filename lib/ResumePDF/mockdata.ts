@@ -57,12 +57,12 @@ export const mockResumeData: TResumeData = {
   skills: [
     {
       name: 'Frontend',
-      skills: ['React', 'TypeScript', 'Next.js', 'Vite', 'MUI', 'Tailwind CSS']
+      values: ['React', 'TypeScript', 'Next.js', 'Vite', 'MUI', 'Tailwind CSS']
     },
-    { name: 'StateManagement', skills: ['Redux Toolkit', 'React Query', 'Zustand'] },
-    { name: 'Tooling', skills: ['Turborepo', 'Storybook', 'Git'] },
-    { name: 'Backend', skills: ['Node.js', 'Express.js', 'Nest.js'] },
-    { name: 'Quality', skills: ['React Hook Form', 'Zod', 'Jest', 'Vitest'] }
+    { name: 'StateManagement', values: ['Redux Toolkit', 'React Query', 'Zustand'] },
+    { name: 'Tooling', values: ['Turborepo', 'Storybook', 'Git'] },
+    { name: 'Backend', values: ['Node.js', 'Express.js', 'Nest.js'] },
+    { name: 'Quality', values: ['React Hook Form', 'Zod', 'Jest', 'Vitest'] }
   ],
   documentStyle: {
     palette: 'ocean',
@@ -186,10 +186,10 @@ export const extendedMockResumeData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    { name: 'Languages', values: ['TypeScript', 'JavaScript'] },
     {
       name: 'Frontend',
-      skills: [
+      values: [
         'React',
         'Next.js',
         'Vite',
@@ -202,16 +202,16 @@ export const extendedMockResumeData: TResumeData = {
     },
     {
       name: 'StateManagement',
-      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+      values: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
     },
-    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    { name: 'FormsAndValidation', values: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
     {
       name: 'Testing',
-      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+      values: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
     },
     {
       name: 'BackendAndApis',
-      skills: [
+      values: [
         'Node.js',
         'Express.js',
         'Nest.js',
@@ -221,14 +221,14 @@ export const extendedMockResumeData: TResumeData = {
         'REST APIs'
       ]
     },
-    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    { name: 'Data', values: ['PostgreSQL', 'MongoDB', 'Redis'] },
     {
       name: 'DevOps',
-      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+      values: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
     },
     {
       name: 'Collaboration',
-      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+      values: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
     }
   ],
   documentStyle: {
@@ -394,10 +394,10 @@ export const groupedLongMockData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    { name: 'Languages', values: ['TypeScript', 'JavaScript'] },
     {
       name: 'Frontend',
-      skills: [
+      values: [
         'React',
         'Next.js',
         'Vite',
@@ -410,16 +410,16 @@ export const groupedLongMockData: TResumeData = {
     },
     {
       name: 'StateManagement',
-      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+      values: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
     },
-    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    { name: 'FormsAndValidation', values: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
     {
       name: 'Testing',
-      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+      values: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
     },
     {
       name: 'BackendAndApis',
-      skills: [
+      values: [
         'Node.js',
         'Express.js',
         'Nest.js',
@@ -429,14 +429,14 @@ export const groupedLongMockData: TResumeData = {
         'REST APIs'
       ]
     },
-    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    { name: 'Data', values: ['PostgreSQL', 'MongoDB', 'Redis'] },
     {
       name: 'DevOps',
-      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+      values: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
     },
     {
       name: 'Collaboration',
-      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+      values: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
     }
   ],
   documentStyle: {

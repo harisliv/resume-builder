@@ -38,7 +38,7 @@ export default function Skills() {
   const addCategory = () => {
     updateSkills([
       ...categories,
-      { name: getNextCategoryName(categories), skills: [''] }
+      { name: getNextCategoryName(categories), values: [''] }
     ]);
   };
 
@@ -62,7 +62,7 @@ export default function Skills() {
       if (!existing) return;
       next[existingTargetIndex] = {
         ...existing,
-        skills: [...existing.skills, ...previous.skills]
+        values: [...existing.values, ...previous.values]
       };
       next.splice(categoryIndex, 1);
     } else {
@@ -76,7 +76,7 @@ export default function Skills() {
     const next = [...categories];
     const category = next[categoryIndex];
     if (!category) return;
-    next[categoryIndex] = { ...category, skills: [...category.skills, ''] };
+    next[categoryIndex] = { ...category, values: [...category.values, ''] };
     updateSkills(next);
   };
 
@@ -84,9 +84,9 @@ export default function Skills() {
     const next = [...categories];
     const category = next[categoryIndex];
     if (!category) return;
-    const nextCategorySkills = [...category.skills];
-    nextCategorySkills[skillIndex] = value;
-    next[categoryIndex] = { ...category, skills: nextCategorySkills };
+    const nextCategoryValues = [...category.values];
+    nextCategoryValues[skillIndex] = value;
+    next[categoryIndex] = { ...category, values: nextCategoryValues };
     updateSkills(next);
   };
 
@@ -94,12 +94,12 @@ export default function Skills() {
     const next = [...categories];
     const category = next[categoryIndex];
     if (!category) return;
-    const nextCategory = category.skills.filter((_, i) => i !== skillIndex);
+    const nextCategory = category.values.filter((_, i) => i !== skillIndex);
     const sanitized = sanitizeCategory(nextCategory);
     if (sanitized.length === 0) {
       next.splice(categoryIndex, 1);
     } else {
-      next[categoryIndex] = { ...category, skills: sanitized };
+      next[categoryIndex] = { ...category, values: sanitized };
     }
     updateSkills(next);
   };
@@ -132,7 +132,7 @@ export default function Skills() {
     categoryIndex: number,
     skillIndex: number
   ) => {
-    const skillLabel = (categories[categoryIndex]?.skills?.[skillIndex] ?? '').trim();
+    const skillLabel = (categories[categoryIndex]?.values?.[skillIndex] ?? '').trim();
     const ok = await confirm({
       title: 'Delete skill?',
       description: skillLabel
@@ -194,7 +194,7 @@ export default function Skills() {
                     <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
                       Skills
                     </p>
-                    {category.skills.map((skill, skillIndex) => (
+                    {category.values.map((skill, skillIndex) => (
                       <div
                         key={`${category.name}-${skillIndex}`}
                         className="flex items-center gap-2"

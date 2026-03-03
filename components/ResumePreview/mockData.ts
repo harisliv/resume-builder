@@ -88,11 +88,11 @@ export const mockEducation = [
 ];
 
 export const mockSkills = [
-  { name: 'Languages', skills: ['JavaScript', 'TypeScript', 'Python'] },
-  { name: 'Frontend', skills: ['React'] },
-  { name: 'Backend', skills: ['Node.js'] },
-  { name: 'Data', skills: ['PostgreSQL'] },
-  { name: 'DevOps', skills: ['Docker', 'AWS'] }
+  { name: 'Languages', values: ['JavaScript', 'TypeScript', 'Python'] },
+  { name: 'Frontend', values: ['React'] },
+  { name: 'Backend', values: ['Node.js'] },
+  { name: 'Data', values: ['PostgreSQL'] },
+  { name: 'DevOps', values: ['Docker', 'AWS'] }
 ];
 
 /** Homepage default mock as TResumeData — used when no resume selected. */

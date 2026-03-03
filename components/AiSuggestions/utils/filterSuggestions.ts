@@ -13,10 +13,10 @@ export function buildFilteredSuggestions(
       const selected = selection.skills[categoryIdx]?.selected ?? [];
       return {
         name: category.name,
-        skills: category.skills.filter((_, skillIdx) => selected[skillIdx] ?? true)
+        values: category.values.filter((_, skillIdx) => selected[skillIdx] ?? true)
       };
     })
-    .filter((category) => category.skills.length > 0);
+    .filter((category) => category.values.length > 0);
 
   return {
     title: suggestions.title,

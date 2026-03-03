@@ -50,16 +50,16 @@ export const resumeInfoSchema = z.object({
   documentStyle: documentStyleSchema
 });
 
+export const skillsSchema = z.object({
+  name: z.string(),
+  values: z.array(z.string())
+});
+
 export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
-  skills: z.array(
-    z.object({
-      name: z.string(),
-      skills: z.array(z.string())
-    })
-  )
+  skills: z.array(skillsSchema)
 });
 
 export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);

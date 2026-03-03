@@ -18,7 +18,7 @@ export default defineSchema({
       v.array(
         v.object({
           name: v.string(),
-          skills: v.array(v.string())
+          values: v.array(v.string())
         })
       )
     ),
