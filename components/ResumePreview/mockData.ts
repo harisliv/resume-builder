@@ -23,8 +23,8 @@ export const mockExperience = [
     description:
       'Promoted to Front End Lead for the UNFCCC International Sustainability Standards project.',
     highlights: [
-      'Led frontend architecture for climate reporting platform',
-      'Managed team of 4 frontend engineers'
+      { value: 'Led frontend architecture for climate reporting platform' },
+      { value: 'Managed team of 4 frontend engineers' }
     ]
   },
   {
@@ -37,8 +37,8 @@ export const mockExperience = [
     description:
       'Engineered smart contracts and frontend interfaces for blockchain-based identity solutions.',
     highlights: [
-      'Built Solidity smart contracts for decentralized identity',
-      'Integrated Web3 wallet authentication'
+      { value: 'Built Solidity smart contracts for decentralized identity' },
+      { value: 'Integrated Web3 wallet authentication' }
     ]
   },
   {
@@ -51,8 +51,8 @@ export const mockExperience = [
     description:
       'Led general tasks and sprint planning for the UNFCCC Enhanced Transparency Framework.',
     highlights: [
-      'Coordinated cross-functional team of 8 engineers',
-      'Delivered project milestones ahead of schedule'
+      { value: 'Coordinated cross-functional team of 8 engineers' },
+      { value: 'Delivered project milestones ahead of schedule' }
     ]
   },
   {
@@ -64,7 +64,10 @@ export const mockExperience = [
     current: false,
     description:
       'Developed full-stack web applications using modern frameworks. Collaborated with design team to implement responsive UI components.',
-    highlights: ['Improved test coverage to 85%', 'Built RESTful APIs']
+    highlights: [
+      { value: 'Improved test coverage to 85%' },
+      { value: 'Built RESTful APIs' }
+    ]
   }
 ];
 
@@ -88,11 +91,11 @@ export const mockEducation = [
 ];
 
 export const mockSkills = [
-  { name: 'Languages', skills: ['JavaScript', 'TypeScript', 'Python'] },
-  { name: 'Frontend', skills: ['React'] },
-  { name: 'Backend', skills: ['Node.js'] },
-  { name: 'Data', skills: ['PostgreSQL'] },
-  { name: 'DevOps', skills: ['Docker', 'AWS'] }
+  { name: 'Languages', skills: [{ value: 'JavaScript' }, { value: 'TypeScript' }, { value: 'Python' }] },
+  { name: 'Frontend', skills: [{ value: 'React' }] },
+  { name: 'Backend', skills: [{ value: 'Node.js' }] },
+  { name: 'Data', skills: [{ value: 'PostgreSQL' }] },
+  { name: 'DevOps', skills: [{ value: 'Docker' }, { value: 'AWS' }] }
 ];
 
 /** Homepage default mock as TResumeData — used when no resume selected. */

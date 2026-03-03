@@ -57,12 +57,12 @@ export const mockResumeData: TResumeData = {
   skills: [
     {
       name: 'Frontend',
-      skills: ['React', 'TypeScript', 'Next.js', 'Vite', 'MUI', 'Tailwind CSS']
+      skills: [{ value: 'React' }, { value: 'TypeScript' }, { value: 'Next.js' }, { value: 'Vite' }, { value: 'MUI' }, { value: 'Tailwind CSS' }]
     },
-    { name: 'StateManagement', skills: ['Redux Toolkit', 'React Query', 'Zustand'] },
-    { name: 'Tooling', skills: ['Turborepo', 'Storybook', 'Git'] },
-    { name: 'Backend', skills: ['Node.js', 'Express.js', 'Nest.js'] },
-    { name: 'Quality', skills: ['React Hook Form', 'Zod', 'Jest', 'Vitest'] }
+    { name: 'StateManagement', skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'Zustand' }] },
+    { name: 'Tooling', skills: [{ value: 'Turborepo' }, { value: 'Storybook' }, { value: 'Git' }] },
+    { name: 'Backend', skills: [{ value: 'Node.js' }, { value: 'Express.js' }, { value: 'Nest.js' }] },
+    { name: 'Quality', skills: [{ value: 'React Hook Form' }, { value: 'Zod' }, { value: 'Jest' }, { value: 'Vitest' }] }
   ],
   documentStyle: {
     palette: 'ocean',
@@ -94,9 +94,9 @@ export const extendedMockResumeData: TResumeData = {
       description:
         'Promoted to Front End Lead, overseeing a team of three developers. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo.',
       highlights: [
-        'Built and maintained a reusable component library with Storybook for consistent UI across applications',
-        'Implemented WebSocket functionality enabling real-time data sharing across the platform',
-        'Optimized performance by offloading large object processing to Web Workers, reducing main-thread blocking by 60%'
+        { value: 'Built and maintained a reusable component library with Storybook for consistent UI across applications' },
+        { value: 'Implemented WebSocket functionality enabling real-time data sharing across the platform' },
+        { value: 'Optimized performance by offloading large object processing to Web Workers, reducing main-thread blocking by 60%' }
       ]
     },
     {
@@ -109,9 +109,9 @@ export const extendedMockResumeData: TResumeData = {
       description:
         'Led full-stack development with Next.js and custom Express.js backend, optimizing application performance.',
       highlights: [
-        'Migrated from Redux Connect to Redux Toolkit, reducing boilerplate by 40%',
-        'Developed an interactive marketing flow builder using React Flow for visual campaign design',
-        'Implemented React Query for API calls, improving caching and data synchronization'
+        { value: 'Migrated from Redux Connect to Redux Toolkit, reducing boilerplate by 40%' },
+        { value: 'Developed an interactive marketing flow builder using React Flow for visual campaign design' },
+        { value: 'Implemented React Query for API calls, improving caching and data synchronization' }
       ]
     },
     {
@@ -124,8 +124,8 @@ export const extendedMockResumeData: TResumeData = {
       description:
         'Developed custom React applications for European Union funded research projects.',
       highlights: [
-        'Created interactive data visualizations for complex agricultural sustainability datasets',
-        'Ensured cross-browser compatibility and responsive designs across all major platforms'
+        { value: 'Created interactive data visualizations for complex agricultural sustainability datasets' },
+        { value: 'Ensured cross-browser compatibility and responsive designs across all major platforms' }
       ]
     },
     {
@@ -186,49 +186,49 @@ export const extendedMockResumeData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    { name: 'Languages', skills: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
     {
       name: 'Frontend',
       skills: [
-        'React',
-        'Next.js',
-        'Vite',
-        'MUI',
-        'Chakra UI',
-        'Tailwind CSS',
-        'Styled Components',
-        'Emotion'
+        { value: 'React' },
+        { value: 'Next.js' },
+        { value: 'Vite' },
+        { value: 'MUI' },
+        { value: 'Chakra UI' },
+        { value: 'Tailwind CSS' },
+        { value: 'Styled Components' },
+        { value: 'Emotion' }
       ]
     },
     {
       name: 'StateManagement',
-      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+      skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
     },
-    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    { name: 'FormsAndValidation', skills: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
     {
       name: 'Testing',
-      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+      skills: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
     },
     {
       name: 'BackendAndApis',
       skills: [
-        'Node.js',
-        'Express.js',
-        'Nest.js',
-        'Fastify',
-        'GraphQL',
-        'Apollo Client',
-        'REST APIs'
+        { value: 'Node.js' },
+        { value: 'Express.js' },
+        { value: 'Nest.js' },
+        { value: 'Fastify' },
+        { value: 'GraphQL' },
+        { value: 'Apollo Client' },
+        { value: 'REST APIs' }
       ]
     },
-    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    { name: 'Data', skills: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
     {
       name: 'DevOps',
-      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+      skills: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
     },
     {
       name: 'Collaboration',
-      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+      skills: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
     }
   ],
   documentStyle: {
@@ -265,13 +265,13 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Promoted to Front End Lead for the UNFCCC International Sustainability Standards project. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo. Built and maintained a reusable component library with Storybook for consistent UI across applications. Led general tasks and bug fixes, ensuring timely resolutions that enhanced platform stability.',
       highlights: [
-        'Led frontend architecture for climate reporting platform serving 195+ countries',
-        'Managed team of 4 frontend engineers across distributed timezones',
-        'Implemented WebSocket functionality enabling real-time data sharing across the platform',
-        'Optimized performance by offloading large object processing to Web Workers, reducing main-thread blocking by 60%',
-        'Established coding standards and CI/CD pipelines for the project',
-        'Collaborated with UN stakeholders on accessibility compliance (WCAG 2.1 AA)',
-        'Delivered project milestones ahead of schedule despite scope changes'
+        { value: 'Led frontend architecture for climate reporting platform serving 195+ countries' },
+        { value: 'Managed team of 4 frontend engineers across distributed timezones' },
+        { value: 'Implemented WebSocket functionality enabling real-time data sharing across the platform' },
+        { value: 'Optimized performance by offloading large object processing to Web Workers, reducing main-thread blocking by 60%' },
+        { value: 'Established coding standards and CI/CD pipelines for the project' },
+        { value: 'Collaborated with UN stakeholders on accessibility compliance (WCAG 2.1 AA)' },
+        { value: 'Delivered project milestones ahead of schedule despite scope changes' }
       ]
     },
     {
@@ -284,13 +284,13 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Engineered smart contracts and frontend interfaces for blockchain-based identity solutions. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo. Built and maintained a reusable component library with Storybook for consistent UI across applications. Led general tasks and bug fixes, ensuring timely resolutions that enhanced platform stability.',
       highlights: [
-        'Built Solidity smart contracts for decentralized identity verification',
-        'Integrated Web3 wallet authentication with MetaMask and WalletConnect',
-        'Designed gas-efficient contract patterns for high-frequency transaction scenarios',
-        'Implemented comprehensive test coverage for smart contracts using Hardhat',
-        'Collaborated with security team on audit findings and remediation',
-        'Documented architecture decisions and deployment procedures for future maintainers',
-        'Reduced gas costs by 40% through contract optimization'
+        { value: 'Built Solidity smart contracts for decentralized identity verification' },
+        { value: 'Integrated Web3 wallet authentication with MetaMask and WalletConnect' },
+        { value: 'Designed gas-efficient contract patterns for high-frequency transaction scenarios' },
+        { value: 'Implemented comprehensive test coverage for smart contracts using Hardhat' },
+        { value: 'Collaborated with security team on audit findings and remediation' },
+        { value: 'Documented architecture decisions and deployment procedures for future maintainers' },
+        { value: 'Reduced gas costs by 40% through contract optimization' }
       ]
     },
     {
@@ -303,13 +303,13 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Led general tasks and sprint planning for the UNFCCC Enhanced Transparency Framework. Coordinated cross-functional team of 8 engineers across frontend, backend, and DevOps. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo. Built and maintained a reusable component library with Storybook for consistent UI across applications.',
       highlights: [
-        'Coordinated cross-functional team of 8 engineers across frontend, backend, and DevOps',
-        'Delivered project milestones ahead of schedule despite scope changes',
-        'Implemented feature flags for gradual rollout of new reporting modules',
-        'Conducted code reviews and mentored junior developers on best practices',
-        'Established incident response procedures and on-call rotation',
-        'Reduced deployment time from 2 hours to 15 minutes through CI/CD pipeline improvements',
-        'Led technical debt discussions and prioritized refactoring initiatives'
+        { value: 'Coordinated cross-functional team of 8 engineers across frontend, backend, and DevOps' },
+        { value: 'Delivered project milestones ahead of schedule despite scope changes' },
+        { value: 'Implemented feature flags for gradual rollout of new reporting modules' },
+        { value: 'Conducted code reviews and mentored junior developers on best practices' },
+        { value: 'Established incident response procedures and on-call rotation' },
+        { value: 'Reduced deployment time from 2 hours to 15 minutes through CI/CD pipeline improvements' },
+        { value: 'Led technical debt discussions and prioritized refactoring initiatives' }
       ]
     },
     {
@@ -322,13 +322,13 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Developed custom React applications for European Union funded research projects. Created interactive visualizations and data-driven interfaces that effectively displayed complex agricultural sustainability data. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo. Built and maintained a reusable component library with Storybook for consistent UI across applications.',
       highlights: [
-        'Created interactive data visualizations for complex agricultural sustainability datasets',
-        'Ensured cross-browser compatibility and responsive designs across all major platforms',
-        'Implemented virtualization for large datasets (10k+ rows) without performance degradation',
-        'Integrated with REST and GraphQL APIs for real-time data synchronization',
-        'Participated in design system evolution and component library documentation',
-        'Mentored 2 junior developers on React patterns and testing strategies',
-        'Reduced bundle size by 30% through code splitting and lazy loading'
+        { value: 'Created interactive data visualizations for complex agricultural sustainability datasets' },
+        { value: 'Ensured cross-browser compatibility and responsive designs across all major platforms' },
+        { value: 'Implemented virtualization for large datasets (10k+ rows) without performance degradation' },
+        { value: 'Integrated with REST and GraphQL APIs for real-time data synchronization' },
+        { value: 'Participated in design system evolution and component library documentation' },
+        { value: 'Mentored 2 junior developers on React patterns and testing strategies' },
+        { value: 'Reduced bundle size by 30% through code splitting and lazy loading' }
       ]
     },
     {
@@ -341,12 +341,12 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Built and maintained multiple client-facing web applications using React and Vue.js. Collaborated with UX designers to implement pixel-perfect designs. Participated in code reviews and contributed to establishing coding standards. Integrated third-party APIs and payment gateways for e-commerce platforms. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo.',
       highlights: [
-        'Developed reusable UI components using React and TypeScript',
-        'Implemented unit tests with Jest and React Testing Library for critical paths',
-        'Fixed accessibility issues identified in automated accessibility audits',
-        'Improved build performance by optimizing webpack configuration',
-        'Documented component usage and API contracts in Storybook',
-        'Participated in agile ceremonies and sprint planning sessions'
+        { value: 'Developed reusable UI components using React and TypeScript' },
+        { value: 'Implemented unit tests with Jest and React Testing Library for critical paths' },
+        { value: 'Fixed accessibility issues identified in automated accessibility audits' },
+        { value: 'Improved build performance by optimizing webpack configuration' },
+        { value: 'Documented component usage and API contracts in Storybook' },
+        { value: 'Participated in agile ceremonies and sprint planning sessions' }
       ]
     },
     {
@@ -359,11 +359,11 @@ export const groupedLongMockData: TResumeData = {
       description:
         'Assisted senior developers in building responsive websites for agency clients. Learned modern web development practices including version control with Git, CSS preprocessors, and JavaScript frameworks. Participated in daily standups and sprint planning meetings. Architected and implemented a scalable monorepo architecture using pnpm workspaces and Turborepo.',
       highlights: [
-        'Assisted in building responsive websites for agency clients',
-        'Learned version control with Git and modern JavaScript frameworks',
-        'Participated in daily standups and sprint planning meetings',
-        'Implemented basic CRUD operations for internal admin tools',
-        'Contributed to documentation and developer onboarding materials'
+        { value: 'Assisted in building responsive websites for agency clients' },
+        { value: 'Learned version control with Git and modern JavaScript frameworks' },
+        { value: 'Participated in daily standups and sprint planning meetings' },
+        { value: 'Implemented basic CRUD operations for internal admin tools' },
+        { value: 'Contributed to documentation and developer onboarding materials' }
       ]
     }
   ],
@@ -394,49 +394,49 @@ export const groupedLongMockData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: ['TypeScript', 'JavaScript'] },
+    { name: 'Languages', skills: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
     {
       name: 'Frontend',
       skills: [
-        'React',
-        'Next.js',
-        'Vite',
-        'MUI',
-        'Chakra UI',
-        'Tailwind CSS',
-        'Styled Components',
-        'Emotion'
+        { value: 'React' },
+        { value: 'Next.js' },
+        { value: 'Vite' },
+        { value: 'MUI' },
+        { value: 'Chakra UI' },
+        { value: 'Tailwind CSS' },
+        { value: 'Styled Components' },
+        { value: 'Emotion' }
       ]
     },
     {
       name: 'StateManagement',
-      skills: ['Redux Toolkit', 'React Query', 'TanStack Query', 'Zustand', 'Jotai']
+      skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
     },
-    { name: 'FormsAndValidation', skills: ['React Hook Form', 'Formik', 'Zod', 'Yup'] },
+    { name: 'FormsAndValidation', skills: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
     {
       name: 'Testing',
-      skills: ['Jest', 'Vitest', 'Cypress', 'Playwright', 'React Testing Library']
+      skills: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
     },
     {
       name: 'BackendAndApis',
       skills: [
-        'Node.js',
-        'Express.js',
-        'Nest.js',
-        'Fastify',
-        'GraphQL',
-        'Apollo Client',
-        'REST APIs'
+        { value: 'Node.js' },
+        { value: 'Express.js' },
+        { value: 'Nest.js' },
+        { value: 'Fastify' },
+        { value: 'GraphQL' },
+        { value: 'Apollo Client' },
+        { value: 'REST APIs' }
       ]
     },
-    { name: 'Data', skills: ['PostgreSQL', 'MongoDB', 'Redis'] },
+    { name: 'Data', skills: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
     {
       name: 'DevOps',
-      skills: ['Docker', 'Kubernetes', 'AWS', 'Vercel', 'Git', 'GitHub Actions', 'CI/CD']
+      skills: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
     },
     {
       name: 'Collaboration',
-      skills: ['Agile/Scrum', 'Figma', 'Adobe XD', 'Storybook', 'Nx', 'Turborepo']
+      skills: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
     }
   ],
   documentStyle: {

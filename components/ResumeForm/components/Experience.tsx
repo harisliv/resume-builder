@@ -5,12 +5,12 @@ import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import type { TResumeForm } from '@/types/schema';
 import { experienceDefaultValues } from '@/types/schema';
-import SectionTitle from './SectionTitle';
-import FieldRow from './FieldRow';
+import SectionTitle from './styles/section-title';
+import FieldRow from './styles/field-row';
 import Company from './ExperienceFields/Company';
 import Position from './ExperienceFields/Position';
 import Location from './ExperienceFields/Location';
-import { ResumeFormControlledDateRange } from '@/components/ControlledFields/ControlledDateRange';
+import { ResumeFormControlledDateRange } from '@/components/ConnectedFields/ControlledDateRange';
 import Description from './ExperienceFields/Description';
 import Highlights from './ExperienceFields/Highlights';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
@@ -19,7 +19,8 @@ import {
   StyledAccordionItem,
   StyledAccordionTrigger,
   StyledAccordionContent
-} from './UI/section-accordion';
+} from './styles/section-accordion';
+import { parseDate } from '@/lib/parse-date';
 
 function experienceLabel(
   company: string | undefined,
@@ -32,13 +33,6 @@ function experienceLabel(
   if (c) return c;
   if (p) return p;
   return `Experience ${index + 1}`;
-}
-
-/** Parse "Jan 2020" into a sortable timestamp. Returns 0 for empty/invalid. */
-function parseDate(str: string | undefined): number {
-  if (!str) return 0;
-  const parsed = Date.parse(str.trim());
-  return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 export default function Experience() {

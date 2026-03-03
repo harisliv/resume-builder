@@ -1,17 +1,16 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
-import { Textarea } from '../ui/textarea';
+import { Input } from '../ui/input';
 import { useId } from 'react';
-import type { TResumeForm, TResumeInfo } from '@/types/schema';
 import { sanitizeInput } from '@/lib/utils';
 
-export default function ControlledTextarea<TForm extends FieldValues>(props: {
+export default function ControlledInput<TForm extends FieldValues>(props: {
   name: FieldPath<TForm>;
   label?: string;
   placeholder?: string;
+  autoComplete?: string;
   description?: string;
-  className?: string;
 }) {
   const form = useFormContext<TForm>();
   const id = useId();
@@ -23,14 +22,14 @@ export default function ControlledTextarea<TForm extends FieldValues>(props: {
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <FieldLabel htmlFor={id}>{props.label}</FieldLabel>
-          <Textarea
+          <Input
             {...field}
             value={field.value ?? ''}
             onChange={(e) => field.onChange(sanitizeInput(e.target.value))}
             id={id}
             aria-invalid={fieldState.invalid}
             placeholder={props.placeholder}
-            className={props.className}
+            autoComplete={props.autoComplete ?? 'on'}
           />
           {props.description && (
             <FieldDescription>{props.description}</FieldDescription>
@@ -41,6 +40,3 @@ export default function ControlledTextarea<TForm extends FieldValues>(props: {
     />
   );
 }
-
-export const ResumeFormControlledTextarea = ControlledTextarea<TResumeForm>;
-export const ResumeInfoControlledTextarea = ControlledTextarea<TResumeInfo>;

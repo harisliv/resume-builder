@@ -27,7 +27,7 @@ export const experienceSchema = z.object({
   endDate: z.string().optional().or(z.literal('')),
   current: z.boolean().optional(),
   description: z.string().optional().or(z.literal('')),
-  highlights: z.array(z.string()).optional()
+  highlights: z.array(z.object({ value: z.string() })).optional()
 });
 
 export const educationSchema = z.object({
@@ -57,7 +57,7 @@ export const resumeFormSchema = z.object({
   skills: z.array(
     z.object({
       name: z.string(),
-      skills: z.array(z.string())
+      skills: z.array(z.object({ value: z.string() }))
     })
   )
 });

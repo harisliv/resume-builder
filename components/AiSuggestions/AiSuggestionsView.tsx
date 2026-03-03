@@ -139,11 +139,11 @@ function buildHighlightRows(
 
 /** Keeps category names and trims skill values while preserving category order. */
 function normalizeSkillCategories(
-  skills?: { name: string; skills: string[] }[]
+  skills?: { name: string; skills: { value: string }[] }[]
 ): TSkillCategory[] {
   return (skills ?? []).map((category) => ({
     name: category.name.trim(),
-    skills: category.skills.map((skill) => skill.trim()).filter(Boolean)
+    skills: category.skills.map((s) => s.value.trim()).filter(Boolean)
   }));
 }
 
@@ -270,7 +270,7 @@ export function AiSuggestionsView({
                 if (!current || (!exp.description && !exp.highlights?.length))
                   return null;
 
-                const currentHighlights = current.highlights ?? [];
+                const currentHighlights = (current.highlights ?? []).map((h) => h.value);
                 const suggestedHighlights = exp.highlights ?? [];
                 const { suggestedToCurrent } = buildHighlightMatchMaps(
                   currentHighlights,

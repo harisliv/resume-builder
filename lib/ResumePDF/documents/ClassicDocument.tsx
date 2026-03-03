@@ -432,7 +432,7 @@ export const ClassicDocument = ({
                                     lineHeight: 1.5
                                   }}
                                 >
-                                  {h}
+                                  {h.value}
                                 </Text>
                               </View>
                             ))}
@@ -477,7 +477,7 @@ export const ClassicDocument = ({
                                 lineHeight: 1.5
                               }}
                             >
-                              {h}
+                              {h.value}
                             </Text>
                           </View>
                         ))}

@@ -20,7 +20,7 @@ import { CompanyOptionRow } from './CompanyOptionRow';
 
 /** Company popover selector with create/edit/delete. */
 export default function Company({ index }: { index: number }) {
-  const { watch, setValue } = useFormContext<TResumeForm>();
+  const { watch, setValue, register } = useFormContext<TResumeForm>();
   const experience = watch('experience');
   const currentCompany = experience?.[index]?.company ?? '';
   const [open, setOpen] = useState(false);
@@ -77,6 +77,7 @@ export default function Company({ index }: { index: number }) {
 
   return (
     <Field>
+      <input type="hidden" {...register(`experience.${index}.company`)} />
       <FieldLabel>Company</FieldLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

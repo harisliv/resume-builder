@@ -20,7 +20,7 @@ const resumeValidator = v.object({
     v.array(
       v.object({
         name: v.string(),
-        skills: v.array(v.string())
+        skills: v.array(v.object({ value: v.string() }))
       })
     )
   ),
@@ -37,7 +37,7 @@ export const createResume = mutation({
       v.array(
         v.object({
           name: v.string(),
-          skills: v.array(v.string())
+          skills: v.array(v.object({ value: v.string() }))
         })
       )
     ),
@@ -70,7 +70,7 @@ export const updateResume = mutation({
       v.array(
         v.object({
           name: v.string(),
-          skills: v.array(v.string())
+          skills: v.array(v.object({ value: v.string() }))
         })
       )
     ),

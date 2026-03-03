@@ -1,8 +1,9 @@
-import { ResumeFormControlledInput } from '@/components/ControlledFields/ControlledInput';
+import UncontrolledInput from '@/components/ConnectedFields/UncontrolledInput';
+import type { TResumeForm } from '@/types/schema';
 
 export default function Degree({ index }: { index: number }) {
   return (
-    <ResumeFormControlledInput
+    <UncontrolledInput<TResumeForm>
       name={`education.${index}.degree`}
       label="Degree"
       placeholder="Bachelor of Science"
