@@ -4,7 +4,7 @@ import { useReducer } from 'react';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
-import type { TAiSuggestions, TRawModelResult } from '@/types/aiSuggestions';
+import type { TAiSuggestions } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import {
   Dialog,
@@ -45,8 +45,8 @@ export function AiSuggestionsDialog({
 }: TAiSuggestionsDialogProps) {
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
   const confirm = useWarningDialog();
-  const generateSuggestionsMultiModel = useAction(
-    api.aiSuggestions.generateResumeSuggestionsMultiModel
+  const generateSuggestions = useAction(
+    api.aiSuggestions.generateResumeSuggestions
   );
 
   const handleGenerate = async () => {
@@ -54,13 +54,13 @@ export function AiSuggestionsDialog({
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'GENERATE_START' });
     try {
-      const results = await generateSuggestionsMultiModel({
+      const result = await generateSuggestions({
         resumeId,
         jobDescription
       });
       dispatch({
         type: 'GENERATE_SUCCESS',
-        payload: { results: results as TRawModelResult[], jobDescription }
+        payload: { result, jobDescription }
       });
     } catch (e) {
       dispatch({
@@ -107,13 +107,13 @@ export function AiSuggestionsDialog({
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'REGENERATE_START' });
     try {
-      const results = await generateSuggestionsMultiModel({
+      const result = await generateSuggestions({
         resumeId,
         jobDescription
       });
       dispatch({
         type: 'GENERATE_SUCCESS',
-        payload: { results: results as TRawModelResult[], jobDescription }
+        payload: { result, jobDescription }
       });
     } catch (e) {
       dispatch({
@@ -126,11 +126,11 @@ export function AiSuggestionsDialog({
 
   const handleApply = async () => {
     if (state.phase !== 'results') return;
-    const active = state.results[state.activeModelIdx];
-    if (!active.editedSuggestions || !active.selection) return;
+    const { result } = state;
+    if (!result.editedSuggestions || !result.selection) return;
     const filtered = buildFilteredSuggestions(
-      active.editedSuggestions,
-      active.selection
+      result.editedSuggestions,
+      result.selection
     );
     const ok = await confirm({
       title: 'Apply suggestions?',
@@ -146,11 +146,11 @@ export function AiSuggestionsDialog({
 
   const handleCreateVersion = () => {
     if (state.phase !== 'results') return;
-    const active = state.results[state.activeModelIdx];
-    if (!active.editedSuggestions || !active.selection) return;
+    const { result } = state;
+    if (!result.editedSuggestions || !result.selection) return;
     const filtered = buildFilteredSuggestions(
-      active.editedSuggestions,
-      active.selection
+      result.editedSuggestions,
+      result.selection
     );
     onCreateNewVersion(filtered);
     onOpenChange(false);
@@ -195,8 +195,7 @@ export function AiSuggestionsDialog({
         </DialogHeader>
         {state.phase === 'results' ? (
           <ResultsPhase
-            results={state.results}
-            activeModelIdx={state.activeModelIdx}
+            result={state.result}
             currentData={currentData}
             dispatch={dispatch}
             isRegenerating={state.isRegenerating}
