@@ -8,8 +8,7 @@ export type TDialogState =
   | {
       phase: 'results';
       jobDescription: string;
-      results: TModelResult[];
-      activeModelIdx: number;
+      result: TModelResult;
       isRegenerating: boolean;
       regenerateError: string | null;
     };
@@ -19,17 +18,16 @@ export type TDialogAction =
   | { type: 'GENERATE_START' }
   | {
       type: 'GENERATE_SUCCESS';
-      payload: { results: TRawModelResult[]; jobDescription: string };
+      payload: { result: TRawModelResult; jobDescription: string };
     }
   | { type: 'GENERATE_ERROR'; payload: string }
   | { type: 'REGENERATE_START' }
   | { type: 'REGENERATE_ERROR'; payload: string }
-  | { type: 'SET_ACTIVE_MODEL'; idx: number }
   | { type: 'BACK' }
   | { type: 'RESET' }
   | { type: 'TOGGLE_SUMMARY' }
   | { type: 'TOGGLE_EXPERIENCE_FIELD'; expIdx: number; field: 'description' | 'highlight'; highlightIdx?: number }
-  | { type: 'REMOVE_SKILL'; category: string; skillIdx: number };
+  | { type: 'TOGGLE_SKILL'; categoryIdx: number; skillIdx: number };
 
 export const initialDialogState: TDialogState = {
   phase: 'idle',
@@ -40,19 +38,21 @@ export const initialDialogState: TDialogState = {
 /** Converts a TRawModelResult into a TModelResult with default selection state. */
 function toModelResult(raw: TRawModelResult): TModelResult {
   if (raw.error || !raw.suggestions) {
-    return { modelId: raw.modelId, label: raw.label, error: raw.error ?? 'Unknown error' };
+    return { modelId: raw.modelId, label: raw.label, error: raw.error ?? 'Unknown error', cost: raw.cost, durationMs: raw.durationMs };
   }
   return {
     modelId: raw.modelId,
     label: raw.label,
     editedSuggestions: structuredClone(raw.suggestions),
-    selection: createDefaultSelection(raw.suggestions)
+    selection: createDefaultSelection(raw.suggestions),
+    cost: raw.cost,
+    durationMs: raw.durationMs
   };
 }
 
 /**
  * Reducer for AiSuggestionsDialog. Enforces valid phase transitions
- * and colocates multi-model results in the results phase.
+ * and manages single-model result state.
  */
 export function dialogReducer(state: TDialogState, action: TDialogAction): TDialogState {
   switch (action.type) {
@@ -68,8 +68,7 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
       return {
         phase: 'results',
         jobDescription: action.payload.jobDescription,
-        results: action.payload.results.map(toModelResult),
-        activeModelIdx: 0,
+        result: toModelResult(action.payload.result),
         isRegenerating: false,
         regenerateError: null
       };
@@ -86,10 +85,6 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
       if (state.phase !== 'results') return state;
       return { ...state, isRegenerating: false, regenerateError: action.payload };
 
-    case 'SET_ACTIVE_MODEL':
-      if (state.phase !== 'results') return state;
-      return { ...state, activeModelIdx: action.idx };
-
     case 'BACK':
       if (state.phase !== 'results') return state;
       return initialDialogState;
@@ -99,19 +94,17 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
 
     case 'TOGGLE_SUMMARY': {
       if (state.phase !== 'results') return state;
-      const active = state.results[state.activeModelIdx];
-      if (!active.selection) return state;
-      const results = [...state.results];
-      results[state.activeModelIdx] = { ...active, selection: { ...active.selection, summary: !active.selection.summary } };
-      return { ...state, results };
+      const { result } = state;
+      if (!result.selection) return state;
+      return { ...state, result: { ...result, selection: { ...result.selection, summary: !result.selection.summary } } };
     }
 
     case 'TOGGLE_EXPERIENCE_FIELD': {
       if (state.phase !== 'results') return state;
-      const active = state.results[state.activeModelIdx];
-      if (!active.selection) return state;
+      const { result } = state;
+      if (!result.selection) return state;
       const { expIdx, field, highlightIdx } = action;
-      const experience = [...active.selection.experience];
+      const experience = [...result.selection.experience];
       const exp = { ...experience[expIdx] };
       if (field === 'description') {
         exp.description = !exp.description;
@@ -120,32 +113,23 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
         exp.highlights[highlightIdx] = !exp.highlights[highlightIdx];
       }
       experience[expIdx] = exp;
-      const results = [...state.results];
-      results[state.activeModelIdx] = { ...active, selection: { ...active.selection, experience } };
-      return { ...state, results };
+      return { ...state, result: { ...result, selection: { ...result.selection, experience } } };
     }
 
-    case 'REMOVE_SKILL': {
+    case 'TOGGLE_SKILL': {
       if (state.phase !== 'results') return state;
-      const active = state.results[state.activeModelIdx];
-      if (!active.editedSuggestions) return state;
-      const nextSkills = (active.editedSuggestions.skills ?? []).map((category) => ({
-        ...category,
-        skills:
-          category.name === action.category
-            ? category.skills.filter((_, i) => i !== action.skillIdx)
-            : category.skills
-      }));
-      const filteredSkills = nextSkills.filter((category) => category.skills.length > 0);
-      const results = [...state.results];
-      results[state.activeModelIdx] = {
-        ...active,
-        editedSuggestions: {
-          ...active.editedSuggestions,
-          skills: filteredSkills.length > 0 ? filteredSkills : undefined
-        }
+      const { result } = state;
+      if (!result.selection) return state;
+      const nextSkills = [...result.selection.skills];
+      const category = nextSkills[action.categoryIdx];
+      if (!category || category.selected[action.skillIdx] === undefined) return state;
+      const nextCategory = { ...category, selected: [...category.selected] };
+      nextCategory.selected[action.skillIdx] = !nextCategory.selected[action.skillIdx];
+      nextSkills[action.categoryIdx] = nextCategory;
+      return {
+        ...state,
+        result: { ...result, selection: { ...result.selection, skills: nextSkills } }
       };
-      return { ...state, results };
     }
 
     default:

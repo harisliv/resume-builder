@@ -5,21 +5,17 @@ import type { TModelResult } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
-import { AlertCircle, Copy, RotateCcw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Copy, RotateCcw } from 'lucide-react';
 import { ErrorMessage } from '@/components/ui/error-message';
 import {
   ResultsContainer,
-  ModelSidebar,
-  ModelLayout,
-  ModelScrollArea
+  ResultsScrollArea
 } from '../styles/ai-suggestions-dialog.styles';
 import { AiSuggestionsView } from '../AiSuggestionsView';
 import type { TDialogAction } from '../utils/dialogReducer';
 
 type TResultsPhaseProps = {
-  results: TModelResult[];
-  activeModelIdx: number;
+  result: TModelResult;
   currentData: TResumeForm;
   dispatch: Dispatch<TDialogAction>;
   isRegenerating: boolean;
@@ -31,12 +27,10 @@ type TResultsPhaseProps = {
 };
 
 /**
- * Results phase of the suggestions dialog: model sidebar + comparison view + action footer.
- * Failed models show an error state in the sidebar and right panel.
+ * Results phase of the suggestions dialog: scrollable suggestions view + action footer.
  */
 export function ResultsPhase({
-  results,
-  activeModelIdx,
+  result,
   currentData,
   dispatch,
   isRegenerating,
@@ -46,52 +40,37 @@ export function ResultsPhase({
   onApply,
   onCreateVersion
 }: TResultsPhaseProps) {
-  const active = results[activeModelIdx];
-  const activeHasError = !!active.error;
+  const hasError = !!result.error;
 
   return (
     <ResultsContainer>
-      <ModelLayout>
-        <ModelSidebar>
-          {results.map((result, idx) => (
-            <button
-              key={result.modelId}
-              onClick={() => dispatch({ type: 'SET_ACTIVE_MODEL', idx })}
-              className={cn(
-                'flex items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium transition-colors',
-                idx === activeModelIdx
-                  ? 'bg-primary text-primary-foreground'
-                  : result.error
-                    ? 'text-destructive hover:bg-muted'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {result.error && <AlertCircle className="size-3 shrink-0" />}
-              {result.label}
-            </button>
-          ))}
-        </ModelSidebar>
-        <ModelScrollArea>
-          {activeHasError ? (
-            <div className="flex h-full items-center justify-center">
-              <ErrorMessage>{active.error}</ErrorMessage>
-            </div>
-          ) : (
-            <AiSuggestionsView
-              suggestions={active.editedSuggestions!}
-              currentData={currentData}
-              selection={active.selection!}
-              onToggleSummary={() => dispatch({ type: 'TOGGLE_SUMMARY' })}
-              onToggleExperienceField={(expIdx, field, highlightIdx) =>
-                dispatch({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
-              }
-              onRemoveSkill={(category, skillIdx) =>
-                dispatch({ type: 'REMOVE_SKILL', category, skillIdx })
-              }
-            />
-          )}
-        </ModelScrollArea>
-      </ModelLayout>
+      {(result.cost != null || result.durationMs != null) && (
+        <p className="text-muted-foreground text-xs">
+          {result.cost != null && `Cost: $${result.cost.toFixed(4)}`}
+          {result.cost != null && result.durationMs != null && ' · '}
+          {result.durationMs != null && `${(result.durationMs / 1000).toFixed(1)}s`}
+        </p>
+      )}
+      <ResultsScrollArea>
+        {hasError ? (
+          <div className="flex h-full items-center justify-center">
+            <ErrorMessage>{result.error}</ErrorMessage>
+          </div>
+        ) : (
+          <AiSuggestionsView
+            suggestions={result.editedSuggestions!}
+            currentData={currentData}
+            selection={result.selection!}
+            onToggleSummary={() => dispatch({ type: 'TOGGLE_SUMMARY' })}
+            onToggleExperienceField={(expIdx, field, highlightIdx) =>
+              dispatch({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
+            }
+            onToggleSkill={(categoryIdx, skillIdx) =>
+              dispatch({ type: 'TOGGLE_SKILL', categoryIdx, skillIdx })
+            }
+          />
+        )}
+      </ResultsScrollArea>
       {regenerateError && <ErrorMessage>{regenerateError}</ErrorMessage>}
       <DialogFooter className="shrink-0">
         <Button variant="outline" onClick={onBack}>
@@ -101,11 +80,11 @@ export function ResultsPhase({
           <RotateCcw className="size-3.5" />
           {isRegenerating ? 'Regenerating...' : 'Regenerate'}
         </Button>
-        <Button variant="secondary" onClick={onCreateVersion} disabled={activeHasError}>
+        <Button variant="secondary" onClick={onCreateVersion} disabled={hasError}>
           <Copy className="size-3.5" />
           Create New Version
         </Button>
-        <Button onClick={onApply} disabled={activeHasError}>Apply to Current</Button>
+        <Button onClick={onApply} disabled={hasError}>Apply to Current</Button>
       </DialogFooter>
     </ResultsContainer>
   );

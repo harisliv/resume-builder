@@ -6,7 +6,7 @@
  * Must stay visually in sync with components/ResumePreview/ClassicStyle.tsx.
  */
 import React from 'react';
-import { Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
@@ -37,7 +37,7 @@ export const ClassicDocument = ({
       backgroundColor: '#ffffff',
       fontFamily: fontFamily,
       paddingTop: 44,
-      paddingBottom: 40,
+      paddingBottom: 60,
       paddingHorizontal: 50
     },
     header: {
@@ -261,15 +261,23 @@ export const ClassicDocument = ({
   const contactItems: React.ReactNode[] = [];
   if (personalInfo?.email)
     contactItems.push(
-      <Text key="email" style={classicStyles.contactText}>
+      <Link
+        key="email"
+        src={`mailto:${personalInfo.email}`}
+        style={classicStyles.contactText}
+      >
         {personalInfo.email}
-      </Text>
+      </Link>
     );
   if (personalInfo?.phone)
     contactItems.push(
-      <Text key="phone" style={classicStyles.contactText}>
+      <Link
+        key="phone"
+        src={`tel:${personalInfo.phone}`}
+        style={classicStyles.contactText}
+      >
         {personalInfo.phone}
-      </Text>
+      </Link>
     );
   if (personalInfo?.location)
     contactItems.push(
@@ -279,15 +287,23 @@ export const ClassicDocument = ({
     );
   if (personalInfo?.linkedIn)
     contactItems.push(
-      <Text key="linkedin" style={classicStyles.contactText}>
+      <Link
+        key="linkedin"
+        src={personalInfo.linkedIn}
+        style={classicStyles.contactText}
+      >
         LinkedIn
-      </Text>
+      </Link>
     );
   if (personalInfo?.website)
     contactItems.push(
-      <Text key="website" style={classicStyles.contactText}>
+      <Link
+        key="website"
+        src={personalInfo.website}
+        style={classicStyles.contactText}
+      >
         Portfolio
-      </Text>
+      </Link>
     );
 
   return (
@@ -330,7 +346,10 @@ export const ClassicDocument = ({
 
       {experience && experience.length > 0 && (
         <View style={classicStyles.section}>
-          <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.experience}>
+          <View
+            style={classicStyles.sectionTitleRow}
+            minPresenceAhead={MIN_PRESENCE.experience}
+          >
             <View style={classicStyles.sectionBar} />
             <Text style={classicStyles.sectionTitle}>
               Professional Experience
@@ -365,7 +384,9 @@ export const ClassicDocument = ({
                         <CalendarIcon size={8} color={colors.experience} />
                         <Text style={classicStyles.experienceDate}>
                           {group.startDate}{' '}
-                          <Text style={classicStyles.experienceDateArrow}>→</Text>{' '}
+                          <Text style={classicStyles.experienceDateArrow}>
+                            →
+                          </Text>{' '}
                           {group.current ? 'Present' : group.endDate}
                         </Text>
                       </View>
@@ -383,42 +404,46 @@ export const ClassicDocument = ({
                           {firstEntry.description}
                         </Text>
                       ) : null}
-                      {firstEntry.highlights && firstEntry.highlights.length > 0 && (
-                        <View style={{ marginTop: 4 }}>
-                          {firstEntry.highlights.map((h, i) => (
-                            <View
-                              key={i}
-                              style={{ flexDirection: 'row', marginBottom: 2 }}
-                            >
-                              <Text
+                      {firstEntry.highlights &&
+                        firstEntry.highlights.length > 0 && (
+                          <View style={{ marginTop: 4 }}>
+                            {firstEntry.highlights.map((h, i) => (
+                              <View
+                                key={i}
                                 style={{
-                                  fontSize: 9,
-                                  color: '#475569',
-                                  marginRight: 6
+                                  flexDirection: 'row',
+                                  marginBottom: 2
                                 }}
                               >
-                                •
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 9,
-                                  color: '#475569',
-                                  flex: 1,
-                                  lineHeight: 1.5
-                                }}
-                              >
-                                {h}
-                              </Text>
-                            </View>
-                          ))}
-                        </View>
-                      )}
+                                <Text
+                                  style={{
+                                    fontSize: 9,
+                                    color: '#475569',
+                                    marginRight: 6
+                                  }}
+                                >
+                                  •
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 9,
+                                    color: '#475569',
+                                    flex: 1,
+                                    lineHeight: 1.5
+                                  }}
+                                >
+                                  {h.value}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
                     </View>
                   )}
                 </View>
                 {/* Remaining role entries */}
                 {restEntries.map((exp, ei) => (
-                  <View key={ei} style={{ marginTop: 4 }} wrap={false}>
+                  <View key={ei} style={{ marginTop: 4 }}>
                     <Text style={classicStyles.experiencePosition}>
                       {exp.position}
                     </Text>
@@ -433,6 +458,7 @@ export const ClassicDocument = ({
                           <View
                             key={i}
                             style={{ flexDirection: 'row', marginBottom: 2 }}
+                            wrap={false}
                           >
                             <Text
                               style={{
@@ -451,7 +477,7 @@ export const ClassicDocument = ({
                                 lineHeight: 1.5
                               }}
                             >
-                              {h}
+                              {h.value}
                             </Text>
                           </View>
                         ))}
@@ -465,96 +491,106 @@ export const ClassicDocument = ({
         </View>
       )}
 
-      {education && education.length > 0 && (() => {
-        const [firstEdu, ...restEdu] = education;
-        return (
-          <View style={classicStyles.section}>
-            {/* Keep header/divider coupled with first item to prevent orphaned section title */}
-            <View wrap={false}>
-              <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.education}>
-                <View style={classicStyles.sectionBar} />
-                <Text style={classicStyles.sectionTitle}>Education</Text>
+      {education &&
+        education.length > 0 &&
+        (() => {
+          const [firstEdu, ...restEdu] = education;
+          return (
+            <View style={classicStyles.section}>
+              {/* Keep header/divider coupled with first item to prevent orphaned section title */}
+              <View wrap={false}>
+                <View
+                  style={classicStyles.sectionTitleRow}
+                  minPresenceAhead={MIN_PRESENCE.education}
+                >
+                  <View style={classicStyles.sectionBar} />
+                  <Text style={classicStyles.sectionTitle}>Education</Text>
+                </View>
+                <View style={classicStyles.dividerWrap}>
+                  <View style={classicStyles.dividerColored} />
+                  <View style={classicStyles.dividerSlate} />
+                </View>
+                {firstEdu && (
+                  <View style={{ marginBottom: 14 }}>
+                    <View style={classicStyles.itemRow}>
+                      <View style={classicStyles.itemLeft}>
+                        <View style={classicStyles.experienceCompanyRow}>
+                          <View style={classicStyles.experienceCompanyMarker} />
+                          <Text style={classicStyles.experienceCompany}>
+                            {firstEdu.degree} in {firstEdu.field}
+                          </Text>
+                        </View>
+                      </View>
+                      {firstEdu.gpa ? (
+                        <Text style={classicStyles.educationGpaInline}>
+                          GPA: {firstEdu.gpa}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <View style={classicStyles.educationInstitutionRow}>
+                      <Text style={classicStyles.educationInstitution}>
+                        {firstEdu.institution}
+                      </Text>
+                      <View style={classicStyles.educationMetaRight}>
+                        <View style={classicStyles.experienceDateRow}>
+                          <CalendarIcon size={8} color={colors.experience} />
+                          <Text style={classicStyles.experienceDate}>
+                            {firstEdu.graduationDate}
+                          </Text>
+                        </View>
+                        <Text style={classicStyles.experienceLocation}>
+                          {firstEdu.location}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
               </View>
-              <View style={classicStyles.dividerWrap}>
-                <View style={classicStyles.dividerColored} />
-                <View style={classicStyles.dividerSlate} />
-              </View>
-              {firstEdu && (
-                <View style={{ marginBottom: 14 }}>
+              {restEdu.map((edu, index) => (
+                <View key={index} style={{ marginBottom: 14 }} wrap={false}>
                   <View style={classicStyles.itemRow}>
                     <View style={classicStyles.itemLeft}>
                       <View style={classicStyles.experienceCompanyRow}>
                         <View style={classicStyles.experienceCompanyMarker} />
                         <Text style={classicStyles.experienceCompany}>
-                          {firstEdu.degree} in {firstEdu.field}
+                          {edu.degree} in {edu.field}
                         </Text>
                       </View>
                     </View>
-                    {firstEdu.gpa ? (
+                    {edu.gpa ? (
                       <Text style={classicStyles.educationGpaInline}>
-                        GPA: {firstEdu.gpa}
+                        GPA: {edu.gpa}
                       </Text>
                     ) : null}
                   </View>
                   <View style={classicStyles.educationInstitutionRow}>
                     <Text style={classicStyles.educationInstitution}>
-                      {firstEdu.institution}
+                      {edu.institution}
                     </Text>
                     <View style={classicStyles.educationMetaRight}>
                       <View style={classicStyles.experienceDateRow}>
                         <CalendarIcon size={8} color={colors.experience} />
                         <Text style={classicStyles.experienceDate}>
-                          {firstEdu.graduationDate}
+                          {edu.graduationDate}
                         </Text>
                       </View>
                       <Text style={classicStyles.experienceLocation}>
-                        {firstEdu.location}
+                        {edu.location}
                       </Text>
                     </View>
                   </View>
                 </View>
-              )}
+              ))}
             </View>
-            {restEdu.map((edu, index) => (
-              <View key={index} style={{ marginBottom: 14 }} wrap={false}>
-                <View style={classicStyles.itemRow}>
-                  <View style={classicStyles.itemLeft}>
-                    <View style={classicStyles.experienceCompanyRow}>
-                      <View style={classicStyles.experienceCompanyMarker} />
-                      <Text style={classicStyles.experienceCompany}>
-                        {edu.degree} in {edu.field}
-                      </Text>
-                    </View>
-                  </View>
-                  {edu.gpa ? (
-                    <Text style={classicStyles.educationGpaInline}>
-                      GPA: {edu.gpa}
-                    </Text>
-                  ) : null}
-                </View>
-                <View style={classicStyles.educationInstitutionRow}>
-                  <Text style={classicStyles.educationInstitution}>
-                    {edu.institution}
-                  </Text>
-                  <View style={classicStyles.educationMetaRight}>
-                    <View style={classicStyles.experienceDateRow}>
-                      <CalendarIcon size={8} color={colors.experience} />
-                      <Text style={classicStyles.experienceDate}>
-                        {edu.graduationDate}
-                      </Text>
-                    </View>
-                    <Text style={classicStyles.experienceLocation}>{edu.location}</Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-          </View>
-        );
-      })()}
+          );
+        })()}
 
       {skillEntries.length > 0 && (
         <View style={classicStyles.section} wrap={false}>
-          <View style={classicStyles.sectionTitleRow} minPresenceAhead={MIN_PRESENCE.skills}>
+          <View
+            style={classicStyles.sectionTitleRow}
+            minPresenceAhead={MIN_PRESENCE.skills}
+          >
             <View style={classicStyles.sectionBar} />
             <Text style={classicStyles.sectionTitle}>Skills</Text>
           </View>

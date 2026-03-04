@@ -5,8 +5,8 @@ import Location from './PersonalInfoFields/Location';
 import LinkedIn from './PersonalInfoFields/LinkedIn';
 import Website from './PersonalInfoFields/Website';
 import Summary from './PersonalInfoFields/Summary';
-import SectionTitle from './SectionTitle';
-import FieldRow from './FieldRow';
+import SectionTitle from './styles/section-title';
+import FieldRow from './styles/field-row';
 
 export default function PersonalInfo() {
   return (

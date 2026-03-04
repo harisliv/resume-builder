@@ -4,7 +4,7 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import { FileSearchIcon, Download } from '@hugeicons/core-free-icons';
 import { Button } from '@/components/ui/button';
 import ResumePreview from './ResumePreview';
-import type { TCombinedResumeData } from '@/types/schema';
+import type { TResumeForm, TResumeInfo } from '@/types/schema';
 import { generateResumePDF } from '@/lib/ResumePDF/generateResumePDF';
 import {
   SectionCard,
@@ -19,17 +19,30 @@ import {
   TooltipContent
 } from '@/components/ui/tooltip';
 import usePrivileges from '@/hooks/usePrivileges';
+import { useWatch, type Control } from 'react-hook-form';
 
+type TResumePreviewWrapperProps = {
+  formControl: Control<TResumeForm>;
+  infoControl: Control<TResumeInfo>;
+  hasSelectedResume: boolean;
+};
+
+/** Subscribes to form changes via useWatch to isolate re-renders from parent. */
 export default function ResumePreviewWrapper({
-  formData,
-  infoData,
+  formControl,
+  infoControl,
   hasSelectedResume
-}: TCombinedResumeData & { hasSelectedResume: boolean }) {
+}: TResumePreviewWrapperProps) {
+  const formData = useWatch({ control: formControl });
+  const infoData = useWatch({ control: infoControl });
   const { isBasic, getDisabledTooltip } = usePrivileges();
   const downloadTooltip = getDisabledTooltip(hasSelectedResume);
 
   const handleDownload = () => {
-    generateResumePDF({ formData, infoData });
+    generateResumePDF({
+      formData: formData as TResumeForm,
+      infoData: infoData as TResumeInfo
+    });
   };
   return (
     <SectionCard>
@@ -59,7 +72,10 @@ export default function ResumePreviewWrapper({
         </SectionCardActions>
       </SectionCardHeader>
       <SectionCardContent>
-        <ResumePreview formData={formData} infoData={infoData} />
+        <ResumePreview
+          formData={formData as TResumeForm}
+          infoData={infoData as TResumeInfo}
+        />
       </SectionCardContent>
     </SectionCard>
   );

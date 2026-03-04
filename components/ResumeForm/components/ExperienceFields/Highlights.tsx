@@ -1,19 +1,18 @@
-import { useFieldArray, useFormContext, Controller } from 'react-hook-form';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Field, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import type { TResumeForm } from '@/types/schema';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import { sanitizeInput } from '@/lib/utils';
 
 export default function Highlights({ index }: { index: number }) {
-  const { control } = useFormContext<TResumeForm>();
+  const { register } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: `experience.${index}.highlights` as any
+  const { fields, append, remove } = useFieldArray<TResumeForm>({
+    name: `experience.${index}.highlights`
   });
 
   /** Confirms before removing a highlight row. */
@@ -35,21 +34,19 @@ export default function Highlights({ index }: { index: number }) {
         {fields.map((field, highlightIndex) => (
           <div key={field.id} className="flex items-center gap-2">
             <span className="text-muted-foreground">•</span>
-            <Controller
-              name={`experience.${index}.highlights.${highlightIndex}` as any}
-              control={control}
-              render={({ field: inputField }) => (
-                <Input
-                  {...inputField}
-                  value={inputField.value ?? ''}
-                  onChange={(e) =>
-                    inputField.onChange(sanitizeInput(e.target.value))
+            <Textarea
+              {...register(
+                `experience.${index}.highlights.${highlightIndex}.value`,
+                {
+                  onChange: (e) => {
+                    e.target.value = sanitizeInput(e.target.value);
                   }
-                  id={`highlight-${index}-${highlightIndex}`}
-                  placeholder="Enter a highlight"
-                  className="flex-1"
-                />
+                }
               )}
+              id={`highlight-${index}-${highlightIndex}`}
+              placeholder="Enter a highlight"
+              rows={1}
+              className="flex-1 min-h-10! max-h-24 resize-none"
             />
             <Button
               type="button"
@@ -68,7 +65,7 @@ export default function Highlights({ index }: { index: number }) {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => append('')}
+          onClick={() => append({ value: '' })}
           className="w-full"
         >
           <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />

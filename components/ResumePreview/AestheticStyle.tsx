@@ -254,7 +254,7 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                                 style={{ color: AESTHETIC.textSecondary }}
                               >
                                 <span>•</span>
-                                <span>{h}</span>
+                                <span>{h.value}</span>
                               </li>
                             ))}
                           </ul>

@@ -7,7 +7,8 @@
 
 import { Controller, useFormContext } from 'react-hook-form';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
+import { Field, FieldDescription, FieldLabel } from '../ui/field';
+import FieldError from './FieldError';
 import {
   Combobox,
   ComboboxContent,
@@ -109,7 +110,7 @@ export default function ControlledCombobox<TForm extends FieldValues, T>({
               )}
             </Combobox>
             {description && <FieldDescription>{description}</FieldDescription>}
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            <FieldError name={field.name} />
           </Field>
         );
       }}

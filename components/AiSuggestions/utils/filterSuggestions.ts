@@ -2,12 +2,22 @@ import type { TAiSuggestions, TSuggestionSelection } from '@/types/aiSuggestions
 
 /**
  * Applies user selection to produce final TAiSuggestions for submission.
- * Unselected fields are set to undefined; skills come pre-edited (removals already applied).
+ * Unselected fields are set to undefined, including unchecked suggested skills.
  */
 export function buildFilteredSuggestions(
   suggestions: TAiSuggestions,
   selection: TSuggestionSelection
 ): TAiSuggestions {
+  const filteredSkills = suggestions.skills
+    ?.map((category, categoryIdx) => {
+      const selected = selection.skills[categoryIdx]?.selected ?? [];
+      return {
+        name: category.name,
+        values: category.values.filter((_, skillIdx) => selected[skillIdx] ?? true)
+      };
+    })
+    .filter((category) => category.values.length > 0);
+
   return {
     title: suggestions.title,
     summary: selection.summary ? suggestions.summary : undefined,
@@ -21,6 +31,6 @@ export function buildFilteredSuggestions(
         highlights: filteredHighlights?.length ? filteredHighlights : undefined
       };
     }),
-    skills: suggestions.skills
+    skills: filteredSkills?.length ? filteredSkills : undefined
   };
 }

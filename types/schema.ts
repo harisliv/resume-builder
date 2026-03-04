@@ -27,7 +27,7 @@ export const experienceSchema = z.object({
   endDate: z.string().optional().or(z.literal('')),
   current: z.boolean().optional(),
   description: z.string().optional().or(z.literal('')),
-  highlights: z.array(z.string()).optional()
+  highlights: z.array(z.object({ value: z.string() })).optional()
 });
 
 export const educationSchema = z.object({
@@ -50,16 +50,16 @@ export const resumeInfoSchema = z.object({
   documentStyle: documentStyleSchema
 });
 
+export const skillsSchema = z.object({
+  name: z.string(),
+  values: z.array(z.object({ value: z.string() }))
+});
+
 export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
-  skills: z.array(
-    z.object({
-      name: z.string(),
-      skills: z.array(z.string())
-    })
-  )
+  skills: z.array(skillsSchema)
 });
 
 export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);

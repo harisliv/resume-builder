@@ -1,13 +1,7 @@
-import { ResumeFormControlledCombobox } from '@/components/ControlledFields/ControlledCombobox';
+import { ResumeFormControlledCombobox } from '@/components/ConnectedFields/ControlledCombobox';
 import { Item, ItemContent, ItemTitle, ItemDescription } from '@/components/ui/item';
 import { useFetchCountries, type CountryOption } from '@/hooks/useFetchCountries';
-
-/** Prefix-only match to avoid contains-based results (e.g. `b` matching `Abu`). */
-function filterCountryByPrefix(item: CountryOption, query: string) {
-  const normalizedQuery = query.trim().toLowerCase();
-  if (!normalizedQuery) return true;
-  return item.value.toLowerCase().startsWith(normalizedQuery);
-}
+import { filterCountryByPrefix } from '@/lib/filter-country';
 
 export default function Location({ index }: { index: number }) {
   const { data: countries = [] } = useFetchCountries();

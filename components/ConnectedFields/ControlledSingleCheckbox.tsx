@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
+import { Field, FieldDescription, FieldLabel } from '../ui/field';
+import FieldError from './FieldError';
 import { Checkbox } from '../ui/checkbox';
 import { useId } from 'react';
 import type { TResumeForm, TResumeInfo } from '@/types/schema';
@@ -29,7 +30,7 @@ export default function ControlledSingleCheckbox<
           {props.description && (
             <FieldDescription>{props.description}</FieldDescription>
           )}
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError name={field.name} />
         </Field>
       )}
     />

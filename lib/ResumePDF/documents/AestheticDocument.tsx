@@ -302,7 +302,7 @@ const AestheticHighlights = ({
   highlights,
   color
 }: {
-  highlights: string[];
+  highlights: { value: string }[];
   color: string;
 }) => (
   <View style={{ marginTop: 4 }}>
@@ -310,7 +310,7 @@ const AestheticHighlights = ({
       <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
         <Text style={{ fontSize: 9, color, marginRight: 6 }}>•</Text>
         <Text style={{ fontSize: 9, color, flex: 1, lineHeight: 1.6 }}>
-          {h}
+          {h.value}
         </Text>
       </View>
     ))}
@@ -452,7 +452,12 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
           {personalInfo?.phone && (
             <View style={styles.contactItem}>
               <PhoneIcon size={10} color={AESTHETIC_COLORS.primary} />
-              <Text style={styles.contactText}>{personalInfo.phone}</Text>
+              <Link
+                src={`tel:${personalInfo.phone}`}
+                style={[styles.contactLink, { color: AESTHETIC_COLORS.primary }]}
+              >
+                {personalInfo.phone}
+              </Link>
             </View>
           )}
           {personalInfo?.location && (

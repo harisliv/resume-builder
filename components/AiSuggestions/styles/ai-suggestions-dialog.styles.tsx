@@ -50,33 +50,3 @@ export function ResultsScrollArea({ className, ...props }: ComponentProps<'div'>
     />
   );
 }
-
-/** Narrow left sidebar listing model options in the results phase. */
-export function ModelSidebar({ className, ...props }: ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn('flex w-36 shrink-0 flex-col gap-1 border-r px-2 py-1', className)}
-      {...props}
-    />
-  );
-}
-
-/** Row layout wrapping ModelSidebar + suggestions view. */
-export function ModelLayout({ className, ...props }: ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn('flex flex-row gap-3 -mx-4 max-h-[50vh] overflow-hidden', className)}
-      {...props}
-    />
-  );
-}
-
-/** Scrollable right panel for suggestions content in multi-model layout. */
-export function ModelScrollArea({ className, ...props }: ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn('flex-1 overflow-y-auto pr-4 pl-2', className)}
-      {...props}
-    />
-  );
-}
