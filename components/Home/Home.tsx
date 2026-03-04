@@ -114,10 +114,15 @@ export default function Home() {
           description: suggestions.experience[idx].description
         }),
         ...(suggestions.experience?.[idx]?.highlights && {
-          highlights: suggestions.experience[idx].highlights
+          highlights: suggestions.experience[idx].highlights.map((h) => ({ value: h }))
         })
       })),
-      skills: suggestions.skills ?? currentForm.skills
+      skills: suggestions.skills
+        ? suggestions.skills.map((cat) => ({
+            name: cat.name,
+            values: cat.values.map((v) => ({ value: v }))
+          }))
+        : currentForm.skills
     };
   };
 
@@ -176,8 +181,8 @@ export default function Home() {
             />
           </FormProvider>
           <ResumePreviewWrapper
-            formData={formForm.watch()}
-            infoData={infoForm.watch()}
+            formControl={formForm.control}
+            infoControl={infoForm.control}
             hasSelectedResume={!!selectedResumeId}
           />
         </HomeLayout>

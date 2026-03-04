@@ -201,7 +201,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                                     className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
                                   >
                                     <span>•</span>
-                                    <span>{h}</span>
+                                    <span>{h.value}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -229,7 +229,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                                   className="flex gap-1.5 text-[9px] leading-relaxed text-slate-600"
                                 >
                                   <span>•</span>
-                                  <span>{h}</span>
+                                  <span>{h.value}</span>
                                 </li>
                               ))}
                             </ul>

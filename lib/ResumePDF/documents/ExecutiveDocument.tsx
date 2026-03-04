@@ -296,7 +296,7 @@ export const ExecutiveDocument = ({
                                     lineHeight: 1.5
                                   }}
                                 >
-                                  {h}
+                                  {h.value}
                                 </Text>
                               </View>
                             ))}
@@ -348,7 +348,7 @@ export const ExecutiveDocument = ({
                                   lineHeight: 1.5
                                 }}
                               >
-                                {h}
+                                {h.value}
                               </Text>
                             </View>
                           ))}

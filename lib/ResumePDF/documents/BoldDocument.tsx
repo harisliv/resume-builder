@@ -271,7 +271,7 @@ export const BoldDocument = ({
                                     lineHeight: 1.5
                                   }}
                                 >
-                                  {h}
+                                  {h.value}
                                 </Text>
                               </View>
                             ))}
@@ -323,7 +323,7 @@ export const BoldDocument = ({
                                   lineHeight: 1.5
                                 }}
                               >
-                                {h}
+                                {h.value}
                               </Text>
                             </View>
                           ))}

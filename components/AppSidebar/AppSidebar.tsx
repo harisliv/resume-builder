@@ -7,7 +7,7 @@ import { ResumeSelector } from './components/ResumeSelector';
 import { SidebarHeader } from './components/SidebarHeader';
 import { SidebarBody } from './components/SidebarBody';
 import { SidebarFooter } from './components/SidebarFooter';
-import { ResumeInfoControlledNavSelector } from '@/components/ControlledFields/ControlledNavSelector';
+import { ResumeInfoControlledNavSelector } from '@/components/ConnectedFields/ControlledNavSelector';
 import { paletteNavOptions, fontNavOptions, styleNavOptions } from './constants';
 
 export type TAppSidebarResumeProps = {

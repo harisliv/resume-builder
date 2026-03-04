@@ -8,6 +8,11 @@ import {
   personalInfoValidator
 } from './validators';
 
+const skillCategoryValidator = v.object({
+  name: v.string(),
+  values: v.array(v.object({ value: v.string() }))
+});
+
 const resumeValidator = v.object({
   _id: v.id('resumes'),
   _creationTime: v.number(),
@@ -16,14 +21,7 @@ const resumeValidator = v.object({
   personalInfo: v.optional(personalInfoValidator),
   experience: v.optional(v.array(experienceValidator)),
   education: v.optional(v.array(educationValidator)),
-  skills: v.optional(
-    v.array(
-      v.object({
-        name: v.string(),
-        values: v.array(v.string())
-      })
-    )
-  ),
+  skills: v.optional(v.array(skillCategoryValidator)),
   documentStyle: documentStyleValidator
 });
 
@@ -33,14 +31,7 @@ export const createResume = mutation({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
-    skills: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          values: v.array(v.string())
-        })
-      )
-    ),
+    skills: v.optional(v.array(skillCategoryValidator)),
     documentStyle: documentStyleValidator
   },
   returns: v.id('resumes'),
@@ -66,14 +57,7 @@ export const updateResume = mutation({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
-    skills: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          values: v.array(v.string())
-        })
-      )
-    ),
+    skills: v.optional(v.array(skillCategoryValidator)),
     documentStyle: documentStyleValidator
   },
   returns: v.null(),

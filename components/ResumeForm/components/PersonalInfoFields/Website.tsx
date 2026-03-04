@@ -1,8 +1,9 @@
-import { ResumeFormControlledInput } from '@/components/ControlledFields/ControlledInput';
+import UncontrolledInput from '@/components/ConnectedFields/UncontrolledInput';
+import type { TResumeForm } from '@/types/schema';
 
 export default function Website() {
   return (
-    <ResumeFormControlledInput
+    <UncontrolledInput<TResumeForm>
       name="personalInfo.website"
       label="Website"
       placeholder="https://johndoe.com"

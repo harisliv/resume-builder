@@ -1,9 +1,11 @@
-interface FieldRowProps {
+/** Grid row for laying out form fields in columns. */
+export default function FieldRow({
+  cols = 'full',
+  children
+}: {
   cols?: 'full' | 'half' | 'third' | 'quarter';
   children: React.ReactNode;
-}
-
-export default function FieldRow({ cols = 'full', children }: FieldRowProps) {
+}) {
   const gridColsClass = {
     full: 'grid-cols-1',
     half: 'grid-cols-2',

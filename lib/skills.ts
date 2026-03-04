@@ -1,5 +1,5 @@
 /** Ordered skills shape used across app, preview, and PDF. */
-export type TSkillCategory = { name: string; values: string[] };
+export type TSkillCategory = { name: string; values: { value: string }[] };
 export type TSkillsByCategory = TSkillCategory[];
 
 /** Returns categories with at least one non-empty skill. */
@@ -10,7 +10,7 @@ export function getSkillEntries(
   return skills
     .map((category) => [
       category.name.trim(),
-      category.values.map((value) => value.trim()).filter(Boolean)
+      category.values.map((v) => v.value.trim()).filter(Boolean)
     ] as [string, string[]])
     .filter(([category, values]) => category && values.length > 0);
 }

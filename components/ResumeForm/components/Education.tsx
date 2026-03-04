@@ -6,8 +6,8 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import type { TResumeForm } from '@/types/schema';
 import { educationDefaultValues } from '@/types/schema';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
-import SectionTitle from './SectionTitle';
-import FieldRow from './FieldRow';
+import SectionTitle from './styles/section-title';
+import FieldRow from './styles/field-row';
 import Institution from './EducationFields/Institution';
 import Degree from './EducationFields/Degree';
 import Field from './EducationFields/Field';
@@ -19,18 +19,12 @@ import {
   StyledAccordionItem,
   StyledAccordionTrigger,
   StyledAccordionContent
-} from './UI/section-accordion';
+} from './styles/section-accordion';
+import { parseDate } from '@/lib/parse-date';
 
 function educationLabel(institution: string | undefined, index: number) {
   const trimmed = institution?.trim();
   return trimmed ? trimmed : `Education ${index + 1}`;
-}
-
-/** Parse "Jan 2020" into a sortable timestamp. Returns 0 for empty/invalid. */
-function parseDate(str: string | undefined): number {
-  if (!str) return 0;
-  const parsed = Date.parse(str.trim());
-  return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 export default function Education() {

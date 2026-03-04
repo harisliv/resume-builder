@@ -145,7 +145,7 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
                                 className="text-[9px] text-slate-600 leading-relaxed flex gap-1.5"
                               >
                                 <span>•</span>
-                                <span>{h}</span>
+                                <span>{h.value}</span>
                               </li>
                             ))}
                           </ul>
