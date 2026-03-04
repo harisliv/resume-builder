@@ -7,7 +7,7 @@ import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/ai
 import { internal } from './_generated/api';
 import { action } from './_generated/server';
 import { getAuthenticatedUser } from './auth';
-import { SYSTEM_PROMPT_4, SYSTEM_SCHEMA_RULES } from './systemPropts';
+import { SYSTEM_PROMPT_5, SYSTEM_SCHEMA_RULES } from './systemPropts';
 
 const suggestionsValidator = v.object({
   title: v.optional(v.string()),
@@ -113,7 +113,7 @@ export const generateResumeSuggestions = action({
     try {
       const { output, usage } = await generateText({
         model: anthropic('claude-sonnet-4-6'),
-        system: `${SYSTEM_PROMPT_4}\n\n${SYSTEM_SCHEMA_RULES}`,
+        system: `${SYSTEM_PROMPT_5}\n\n${SYSTEM_SCHEMA_RULES}`,
         prompt,
         output: Output.object({ schema: suggestionsOutputSchema })
       });
