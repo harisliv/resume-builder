@@ -24,7 +24,7 @@ const suggestionsValidator = v.object({
     v.array(
       v.object({
         name: v.string(),
-        skills: v.array(v.string())
+        values: v.array(v.string())
       })
     )
   )
@@ -33,7 +33,7 @@ const suggestionsValidator = v.object({
 /** Ensures model does not rename/add/remove skill categories. */
 function assertSkillCategoriesMatchInput(
   inputCategoryNames: string[],
-  parsed: { skills?: { name: string; skills: string[] }[] }
+  parsed: { skills?: { name: string; values: string[] }[] }
 ) {
   if (!parsed.skills) return;
   const suggestedCategoryNames = parsed.skills.map((category) => category.name.trim());

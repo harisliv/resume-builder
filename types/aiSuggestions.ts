@@ -2,7 +2,7 @@ import * as z from 'zod';
 
 const suggestionSkillCategorySchema = z.object({
   name: z.string(),
-  skills: z.array(z.string())
+  values: z.array(z.string())
 });
 
 const suggestionSkillsSchema = z.array(suggestionSkillCategorySchema);
@@ -98,7 +98,7 @@ export function createDefaultSelection(
     skills:
       suggestions.skills?.map((category) => ({
         name: category.name,
-        selected: category.skills.map(() => true)
+        selected: category.values.map(() => true)
       })) ?? []
   };
 }

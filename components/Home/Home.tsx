@@ -120,7 +120,7 @@ export default function Home() {
       skills: suggestions.skills
         ? suggestions.skills.map((cat) => ({
             name: cat.name,
-            skills: cat.skills.map((s) => ({ value: s }))
+            values: cat.values.map((v) => ({ value: v }))
           }))
         : currentForm.skills
     };

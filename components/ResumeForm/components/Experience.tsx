@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
@@ -36,9 +36,9 @@ function experienceLabel(
 }
 
 export default function Experience() {
-  const { control, watch } = useFormContext<TResumeForm>();
+  const { control } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
-  const experience = watch('experience');
+  const experience = useWatch({ control, name: 'experience' });
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'experience'

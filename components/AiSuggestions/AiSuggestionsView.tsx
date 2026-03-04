@@ -102,7 +102,7 @@ type THighlightRow = {
 
 type TSkillCategory = {
   name: string;
-  skills: string[];
+  values: string[];
 };
 
 type TSkillRow = {
@@ -137,13 +137,13 @@ function buildHighlightRows(
   return rows;
 }
 
-/** Keeps category names and trims skill values while preserving category order. */
+/** Flattens form skill objects to plain strings for comparison. */
 function normalizeSkillCategories(
-  skills?: { name: string; skills: { value: string }[] }[]
+  skills?: { name: string; values: { value: string }[] }[]
 ): TSkillCategory[] {
   return (skills ?? []).map((category) => ({
     name: category.name.trim(),
-    skills: category.skills.map((s) => s.value.trim()).filter(Boolean)
+    values: category.values.map((v) => v.value.trim()).filter(Boolean)
   }));
 }
 
@@ -201,17 +201,17 @@ export function AiSuggestionsView({
   const hasExperience = !!suggestions.experience?.length;
   const suggestedSkillEntries = (suggestions.skills ?? []).map((category) => ({
     name: category.name.trim(),
-    skills: category.skills.map((skill) => skill.trim())
+    values: category.values.map((skill) => skill.trim())
   }));
   const hasSkills = suggestedSkillEntries.some((category) =>
-    category.skills.some(Boolean)
+    category.values.some(Boolean)
   );
   const currentSkillEntries = normalizeSkillCategories(currentData.skills);
   const currentSkillsSet = new Set(
-    currentSkillEntries.flatMap((category) => category.skills).map((s) => s.toLowerCase())
+    currentSkillEntries.flatMap((category) => category.values).map((s) => s.toLowerCase())
   );
   const currentSkillMap = new Map(
-    currentSkillEntries.map((category) => [category.name, category.skills])
+    currentSkillEntries.map((category) => [category.name, category.values])
   );
 
   const defaultTab = hasSummary
@@ -410,7 +410,7 @@ export function AiSuggestionsView({
             <div className="space-y-4">
               {suggestedSkillEntries.map((category, categoryIdx) => {
                 const currentSkills = currentSkillMap.get(category.name) ?? [];
-                const suggestedRowsBase = category.skills
+                const suggestedRowsBase = category.values
                   .map((value, suggestedIdx) => ({ value, suggestedIdx }))
                   .filter((item) => item.value);
                 const rows = buildSkillRows(currentSkills, suggestedRowsBase);
@@ -461,12 +461,12 @@ export function AiSuggestionsView({
                                     <NewSkillBadge
                                       isNew={
                                         !currentSkillsSet.has(
-                                          category.skills[row.suggestedIdx].toLowerCase()
+                                          category.values[row.suggestedIdx].toLowerCase()
                                         )
                                       }
                                       className="inline-flex max-w-full justify-start px-2 py-1 text-left text-xs"
                                     >
-                                      {category.skills[row.suggestedIdx]}
+                                      {category.values[row.suggestedIdx]}
                                     </NewSkillBadge>
                                   </SelectableField>
                                 ) : (

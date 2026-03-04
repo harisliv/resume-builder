@@ -57,12 +57,12 @@ export const mockResumeData: TResumeData = {
   skills: [
     {
       name: 'Frontend',
-      skills: [{ value: 'React' }, { value: 'TypeScript' }, { value: 'Next.js' }, { value: 'Vite' }, { value: 'MUI' }, { value: 'Tailwind CSS' }]
+      values: [{ value: 'React' }, { value: 'TypeScript' }, { value: 'Next.js' }, { value: 'Vite' }, { value: 'MUI' }, { value: 'Tailwind CSS' }]
     },
-    { name: 'StateManagement', skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'Zustand' }] },
-    { name: 'Tooling', skills: [{ value: 'Turborepo' }, { value: 'Storybook' }, { value: 'Git' }] },
-    { name: 'Backend', skills: [{ value: 'Node.js' }, { value: 'Express.js' }, { value: 'Nest.js' }] },
-    { name: 'Quality', skills: [{ value: 'React Hook Form' }, { value: 'Zod' }, { value: 'Jest' }, { value: 'Vitest' }] }
+    { name: 'StateManagement', values: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'Zustand' }] },
+    { name: 'Tooling', values: [{ value: 'Turborepo' }, { value: 'Storybook' }, { value: 'Git' }] },
+    { name: 'Backend', values: [{ value: 'Node.js' }, { value: 'Express.js' }, { value: 'Nest.js' }] },
+    { name: 'Quality', values: [{ value: 'React Hook Form' }, { value: 'Zod' }, { value: 'Jest' }, { value: 'Vitest' }] }
   ],
   documentStyle: {
     palette: 'ocean',
@@ -186,10 +186,10 @@ export const extendedMockResumeData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
+    { name: 'Languages', values: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
     {
       name: 'Frontend',
-      skills: [
+      values: [
         { value: 'React' },
         { value: 'Next.js' },
         { value: 'Vite' },
@@ -202,16 +202,16 @@ export const extendedMockResumeData: TResumeData = {
     },
     {
       name: 'StateManagement',
-      skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
+      values: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
     },
-    { name: 'FormsAndValidation', skills: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
+    { name: 'FormsAndValidation', values: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
     {
       name: 'Testing',
-      skills: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
+      values: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
     },
     {
       name: 'BackendAndApis',
-      skills: [
+      values: [
         { value: 'Node.js' },
         { value: 'Express.js' },
         { value: 'Nest.js' },
@@ -221,14 +221,14 @@ export const extendedMockResumeData: TResumeData = {
         { value: 'REST APIs' }
       ]
     },
-    { name: 'Data', skills: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
+    { name: 'Data', values: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
     {
       name: 'DevOps',
-      skills: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
+      values: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
     },
     {
       name: 'Collaboration',
-      skills: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
+      values: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
     }
   ],
   documentStyle: {
@@ -394,10 +394,10 @@ export const groupedLongMockData: TResumeData = {
     }
   ],
   skills: [
-    { name: 'Languages', skills: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
+    { name: 'Languages', values: [{ value: 'TypeScript' }, { value: 'JavaScript' }] },
     {
       name: 'Frontend',
-      skills: [
+      values: [
         { value: 'React' },
         { value: 'Next.js' },
         { value: 'Vite' },
@@ -410,16 +410,16 @@ export const groupedLongMockData: TResumeData = {
     },
     {
       name: 'StateManagement',
-      skills: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
+      values: [{ value: 'Redux Toolkit' }, { value: 'React Query' }, { value: 'TanStack Query' }, { value: 'Zustand' }, { value: 'Jotai' }]
     },
-    { name: 'FormsAndValidation', skills: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
+    { name: 'FormsAndValidation', values: [{ value: 'React Hook Form' }, { value: 'Formik' }, { value: 'Zod' }, { value: 'Yup' }] },
     {
       name: 'Testing',
-      skills: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
+      values: [{ value: 'Jest' }, { value: 'Vitest' }, { value: 'Cypress' }, { value: 'Playwright' }, { value: 'React Testing Library' }]
     },
     {
       name: 'BackendAndApis',
-      skills: [
+      values: [
         { value: 'Node.js' },
         { value: 'Express.js' },
         { value: 'Nest.js' },
@@ -429,14 +429,14 @@ export const groupedLongMockData: TResumeData = {
         { value: 'REST APIs' }
       ]
     },
-    { name: 'Data', skills: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
+    { name: 'Data', values: [{ value: 'PostgreSQL' }, { value: 'MongoDB' }, { value: 'Redis' }] },
     {
       name: 'DevOps',
-      skills: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
+      values: [{ value: 'Docker' }, { value: 'Kubernetes' }, { value: 'AWS' }, { value: 'Vercel' }, { value: 'Git' }, { value: 'GitHub Actions' }, { value: 'CI/CD' }]
     },
     {
       name: 'Collaboration',
-      skills: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
+      values: [{ value: 'Agile/Scrum' }, { value: 'Figma' }, { value: 'Adobe XD' }, { value: 'Storybook' }, { value: 'Nx' }, { value: 'Turborepo' }]
     }
   ],
   documentStyle: {

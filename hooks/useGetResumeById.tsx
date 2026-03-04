@@ -53,19 +53,9 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
       },
       form: {
         personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
-        experience: (experience ?? resumeFormDefaultValues.experience).map((exp) => ({
-          ...exp,
-          highlights: exp.highlights?.map((h) =>
-            typeof h === 'string' ? { value: h } : h
-          )
-        })),
+        experience: experience ?? resumeFormDefaultValues.experience,
         education: education ?? resumeFormDefaultValues.education,
-        skills: (skills ?? resumeFormDefaultValues.skills).map((cat) => ({
-          ...cat,
-          skills: cat.skills.map((s) =>
-            typeof s === 'string' ? { value: s } : s
-          )
-        }))
+        skills: skills ?? resumeFormDefaultValues.skills
       }
     };
   }, [resumeData]);

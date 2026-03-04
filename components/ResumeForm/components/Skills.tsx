@@ -17,13 +17,11 @@ function getNextCategoryName(skills: TResumeForm['skills']) {
 }
 
 export default function Skills() {
-  const { watch, setValue } = useFormContext<TResumeForm>();
+  const { getValues, setValue } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
-  const { fields, append, remove, swap } = useFieldArray<TResumeForm>({
+  const { fields, append, remove, swap } = useFieldArray<TResumeForm, 'skills'>({
     name: 'skills'
   });
-  const categories = watch('skills') ?? [];
-  console.log('🚀 ~ Skills ~ categories:', categories);
 
   /** Confirms before deleting an entire category block. */
   const confirmRemoveCategory = async (
@@ -50,6 +48,7 @@ export default function Skills() {
   /** Renames category; merges if target name already exists. */
   const renameCategory = (categoryIndex: number, nextCategory: string) => {
     const trimmed = nextCategory.trim();
+    const categories = getValues('skills') ?? [];
     const previous = categories[categoryIndex];
     if (!previous || !trimmed || trimmed === previous.name) return;
 
@@ -63,7 +62,7 @@ export default function Skills() {
       if (!existing) return;
       next[existingTargetIndex] = {
         ...existing,
-        skills: [...existing.skills, ...previous.skills]
+        values: [...existing.values, ...previous.values]
       };
       next.splice(categoryIndex, 1);
     } else {
@@ -81,8 +80,8 @@ export default function Skills() {
           type="button"
           onClick={() =>
             append({
-              name: getNextCategoryName(categories),
-              skills: [{ value: '' }]
+              name: getNextCategoryName(getValues('skills') ?? []),
+              values: [{ value: '' }]
             })
           }
         >
@@ -103,10 +102,10 @@ export default function Skills() {
             <SkillCategoryItem
               key={field.id}
               index={index}
-              categoryName={categories[index]?.name ?? ''}
+              categoryName={field.name ?? ''}
               totalCategories={fields.length}
               onDelete={() =>
-                confirmRemoveCategory(categories[index]?.name ?? '', index)
+                confirmRemoveCategory(field.name ?? '', index)
               }
               onMoveUp={() => moveCategory(index, index - 1)}
               onMoveDown={() => moveCategory(index, index + 1)}

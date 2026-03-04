@@ -80,32 +80,38 @@ export function StyledAccordionTrigger({
           aria-label="Reorder category"
         >
           <Button
-            type="button"
+            asChild
             variant="ghost"
             size="icon"
-            disabled={disableMoveUp}
+            aria-disabled={disableMoveUp}
             aria-label="Move category up"
-            className="h-5 w-5 shrink-0 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 disabled:opacity-40"
+            className="h-5 w-5 shrink-0 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 [&[aria-disabled=true]]:pointer-events-none [&[aria-disabled=true]]:opacity-40"
             onClick={(e) => {
+              if (disableMoveUp) return;
               e.stopPropagation();
               onMoveUp();
             }}
           >
-            <HugeiconsIcon icon={ArrowUp01Icon} className="h-3 w-3" />
+            <span role="button" tabIndex={disableMoveUp ? -1 : 0}>
+              <HugeiconsIcon icon={ArrowUp01Icon} className="h-3 w-3" />
+            </span>
           </Button>
           <Button
-            type="button"
+            asChild
             variant="ghost"
             size="icon"
-            disabled={disableMoveDown}
+            aria-disabled={disableMoveDown}
             aria-label="Move category down"
-            className="h-5 w-5 shrink-0 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 disabled:opacity-40"
+            className="h-5 w-5 shrink-0 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 [&[aria-disabled=true]]:pointer-events-none [&[aria-disabled=true]]:opacity-40"
             onClick={(e) => {
+              if (disableMoveDown) return;
               e.stopPropagation();
               onMoveDown();
             }}
           >
-            <HugeiconsIcon icon={ArrowDown01Icon} className="h-3 w-3" />
+            <span role="button" tabIndex={disableMoveDown ? -1 : 0}>
+              <HugeiconsIcon icon={ArrowDown01Icon} className="h-3 w-3" />
+            </span>
           </Button>
         </div>
       )}
@@ -113,7 +119,7 @@ export function StyledAccordionTrigger({
         {label}
       </span>
       <Button
-        type="button"
+        asChild
         variant="ghost"
         size="icon"
         className="order-2 h-7 w-7 shrink-0 text-slate-400 hover:bg-red-50 hover:text-red-500"
@@ -122,7 +128,9 @@ export function StyledAccordionTrigger({
           onDelete();
         }}
       >
-        <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4" />
+        <span role="button" tabIndex={0}>
+          <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4" />
+        </span>
       </Button>
     </AccordionTrigger>
   );

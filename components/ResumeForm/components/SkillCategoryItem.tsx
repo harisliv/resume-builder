@@ -11,7 +11,7 @@ import {
   StyledAccordionContent
 } from './styles/section-accordion';
 
-/** Single skill category with nested useFieldArray for skill items. */
+/** Single skill category using useFieldArray for uncontrolled inputs. */
 export default function SkillCategoryItem({
   index,
   categoryName,
@@ -32,7 +32,7 @@ export default function SkillCategoryItem({
   const { register } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
   const { fields, append, remove } = useFieldArray<TResumeForm>({
-    name: `skills.${index}.skills`
+    name: `skills.${index}.values`
   });
 
   /** Confirms before deleting a single skill row. */
@@ -79,7 +79,9 @@ export default function SkillCategoryItem({
               <div key={field.id} className="flex items-center gap-2">
                 <Input
                   className="h-11 border-dashed text-base"
-                  {...register(`skills.${index}.skills.${skillIndex}.value`)}
+                  {...register(
+                    `skills.${index}.values.${skillIndex}.value` as const
+                  )}
                   placeholder="e.g. React"
                 />
                 <Button
