@@ -1,6 +1,7 @@
-import { useFormContext, useFormState } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import type { FieldPath, FieldValues } from 'react-hook-form';
-import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field';
+import { Field, FieldDescription, FieldLabel } from '../ui/field';
+import FieldError from './FieldError';
 import { Textarea } from '../ui/textarea';
 import { useId } from 'react';
 import { sanitizeInput } from '@/lib/utils';
@@ -13,8 +14,7 @@ export default function UncontrolledTextarea<TForm extends FieldValues>(props: {
   description?: string;
   className?: string;
 }) {
-  const { register } = useFormContext<TForm>();
-  const { errors } = useFormState<TForm>({ name: props.name });
+  const { register, formState: { errors } } = useFormContext<TForm>();
   const id = useId();
 
   const fieldError = props.name
@@ -38,7 +38,7 @@ export default function UncontrolledTextarea<TForm extends FieldValues>(props: {
       {props.description && (
         <FieldDescription>{props.description}</FieldDescription>
       )}
-      {fieldError ? <FieldError errors={[fieldError as { message?: string }]} /> : null}
+      <FieldError name={props.name} />
     </Field>
   );
 }

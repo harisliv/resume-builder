@@ -4,12 +4,12 @@ import {
   Field,
   FieldContent,
   FieldDescription,
-  FieldError,
   FieldLabel,
   FieldLegend,
   FieldSet,
   FieldTitle
 } from '../ui/field';
+import FieldError from './FieldError';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import type { TResumeForm, TResumeInfo } from '@/types/schema';
 
@@ -60,7 +60,7 @@ export default function ControlledRadioGroup<TForm extends FieldValues>(props: {
               </FieldLabel>
             ))}
           </RadioGroup>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError name={field.name} />
         </FieldSet>
       )}
     />

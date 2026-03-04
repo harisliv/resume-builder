@@ -3,12 +3,12 @@ import type { FieldPath, FieldValues } from 'react-hook-form';
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
   FieldSet
 } from '../ui/field';
+import FieldError from './FieldError';
 import { Checkbox } from '../ui/checkbox';
 import type { TResumeForm, TResumeInfo } from '@/types/schema';
 
@@ -63,7 +63,7 @@ export default function ControlledCheckbox<TForm extends FieldValues>(props: {
               </Field>
             ))}
           </FieldGroup>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError name={field.name} />
         </FieldSet>
       )}
     />

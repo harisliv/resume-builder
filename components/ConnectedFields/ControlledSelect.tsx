@@ -4,9 +4,9 @@ import {
   Field,
   FieldContent,
   FieldDescription,
-  FieldError,
   FieldLabel
 } from '../ui/field';
+import FieldError from './FieldError';
 import {
   Select,
   SelectContent,
@@ -42,7 +42,7 @@ export default function ControlledSelect<TForm extends FieldValues>(props: {
             {props.description && (
               <FieldDescription>{props.description}</FieldDescription>
             )}
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            <FieldError name={field.name} />
           </FieldContent>
           <Select
             name={field.name}

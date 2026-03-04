@@ -1,6 +1,7 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import { parsePhoneNumber } from 'react-phone-number-input';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldLabel } from '@/components/ui/field';
+import FieldError from '@/components/ConnectedFields/FieldError';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { useId } from 'react';
 import type { TResumeForm } from '@/types/schema';
@@ -30,7 +31,7 @@ export default function Phone() {
             aria-invalid={fieldState.invalid}
             placeholder="(555) 123-4567"
           />
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          <FieldError name="personalInfo.phone" />
         </Field>
       )}
     />
