@@ -14,7 +14,7 @@ export default function ResumeFormTabs() {
       onValueChange={setActiveTab}
       className="h-full flex flex-col min-h-0"
     >
-      <TabsList className="grid w-full grid-cols-4 shrink-0">
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 shrink-0 gap-2 p-2 h-auto! min-h-24 sm:h-12! sm:min-h-0 sm:py-1 sm:px-1.5 [&>button]:h-full [&>button]:flex [&>button]:items-center [&>button]:justify-center">
         <TabsTrigger value="form">Form</TabsTrigger>
         <TabsTrigger value="experience">Experience</TabsTrigger>
         <TabsTrigger value="education">Education</TabsTrigger>

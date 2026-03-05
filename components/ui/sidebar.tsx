@@ -116,7 +116,8 @@ function SidebarProvider({
   // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? 'expanded' : 'collapsed';
 
-  const isCollapsed = state === 'collapsed';
+  /** On mobile, always show expanded; collapsed state applies only to desktop. */
+  const isCollapsed = isMobile ? false : state === 'collapsed';
 
   const contextValue = React.useMemo<SidebarContextProps>(
     () => ({

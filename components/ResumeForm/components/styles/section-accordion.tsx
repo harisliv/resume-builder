@@ -27,7 +27,7 @@ export function StyledAccordion({
     <Accordion
       type="multiple"
       defaultValue={defaultValue}
-      className="rounded-none border-0 shadow-none"
+      className="min-w-0 rounded-none border-0 shadow-none"
     >
       {children}
     </Accordion>
@@ -46,7 +46,7 @@ export function StyledAccordionItem({
   return (
     <AccordionItem
       value={value}
-      className="mb-2 rounded-lg border border-slate-200 last:mb-0"
+      className="min-w-0 mb-2 rounded-lg border border-slate-200 last:mb-0"
     >
       {children}
     </AccordionItem>
@@ -71,7 +71,7 @@ export function StyledAccordionTrigger({
   disableMoveDown = false
 }: TStyledAccordionTriggerProps) {
   return (
-    <AccordionTrigger className="items-center px-4 py-3 text-sm hover:bg-slate-50/50 hover:no-underline [&_[data-slot=accordion-trigger-icon]]:order-3 [&_[data-slot=accordion-trigger-icon]]:ml-0">
+    <AccordionTrigger className="min-w-0 overflow-hidden items-center px-4 py-3 text-sm hover:bg-slate-50/50 hover:no-underline [&_[data-slot=accordion-trigger-icon]]:order-3 [&_[data-slot=accordion-trigger-icon]]:ml-0 [&_[data-slot=accordion-trigger-icon]]:hidden md:[&_[data-slot=accordion-trigger-icon]]:inline">
       {onMoveUp && onMoveDown && (
         <div
           className="order-0 mr-3 flex shrink-0 flex-col rounded-md bg-slate-100 p-0.5"
@@ -115,7 +115,7 @@ export function StyledAccordionTrigger({
           </Button>
         </div>
       )}
-      <span className="order-1 flex-1 truncate text-left font-medium">
+      <span className="order-1 block min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left font-medium">
         {label}
       </span>
       <Button
