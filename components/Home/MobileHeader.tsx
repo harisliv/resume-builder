@@ -16,7 +16,7 @@ export function MobileHeader({ children, className }: MobileHeaderProps) {
   return (
     <div
       className={cn(
-        'bg-background sticky top-0 z-10 flex shrink-0 items-center gap-3 border-b px-4 py-3 md:hidden',
+        'flex items-center gap-3 sticky top-0 z-10 bg-background border-b px-4 py-3 shrink-0 md:hidden',
         className
       )}
     >
