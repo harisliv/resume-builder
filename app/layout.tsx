@@ -16,6 +16,7 @@ import { ConvexClientProvider } from '@/providers/ConvexProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { WarningDialogProvider } from '@/providers/WarningDialogProvider';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -83,6 +84,7 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <WarningDialogProvider>{children}</WarningDialogProvider>
+                <Toaster position="top-right" duration={3000} />
               </ThemeProvider>
             </QueryProvider>
           </ConvexClientProvider>

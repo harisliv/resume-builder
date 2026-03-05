@@ -3,7 +3,7 @@ import type { TRawModelResult, TModelResult } from '@/types/aiSuggestions';
 
 /** Discriminated union representing each phase of the suggestions dialog. */
 export type TDialogState =
-  | { phase: 'idle'; jobDescription: string; error: string | null }
+  | { phase: 'idle'; jobDescription: string }
   | { phase: 'generating'; jobDescription: string }
   | {
       phase: 'results';
@@ -20,7 +20,7 @@ export type TDialogAction =
       type: 'GENERATE_SUCCESS';
       payload: { result: TRawModelResult; jobDescription: string };
     }
-  | { type: 'GENERATE_ERROR'; payload: string }
+  | { type: 'GENERATE_ERROR' }
   | { type: 'REGENERATE_START' }
   | { type: 'REGENERATE_ERROR'; payload: string }
   | { type: 'BACK' }
@@ -31,8 +31,7 @@ export type TDialogAction =
 
 export const initialDialogState: TDialogState = {
   phase: 'idle',
-  jobDescription: '',
-  error: null
+  jobDescription: ''
 };
 
 /** Converts a TRawModelResult into a TModelResult with default selection state. */
@@ -75,7 +74,7 @@ export function dialogReducer(state: TDialogState, action: TDialogAction): TDial
 
     case 'GENERATE_ERROR':
       if (state.phase !== 'generating') return state;
-      return { phase: 'idle', jobDescription: state.jobDescription, error: action.payload };
+      return { phase: 'idle', jobDescription: state.jobDescription };
 
     case 'REGENERATE_START':
       if (state.phase !== 'results') return state;

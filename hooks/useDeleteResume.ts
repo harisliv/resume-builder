@@ -2,6 +2,7 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useConvex, useConvexAuth } from 'convex/react';
+import { toast } from 'sonner';
 
 /** Deletes a resume via Convex and invalidates relevant queries. */
 export function useDeleteResume() {
@@ -16,7 +17,11 @@ export function useDeleteResume() {
       }
       await convex.mutation(api.resumes.deleteResume, { id });
     },
+    onError: (error) => {
+      toast.error('Failed to delete resume');
+    },
     onSuccess: () => {
+      toast.success('Resume deleted');
       queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
     }

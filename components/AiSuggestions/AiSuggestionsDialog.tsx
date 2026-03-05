@@ -66,9 +66,9 @@ export function AiSuggestionsDialog({
         payload: { result, jobDescription }
       });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to generate suggestions';
+      const msg = 'Failed to generate suggestions';
       toast.error(msg);
-      dispatch({ type: 'GENERATE_ERROR', payload: msg });
+      dispatch({ type: 'GENERATE_ERROR' });
     }
   };
 
@@ -117,7 +117,7 @@ export function AiSuggestionsDialog({
         payload: { result, jobDescription }
       });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Failed to regenerate suggestions';
+      const msg = 'Failed to generate suggestions';
       toast.error(msg);
       dispatch({ type: 'REGENERATE_ERROR', payload: msg });
     }
@@ -199,7 +199,6 @@ export function AiSuggestionsDialog({
             dispatch={dispatch}
             isAdmin={isAdmin}
             isRegenerating={state.isRegenerating}
-            regenerateError={state.regenerateError}
             onBack={handleBack}
             onRegenerate={handleRegenerate}
             onApply={handleApply}
@@ -208,7 +207,6 @@ export function AiSuggestionsDialog({
         ) : (
           <InputPhase
             jobDescription={state.jobDescription}
-            error={state.phase === 'idle' ? state.error : null}
             isGenerating={state.phase === 'generating'}
             dispatch={dispatch}
             onGenerate={handleGenerate}

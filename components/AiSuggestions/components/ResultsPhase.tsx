@@ -6,7 +6,6 @@ import type { TResumeForm } from '@/types/schema';
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Copy, RotateCcw } from 'lucide-react';
-import { ErrorMessage } from '@/components/ui/error-message';
 import {
   ResultsContainer,
   ResultsScrollArea
@@ -20,7 +19,6 @@ type TResultsPhaseProps = {
   dispatch: Dispatch<TDialogAction>;
   isAdmin: boolean;
   isRegenerating: boolean;
-  regenerateError: string | null;
   onBack: () => void;
   onRegenerate: () => void;
   onApply: () => void;
@@ -36,7 +34,6 @@ export function ResultsPhase({
   dispatch,
   isAdmin,
   isRegenerating,
-  regenerateError,
   onBack,
   onRegenerate,
   onApply,
@@ -54,11 +51,7 @@ export function ResultsPhase({
         </p>
       )}
       <ResultsScrollArea>
-        {hasError ? (
-          <div className="flex h-full items-center justify-center">
-            <ErrorMessage>{result.error}</ErrorMessage>
-          </div>
-        ) : (
+        {!hasError && (
           <AiSuggestionsView
             suggestions={result.editedSuggestions!}
             currentData={currentData}
@@ -73,7 +66,6 @@ export function ResultsPhase({
           />
         )}
       </ResultsScrollArea>
-      {regenerateError && <ErrorMessage>{regenerateError}</ErrorMessage>}
       <DialogFooter className="shrink-0">
         <Button variant="outline" onClick={onBack}>
           Back

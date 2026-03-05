@@ -2,6 +2,7 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useConvex, useConvexAuth } from 'convex/react';
+import { toast } from 'sonner';
 
 /** Renames a resume title via Convex with optimistic cache update. */
 export function useRenameResume() {
@@ -29,6 +30,7 @@ export function useRenameResume() {
       if (context?.previous) {
         queryClient.setQueryData(['resumeTitles'], context.previous);
       }
+      toast.error('Failed to rename resume');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });

@@ -54,13 +54,14 @@ export function useResumeSubmit() {
       }
       return submitResume(convex, data);
     },
-    onSuccess: () => {
+    onSuccess: (_result, data) => {
+      toast.success(data.id ? 'Resume saved' : 'Resume created');
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
       queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
     },
     /** Show toast on resume limit errors. */
-    onError: (error: Error) => {
-      toast.error(error.message);
+    onError: () => {
+      toast.error('Failed to save resume');
     }
   });
 }
