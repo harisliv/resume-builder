@@ -117,7 +117,9 @@ export default function Home() {
           description: suggestions.experience[idx].description
         }),
         ...(suggestions.experience?.[idx]?.highlights && {
-          highlights: suggestions.experience[idx].highlights.map((h) => ({ value: h }))
+          highlights: suggestions.experience[idx].highlights.map((h) => ({
+            value: h
+          }))
         })
       })),
       skills: suggestions.skills
@@ -172,19 +174,19 @@ export default function Home() {
       </FormProvider>
       <SidebarInset>
         {/* Mobile only - block md:hidden */}
-        <div className="flex md:hidden flex-col flex-1 min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col md:hidden">
           <Tabs
             value={mobileTab}
             onValueChange={(v) => setMobileTab(v as 'form' | 'preview')}
-            className="flex flex-col flex-1 min-h-0"
+            className="flex min-h-0 flex-1 flex-col"
           >
             <MobileHeader>
-              <TabsList className="grid w-full grid-cols-2 ml-auto">
+              <TabsList className="ml-auto grid w-full grid-cols-2">
                 <TabsTrigger value="form">Form</TabsTrigger>
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </MobileHeader>
-            <div className="flex-1 overflow-auto min-h-0 p-4">
+            <div className="min-h-0 flex-1 overflow-auto p-4">
               <TabsContent value="form" className="mt-0 h-full">
                 <FormProvider {...formForm}>
                   <ResumeForm
@@ -210,7 +212,7 @@ export default function Home() {
         </div>
 
         {/* Desktop only - hidden md:block */}
-        <div className="hidden md:block flex-1 min-h-0">
+        <div className="hidden min-h-0 flex-1 md:block">
           <HomeLayout>
             <FormProvider {...formForm}>
               <ResumeForm
