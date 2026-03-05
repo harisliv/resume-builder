@@ -6,7 +6,7 @@ import { v } from 'convex/values';
 import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/aiSuggestions';
 import { internal } from './_generated/api';
 import { action } from './_generated/server';
-import { getAuthenticatedUser } from './auth';
+import { getAuthenticatedUser, getUserRole } from './auth';
 import { SYSTEM_PROMPT_5, SYSTEM_SCHEMA_RULES } from './systemPropts';
 
 const suggestionsValidator = v.object({
@@ -76,6 +76,12 @@ export const generateResumeSuggestions = action({
   }),
   handler: async (ctx, args) => {
     const userId = await getAuthenticatedUser(ctx);
+
+    // Enforce daily quota for non-admin users
+    const role = await getUserRole(ctx);
+    if (role !== 'admin') {
+      await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, { userId });
+    }
 
     const resume = await ctx.runQuery(internal.resumes.getResumeInternal, {
       resumeId: args.resumeId,

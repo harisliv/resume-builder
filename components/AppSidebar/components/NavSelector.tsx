@@ -8,6 +8,11 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/ui/sidebar';
 import { MenuButton } from '../styles/sidebar-menu-button.styles';
 import { DropdownContent } from '../styles/nav-selector.styles';
@@ -23,6 +28,7 @@ export function NavSelector<T extends string = string>({
   onChange,
   options,
   disabled = false,
+  disabledTooltip,
   loading = false,
   dropdownHeader,
   renderOptionContent
@@ -45,27 +51,54 @@ export function NavSelector<T extends string = string>({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-          <DropdownMenuTrigger
-            asChild
-            disabled={disabled}
-            onClick={handleCollapsedClick}
-          >
-            <MenuButton
-              collapsed={isCollapsed}
-              tooltip={tooltip}
+          {disabled && disabledTooltip ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="w-full" tabIndex={0}>
+                  <MenuButton
+                    collapsed={isCollapsed}
+                    tooltip={tooltip}
+                    disabled={disabled}
+                  >
+                    <NavSelectorTriggerContent
+                      label={label}
+                      displayValue={
+                        displayValue.charAt(0).toUpperCase() +
+                        displayValue.slice(1)
+                      }
+                      disabled={disabled}
+                      loading={loading}
+                      navSelectorName={name}
+                    />
+                  </MenuButton>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="right">{disabledTooltip}</TooltipContent>
+            </Tooltip>
+          ) : (
+            <DropdownMenuTrigger
+              asChild
               disabled={disabled}
+              onClick={handleCollapsedClick}
             >
-              <NavSelectorTriggerContent
-                label={label}
-                displayValue={
-                  displayValue.charAt(0).toUpperCase() + displayValue.slice(1)
-                }
+              <MenuButton
+                collapsed={isCollapsed}
+                tooltip={tooltip}
                 disabled={disabled}
-                loading={loading}
-                navSelectorName={name}
-              />
-            </MenuButton>
-          </DropdownMenuTrigger>
+              >
+                <NavSelectorTriggerContent
+                  label={label}
+                  displayValue={
+                    displayValue.charAt(0).toUpperCase() +
+                    displayValue.slice(1)
+                  }
+                  disabled={disabled}
+                  loading={loading}
+                  navSelectorName={name}
+                />
+              </MenuButton>
+            </DropdownMenuTrigger>
+          )}
           <DropdownContent side={isMobile ? 'bottom' : 'right'}>
             {typeof dropdownHeader === 'function'
               ? dropdownHeader(closeDropdown)

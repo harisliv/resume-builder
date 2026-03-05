@@ -1,5 +1,5 @@
 import { api } from '@/convex/_generated/api';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useConvex, useConvexAuth } from 'convex/react';
 import type { Id } from '@/convex/_generated/dataModel';
 import { convertConvexIdToId } from '@/lib/utils';
@@ -22,7 +22,8 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
       });
       return convertConvexIdToId(res);
     },
-    enabled: Boolean(resumeId) && isAuthenticated && !isLoading
+    enabled: Boolean(resumeId) && isAuthenticated && !isLoading,
+    placeholderData: keepPreviousData
   });
 
   const { data: resumeData, ...rest } = res;

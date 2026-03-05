@@ -3,6 +3,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeData } from '@/types/schema';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useConvex, useConvexAuth } from 'convex/react';
+import { toast } from 'sonner';
 
 async function submitResume(
   convex: ReturnType<typeof useConvex>,
@@ -56,6 +57,10 @@ export function useResumeSubmit() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
       queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
+    },
+    /** Show toast on resume limit errors. */
+    onError: (error: Error) => {
+      toast.error(error.message);
     }
   });
 }

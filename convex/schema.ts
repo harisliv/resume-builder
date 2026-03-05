@@ -23,5 +23,12 @@ export default defineSchema({
       )
     ),
     documentStyle: documentStyleValidator
-  }).index('by_user', ['userId'])
+  }).index('by_user', ['userId']),
+
+  /** Tracks per-user per-day AI generation attempts for quota enforcement. */
+  aiAttempts: defineTable({
+    userId: v.string(),
+    dateKey: v.string(),
+    count: v.number()
+  }).index('by_user_date', ['userId', 'dateKey'])
 });

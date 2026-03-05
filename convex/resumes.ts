@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
 import { internalQuery, mutation, query } from './_generated/server';
-import { getAuthenticatedUser } from './auth';
+import { getAuthenticatedUser, getUserRole } from './auth';
 import {
   documentStyleValidator,
   educationValidator,
@@ -37,6 +37,19 @@ export const createResume = mutation({
   returns: v.id('resumes'),
   handler: async (ctx, args) => {
     const userId = await getAuthenticatedUser(ctx);
+
+    /** Enforce max 5 resumes for non-admin users. */
+    const role = await getUserRole(ctx);
+    if (role !== 'admin') {
+      const existing = await ctx.db
+        .query('resumes')
+        .withIndex('by_user', (q) => q.eq('userId', userId))
+        .collect();
+      if (existing.length >= 5) {
+        throw new Error('Resume limit reached (5). Delete one or upgrade.');
+      }
+    }
+
     const resumeId = await ctx.db.insert('resumes', {
       userId,
       title: args.title,

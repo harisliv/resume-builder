@@ -18,6 +18,7 @@ type TResultsPhaseProps = {
   result: TModelResult;
   currentData: TResumeForm;
   dispatch: Dispatch<TDialogAction>;
+  isAdmin: boolean;
   isRegenerating: boolean;
   regenerateError: string | null;
   onBack: () => void;
@@ -33,6 +34,7 @@ export function ResultsPhase({
   result,
   currentData,
   dispatch,
+  isAdmin,
   isRegenerating,
   regenerateError,
   onBack,
@@ -44,7 +46,7 @@ export function ResultsPhase({
 
   return (
     <ResultsContainer>
-      {(result.cost != null || result.durationMs != null) && (
+      {isAdmin && (result.cost != null || result.durationMs != null) && (
         <p className="text-muted-foreground text-xs">
           {result.cost != null && `Cost: $${result.cost.toFixed(4)}`}
           {result.cost != null && result.durationMs != null && ' · '}

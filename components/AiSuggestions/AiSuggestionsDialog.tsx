@@ -12,6 +12,8 @@ import {
   DialogHeader
 } from '@/components/ui/dialog';
 import { Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+import usePrivileges from '@/hooks/usePrivileges';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import {
   DialogContentWrapper,
@@ -44,6 +46,7 @@ export function AiSuggestionsDialog({
   onCreateNewVersion
 }: TAiSuggestionsDialogProps) {
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
+  const { isAdmin } = usePrivileges();
   const confirm = useWarningDialog();
   const generateSuggestions = useAction(
     api.aiSuggestions.generateResumeSuggestions
@@ -63,11 +66,9 @@ export function AiSuggestionsDialog({
         payload: { result, jobDescription }
       });
     } catch (e) {
-      dispatch({
-        type: 'GENERATE_ERROR',
-        payload:
-          e instanceof Error ? e.message : 'Failed to generate suggestions'
-      });
+      const msg = e instanceof Error ? e.message : 'Failed to generate suggestions';
+      toast.error(msg);
+      dispatch({ type: 'GENERATE_ERROR', payload: msg });
     }
   };
 
@@ -116,11 +117,9 @@ export function AiSuggestionsDialog({
         payload: { result, jobDescription }
       });
     } catch (e) {
-      dispatch({
-        type: 'REGENERATE_ERROR',
-        payload:
-          e instanceof Error ? e.message : 'Failed to regenerate suggestions'
-      });
+      const msg = e instanceof Error ? e.message : 'Failed to regenerate suggestions';
+      toast.error(msg);
+      dispatch({ type: 'REGENERATE_ERROR', payload: msg });
     }
   };
 
@@ -198,6 +197,7 @@ export function AiSuggestionsDialog({
             result={state.result}
             currentData={currentData}
             dispatch={dispatch}
+            isAdmin={isAdmin}
             isRegenerating={state.isRegenerating}
             regenerateError={state.regenerateError}
             onBack={handleBack}

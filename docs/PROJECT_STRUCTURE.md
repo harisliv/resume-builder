@@ -17,9 +17,13 @@ React Hook Form manages form state, Zod validates data, Convex mutations persist
   - `Record<string, string[]>`
   - Example: `{ "Languages": ["TypeScript"], "AI Tools": ["Cursor"] }`
 
-## Authentication
+## Authentication & Authorization
 
-WorkOS AuthKit handles authentication via middleware. Protected routes are configured in `proxy.ts`.
+WorkOS AuthKit handles authentication via middleware (`proxy.ts`).
+
+- **Admin-only routes**: `/ai` and `/compare` redirect non-admin users to `/`.
+- **Public auth routes**: `/callback` remains unauthenticated so AuthKit can finalize session.
+- **AI quota**: Non-admin users are limited to 5 AI suggestion generations per UTC day, enforced server-side in Convex (`convex/aiAttempts.ts`).
 
 ## Key Directories
 

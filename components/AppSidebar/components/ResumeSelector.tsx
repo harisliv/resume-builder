@@ -31,7 +31,7 @@ export function ResumeSelector({
   const { data: resumeTitles, isLoading: isLoadingTitles } =
     useGetUserResumeTitles();
 
-  const { isLoggedIn, isBasic } = usePrivileges();
+  const { isMember } = usePrivileges();
   const { mutate: renameResume } = useRenameResume();
 
   const options: NavSelectorOption[] = useMemo(
@@ -70,7 +70,8 @@ export function ResumeSelector({
       onChange={onResumeSelect}
       options={options}
       loading={isLoadingTitles}
-      disabled={isLoadingTitles || !isLoggedIn || !isBasic}
+      disabled={isLoadingTitles || isMember}
+      disabledTooltip={isMember ? 'Upgrade your plan to manage multiple resumes.' : undefined}
       dropdownHeader={dropdownHeader}
       renderOptionContent={(option, defaultContent) => (
         <ResumeOptionActions

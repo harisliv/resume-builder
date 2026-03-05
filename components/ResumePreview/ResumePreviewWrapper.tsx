@@ -35,7 +35,7 @@ export default function ResumePreviewWrapper({
 }: TResumePreviewWrapperProps) {
   const formData = useWatch({ control: formControl });
   const infoData = useWatch({ control: infoControl });
-  const { isBasic, getDisabledTooltip } = usePrivileges();
+  const { isMember, getDisabledTooltip } = usePrivileges();
   const downloadTooltip = getDisabledTooltip(hasSelectedResume);
 
   const handleDownload = () => {
@@ -58,7 +58,7 @@ export default function ResumePreviewWrapper({
                   type="button"
                   onClick={handleDownload}
                   variant="secondary"
-                  disabled={!isBasic || !hasSelectedResume}
+                  disabled={isMember || !hasSelectedResume}
                 >
                   <HugeiconsIcon icon={Download} strokeWidth={2.5} />
                   Download
