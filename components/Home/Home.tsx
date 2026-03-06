@@ -25,6 +25,93 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormProvider } from 'react-hook-form';
 import { HomeLayout } from './home-layout';
 import { MobileHeader } from './MobileHeader';
+import { useShowTabs } from '@/hooks/useShowTabs';
+
+/** Inner content that uses useShowTabs (must be inside SidebarProvider). */
+function HomeContent({
+  mobileTab,
+  setMobileTab,
+  formForm,
+  infoForm,
+  selectedResumeId,
+  handleSubmit,
+  isPending,
+  handleApplySuggestions,
+  handleCreateNewVersion
+}: {
+  mobileTab: 'form' | 'preview';
+  setMobileTab: (v: 'form' | 'preview') => void;
+  formForm: ReturnType<typeof useForm<z.infer<typeof resumeFormSchema>>>;
+  infoForm: ReturnType<typeof useForm<z.infer<typeof resumeInfoSchema>>>;
+  selectedResumeId: Id<'resumes'> | undefined;
+  handleSubmit: (data: z.infer<typeof resumeFormSchema>) => void;
+  isPending: boolean;
+  handleApplySuggestions: (suggestions: TAiSuggestions) => void;
+  handleCreateNewVersion: (suggestions: TAiSuggestions) => void;
+}) {
+  const showTabs = useShowTabs();
+
+  return (
+    <>
+      {showTabs && (
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <Tabs
+            value={mobileTab}
+            onValueChange={(v) => setMobileTab(v as 'form' | 'preview')}
+            className="flex min-h-0 min-w-0 flex-1 flex-col"
+          >
+            <MobileHeader>
+              <TabsList className="ml-auto grid min-w-0 flex-1 grid-cols-2">
+                <TabsTrigger value="form">Form</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
+            </MobileHeader>
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
+              <TabsContent value="form" className="mt-0 h-full min-w-0">
+                <FormProvider {...formForm}>
+                  <ResumeForm
+                    onSubmit={handleSubmit}
+                    isPending={isPending}
+                    resumeId={selectedResumeId}
+                    onApplySuggestions={handleApplySuggestions}
+                    onCreateNewVersion={handleCreateNewVersion}
+                  />
+                </FormProvider>
+              </TabsContent>
+              <TabsContent value="preview" className="mt-0 h-full min-w-0">
+                <ResumePreviewWrapper
+                  formControl={formForm.control}
+                  infoControl={infoForm.control}
+                  hasSelectedResume={!!selectedResumeId}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      )}
+      {!showTabs && (
+        <div className="min-h-0 min-w-0 flex-1">
+          <HomeLayout>
+            <FormProvider {...formForm}>
+              <ResumeForm
+                onSubmit={handleSubmit}
+                isPending={isPending}
+                resumeId={selectedResumeId}
+                onApplySuggestions={handleApplySuggestions}
+                onCreateNewVersion={handleCreateNewVersion}
+              />
+            </FormProvider>
+            <ResumePreviewWrapper
+              formControl={formForm.control}
+              infoControl={infoForm.control}
+              hasSelectedResume={!!selectedResumeId}
+            />
+          </HomeLayout>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<
@@ -173,61 +260,17 @@ export default function Home() {
         />
       </FormProvider>
       <SidebarInset>
-        {/* Mobile only - block md:hidden */}
-        <div className="flex md:hidden flex-col flex-1 min-h-0">
-          <Tabs
-            value={mobileTab}
-            onValueChange={(v) => setMobileTab(v as 'form' | 'preview')}
-            className="flex flex-col flex-1 min-h-0"
-          >
-            <MobileHeader>
-              <TabsList className="grid w-full grid-cols-2 ml-auto">
-                <TabsTrigger value="form">Form</TabsTrigger>
-                <TabsTrigger value="preview">Preview</TabsTrigger>
-              </TabsList>
-            </MobileHeader>
-            <div className="flex-1 overflow-auto min-h-0 p-4">
-              <TabsContent value="form" className="mt-0 h-full">
-                <FormProvider {...formForm}>
-                  <ResumeForm
-                    onSubmit={handleSubmit}
-                    isPending={isPending}
-                    resumeId={selectedResumeId}
-                    onApplySuggestions={handleApplySuggestions}
-                    onCreateNewVersion={handleCreateNewVersion}
-                  />
-                </FormProvider>
-              </TabsContent>
-              <TabsContent value="preview" className="mt-0 h-full">
-                <ResumePreviewWrapper
-                  formControl={formForm.control}
-                  infoControl={infoForm.control}
-                  hasSelectedResume={!!selectedResumeId}
-                />
-              </TabsContent>
-            </div>
-          </Tabs>
-        </div>
-
-        {/* Desktop only - hidden md:block */}
-        <div className="hidden md:block flex-1 min-h-0">
-          <HomeLayout>
-            <FormProvider {...formForm}>
-              <ResumeForm
-                onSubmit={handleSubmit}
-                isPending={isPending}
-                resumeId={selectedResumeId}
-                onApplySuggestions={handleApplySuggestions}
-                onCreateNewVersion={handleCreateNewVersion}
-              />
-            </FormProvider>
-            <ResumePreviewWrapper
-              formControl={formForm.control}
-              infoControl={infoForm.control}
-              hasSelectedResume={!!selectedResumeId}
-            />
-          </HomeLayout>
-        </div>
+        <HomeContent
+          mobileTab={mobileTab}
+          setMobileTab={setMobileTab}
+          formForm={formForm}
+          infoForm={infoForm}
+          selectedResumeId={selectedResumeId}
+          handleSubmit={handleSubmit}
+          isPending={isPending}
+          handleApplySuggestions={handleApplySuggestions}
+          handleCreateNewVersion={handleCreateNewVersion}
+        />
       </SidebarInset>
     </SidebarProvider>
   );
