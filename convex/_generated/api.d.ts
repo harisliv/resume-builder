@@ -10,7 +10,6 @@
 
 import type * as aiAttempts from "../aiAttempts.js";
 import type * as aiSuggestions from "../aiSuggestions.js";
-import type * as aiSuggestionsMultiModel from "../aiSuggestionsMultiModel.js";
 import type * as auth from "../auth.js";
 import type * as formatResumePrompt from "../formatResumePrompt.js";
 import type * as resumes from "../resumes.js";
@@ -28,7 +27,6 @@ import type {
 declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
   aiSuggestions: typeof aiSuggestions;
-  aiSuggestionsMultiModel: typeof aiSuggestionsMultiModel;
   auth: typeof auth;
   formatResumePrompt: typeof formatResumePrompt;
   resumes: typeof resumes;

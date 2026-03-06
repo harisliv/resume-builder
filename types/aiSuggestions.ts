@@ -1,3 +1,6 @@
+import type { AnthropicMessagesModelId } from '@ai-sdk/anthropic/internal';
+import type { GoogleGenerativeAIModelId } from '@ai-sdk/google/internal';
+import type { OpenAIChatModelId } from '@ai-sdk/openai/internal';
 import * as z from 'zod';
 
 const suggestionSkillCategorySchema = z.object({
@@ -88,6 +91,37 @@ export type TModelResult = {
   cost?: number;
   durationMs?: number;
   jdKeywords?: string[];
+};
+
+/** Discriminated union of model configs by provider. Uses SDK types for id autocomplete. */
+export type TModelConfig =
+  | {
+      id: GoogleGenerativeAIModelId;
+      label: string;
+      provider: 'google';
+      pricing: { input: number; output: number };
+    }
+  | {
+      id: AnthropicMessagesModelId;
+      label: string;
+      provider: 'anthropic';
+      pricing: { input: number; output: number };
+    }
+  | {
+      id: OpenAIChatModelId;
+      label: string;
+      provider: 'openai';
+      pricing: { input: number; output: number };
+    };
+
+/** Model ID union for autocomplete. */
+export type TModelId = TModelConfig['id'];
+
+/** Per-model slot in multi-model generation. */
+export type TModelSlot = {
+  config: TModelConfig;
+  status: 'pending' | 'done' | 'error';
+  result?: TModelResult;
 };
 
 /** Creates a fully-selected TSuggestionSelection from suggestions. */

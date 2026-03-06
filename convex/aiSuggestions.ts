@@ -1,6 +1,8 @@
 'use node';
 
 import { createAnthropic } from '@ai-sdk/anthropic';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
 import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/aiSuggestions';
@@ -51,12 +53,27 @@ function assertSkillCategoriesMatchInput(
   }
 }
 
-/** Per-model pricing in USD per 1M tokens. */
-const SONNET_PRICING = { input: 3.0, output: 15.0 };
-
-/** Calculates cost in USD from token usage. */
-function calculateCost(inputTokens: number, outputTokens: number): number {
-  return (inputTokens * SONNET_PRICING.input + outputTokens * SONNET_PRICING.output) / 1_000_000;
+/** Creates a provider-specific model instance. */
+function createModel(provider: string, modelId: string) {
+  switch (provider) {
+    case 'google': {
+      const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+      if (!key) throw new Error('GOOGLE_GENERATIVE_AI_API_KEY not set');
+      return createGoogleGenerativeAI({ apiKey: key })(modelId);
+    }
+    case 'anthropic': {
+      const key = process.env.ANTHROPIC_API_KEY;
+      if (!key) throw new Error('ANTHROPIC_API_KEY not set');
+      return createAnthropic({ apiKey: key })(modelId);
+    }
+    case 'openai': {
+      const key = process.env.OPENAI_API_KEY;
+      if (!key) throw new Error('OPENAI_API_KEY not set');
+      return createOpenAI({ apiKey: key })(modelId);
+    }
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
 }
 
 /**
@@ -66,7 +83,17 @@ function calculateCost(inputTokens: number, outputTokens: number): number {
 export const generateResumeSuggestions = action({
   args: {
     resumeId: v.id('resumes'),
-    jobDescription: v.string()
+    jobDescription: v.string(),
+    model: v.optional(
+      v.object({
+        provider: v.union(v.literal('anthropic'), v.literal('google'), v.literal('openai')),
+        modelId: v.string(),
+        label: v.string(),
+        pricing: v.object({ input: v.number(), output: v.number() })
+      })
+    ),
+    systemPromptOverride: v.optional(v.string()),
+    systemRuleOverride: v.optional(v.string())
   },
   returns: v.object({
     modelId: v.string(),
@@ -80,7 +107,6 @@ export const generateResumeSuggestions = action({
   handler: async (ctx, args) => {
     const userId = await getAuthenticatedUser(ctx);
 
-    // Enforce daily quota for non-admin users
     const role = await getUserRole(ctx);
     if (role !== 'admin') {
       await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, { userId });
@@ -95,12 +121,12 @@ export const generateResumeSuggestions = action({
       throw new Error('Resume not found');
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY not set');
-    }
-
-    const anthropic = createAnthropic({ apiKey });
+    const modelConfig = args.model ?? {
+      provider: 'anthropic' as const,
+      modelId: 'claude-sonnet-4-6',
+      label: 'Claude Sonnet 4.6',
+      pricing: { input: 3.0, output: 15.0 }
+    };
 
     const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
       category.name.trim()
@@ -120,25 +146,33 @@ export const generateResumeSuggestions = action({
       args.jobDescription
     );
 
+    const basePrompt = args.systemPromptOverride ?? SYSTEM_PROMPT_5;
+    const rules = args.systemRuleOverride ?? SYSTEM_SCHEMA_RULES;
+    const systemPrompt = `${basePrompt}\n\n${rules}`;
+
     const start = Date.now();
     try {
+      const aiModel = createModel(modelConfig.provider, modelConfig.modelId);
       const { output, usage } = await generateText({
-        model: anthropic('claude-sonnet-4-6'),
-        system: `${SYSTEM_PROMPT_5}\n\n${SYSTEM_SCHEMA_RULES}`,
+        model: aiModel,
+        system: systemPrompt,
         prompt,
         output: Output.object({ schema: suggestionsOutputSchema })
       });
       const durationMs = Date.now() - start;
       const suggestions = normalizeSuggestionsOutput(output);
       assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
-      const cost = calculateCost(usage.inputTokens ?? 0, usage.outputTokens ?? 0);
+      const cost = (
+        (usage.inputTokens ?? 0) * modelConfig.pricing.input +
+        (usage.outputTokens ?? 0) * modelConfig.pricing.output
+      ) / 1_000_000;
 
-      return { modelId: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
+      return { modelId: modelConfig.modelId, label: modelConfig.label, suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
     } catch (e) {
       const durationMs = Date.now() - start;
       const errorMsg = e instanceof Error ? e.message : String(e);
       console.error('[generateResumeSuggestions] failed:', errorMsg);
-      return { modelId: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', error: errorMsg, durationMs };
+      return { modelId: modelConfig.modelId, label: modelConfig.label, error: errorMsg, durationMs };
     }
   }
 });

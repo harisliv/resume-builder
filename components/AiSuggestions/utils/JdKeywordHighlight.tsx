@@ -50,7 +50,7 @@ function splitByKeywords(text: string, keywords: string[]): TSegment[] {
 
   if (!escaped.length) return [{ text, highlighted: false }];
 
-  const pattern = new RegExp(`(${escaped.join('|')})`, 'gi');
+  const pattern = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
   const segments: TSegment[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;

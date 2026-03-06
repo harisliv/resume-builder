@@ -1,7 +1,7 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
-import type { TModelResult } from '@/types/aiSuggestions';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import type { TModelSlot } from '@/types/aiSuggestions';
 import type { TResumeForm } from '@/types/schema';
 import { Button } from '@/components/ui/button';
 import { AiSuggestionsView } from '@/components/AiSuggestions/AiSuggestionsView';
@@ -11,7 +11,7 @@ import {
 } from './styles/ai-multi-model.styles';
 
 type TAiMultiModelPanelProps = {
-  results: TModelResult[];
+  models: TModelSlot[];
   activeModelIdx: number;
   currentData: TResumeForm;
   onSetActiveModel: (idx: number) => void;
@@ -19,7 +19,6 @@ type TAiMultiModelPanelProps = {
   onToggleExperienceField: (expIdx: number, field: 'description' | 'highlight', highlightIdx?: number) => void;
   onToggleSkill: (categoryIdx: number, skillIdx: number) => void;
   onRemoveSkill: (category: string, skillIdx: number) => void;
-  onApply: () => void;
   onCreateVersion: () => void;
 };
 
@@ -36,10 +35,10 @@ function formatDuration(ms?: number): string {
 }
 
 /**
- * Right panel for multi-model comparison: model sidebar + active model results + footer actions.
+ * Right panel for multi-model comparison: model tabs + active model results + footer actions.
  */
 export function AiMultiModelPanel({
-  results,
+  models,
   activeModelIdx,
   currentData,
   onSetActiveModel,
@@ -47,36 +46,44 @@ export function AiMultiModelPanel({
   onToggleExperienceField,
   onToggleSkill,
   onRemoveSkill,
-  onApply,
   onCreateVersion
 }: TAiMultiModelPanelProps) {
-  const active = results[activeModelIdx];
+  const activeSlot = models[activeModelIdx];
+  const active = activeSlot?.result;
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {/* Horizontal model tabs at the top */}
+      {/* Horizontal model tabs */}
       <div className="mb-3 flex shrink-0 gap-1 border-b pb-2">
-        {results.map((r, i) => (
+        {models.map((slot, i) => (
           <ModelButton
-            key={r.modelId}
+            key={slot.config.id}
             active={i === activeModelIdx}
-            hasError={!!r.error}
+            hasError={slot.status === 'error'}
             onClick={() => onSetActiveModel(i)}
           >
             <span className="flex items-center gap-1.5">
-              {r.error && <AlertCircle className="size-3.5" />}
-              {r.label}
+              {slot.status === 'pending' && <Loader2 className="size-3.5 animate-spin" />}
+              {slot.status === 'error' && <AlertCircle className="size-3.5" />}
+              {slot.config.label}
             </span>
-            <span className="text-muted-foreground text-xs">
-              {[formatDuration(r.durationMs), formatCost(r.cost)].filter(Boolean).join(' · ')}
-            </span>
+            {slot.result && (
+              <span className="text-muted-foreground text-xs">
+                {[formatDuration(slot.result.durationMs), formatCost(slot.result.cost)].filter(Boolean).join(' · ')}
+              </span>
+            )}
           </ModelButton>
         ))}
       </div>
 
-      {/* Scrollable results below */}
+      {/* Active model content */}
       <MultiModelScrollArea>
-        {active?.error ? (
+        {activeSlot?.status === 'pending' ? (
+          <div className="text-muted-foreground flex items-center gap-2 p-4 text-sm">
+            <Loader2 className="size-4 animate-spin" />
+            Generating…
+          </div>
+        ) : active?.error ? (
           <div className="text-destructive p-4 text-sm">{active.error}</div>
         ) : active?.editedSuggestions && active.selection ? (
           <AiSuggestionsView
@@ -95,8 +102,7 @@ export function AiMultiModelPanel({
 
       {active && !active.error && (
         <div className="flex shrink-0 justify-end gap-2 border-t pt-3">
-          <Button variant="outline" onClick={onCreateVersion}>Create Version</Button>
-          <Button onClick={onApply}>Apply</Button>
+          <Button onClick={onCreateVersion}>Create Version</Button>
         </div>
       )}
     </div>

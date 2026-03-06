@@ -1,13 +1,24 @@
 'use client';
 
-import { useReducer, useMemo, useCallback, useEffect } from 'react';
+import { useReducer, useMemo, useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useAction, useQuery } from 'convex/react';
 import type { Id } from '@/convex/_generated/dataModel';
 import { api } from '@/convex/_generated/api';
+import type { TAiSuggestions } from '@/types/aiSuggestions';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 import {
   Accordion,
   AccordionItem,
@@ -17,9 +28,11 @@ import {
 import { JdKeywordHighlight } from '@/components/AiSuggestions/utils/JdKeywordHighlight';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
+import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { buildFilteredSuggestions } from '@/components/AiSuggestions/utils/filterSuggestions';
 import { AiMultiModelPanel } from '@/components/AiMultiModel';
 import { MultiModelLayout } from '@/components/AiMultiModel/styles/ai-multi-model.styles';
+import { MULTI_MODEL_CONFIGS } from '@/components/AiMultiModel/utils/modelConfig';
 import {
   multiModelReducer,
   initialMultiModelState
@@ -39,9 +52,9 @@ export default function AiMultiModelPage() {
     useGetUserResumeTitles();
   const systemPrompts = useQuery(api.systemPrompts.list, { type: 'prompt' });
   const systemRules = useQuery(api.systemPrompts.list, { type: 'rule' });
-  const generateMultiModel = useAction(
-    api.aiSuggestionsMultiModel.generateResumeSuggestionsMultiModel
-  );
+  const generateSingle = useAction(api.aiSuggestions.generateResumeSuggestions);
+  const { mutate: submitResume } = useResumeSubmit();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   /** Auto-select first system prompt when loaded. */
   useEffect(() => {
@@ -68,8 +81,11 @@ export default function AiMultiModelPage() {
       : resumeTitles[0].id;
   }, [resumeTitles, selectedResumeId]);
 
-  const { form: currentData, isLoading: isLoadingResume } =
-    useGetResumeById(effectiveResumeId);
+  const {
+    form: currentData,
+    info: currentInfo,
+    isLoading: isLoadingResume
+  } = useGetResumeById(effectiveResumeId);
 
   const handleGenerate = useCallback(async () => {
     if (
@@ -78,46 +94,93 @@ export default function AiMultiModelPage() {
       !state.jobDescription.trim()
     )
       return;
-    dispatch({ type: 'GENERATE_START' });
-    try {
-      const results = await generateMultiModel({
+    dispatch({
+      type: 'GENERATE_START',
+      payload: { configs: MULTI_MODEL_CONFIGS }
+    });
+
+    MULTI_MODEL_CONFIGS.forEach((config) => {
+      generateSingle({
         resumeId: effectiveResumeId,
         jobDescription: state.jobDescription,
+        model: {
+          provider: config.provider,
+          modelId: config.id,
+          label: config.label,
+          pricing: config.pricing
+        },
         systemPromptOverride: state.systemPrompt || undefined,
         systemRuleOverride: state.systemRule || undefined
-      });
-      dispatch({
-        type: 'GENERATE_SUCCESS',
-        payload: { results, jobDescription: state.jobDescription }
-      });
-    } catch (e) {
-      dispatch({
-        type: 'GENERATE_ERROR',
-        payload: e instanceof Error ? e.message : String(e)
-      });
-    }
-  }, [effectiveResumeId, state, generateMultiModel]);
+      })
+        .then((raw) => {
+          dispatch({
+            type: 'MODEL_RESULT',
+            payload: { modelId: config.id, raw }
+          });
+        })
+        .catch((e) => {
+          dispatch({
+            type: 'MODEL_ERROR',
+            payload: {
+              modelId: config.id,
+              error: e instanceof Error ? e.message : String(e)
+            }
+          });
+        });
+    });
+  }, [effectiveResumeId, state, generateSingle]);
 
-  /** Builds filtered suggestions from active model and dispatches action. */
-  const handleAction = useCallback(
-    (action: 'apply' | 'create-version') => {
-      if (state.phase !== 'results') return;
-      const active = state.results[state.activeModelIdx];
-      if (!active?.editedSuggestions || !active.selection) return;
-      const filtered = buildFilteredSuggestions(
-        active.editedSuggestions,
-        active.selection
-      );
-      // eslint-disable-next-line no-console
-      console.log(`[AI multi-model] ${action}`, filtered);
-    },
-    [state]
+  /** Merges AI suggestions into the current resume form shape. */
+  const mergeSuggestions = useCallback(
+    (suggestions: TAiSuggestions) => ({
+      ...currentData,
+      personalInfo: {
+        ...currentData.personalInfo,
+        ...(suggestions.summary && { summary: suggestions.summary })
+      },
+      experience: currentData.experience.map((exp, idx) => ({
+        ...exp,
+        ...(suggestions.experience?.[idx]?.description && {
+          description: suggestions.experience[idx].description
+        }),
+        ...(suggestions.experience?.[idx]?.highlights && {
+          highlights: suggestions.experience[idx].highlights!.map((h) => ({
+            value: h
+          }))
+        })
+      })),
+      skills: suggestions.skills
+        ? suggestions.skills.map((cat) => ({
+            name: cat.name,
+            values: cat.values.map((v) => ({ value: v }))
+          }))
+        : currentData.skills
+    }),
+    [currentData]
   );
 
-  const isGenerating = state.phase === 'generating';
+  /** Creates a new resume version from the active model's filtered suggestions. */
+  const handleCreateVersion = useCallback(() => {
+    if (state.phase !== 'generating' && state.phase !== 'results') return;
+    const active = state.models[state.activeModelIdx]?.result;
+    if (!active?.editedSuggestions || !active.selection) return;
+    const filtered = buildFilteredSuggestions(
+      active.editedSuggestions,
+      active.selection
+    );
+    const mergedForm = mergeSuggestions(filtered);
+    submitResume({
+      ...mergedForm,
+      id: undefined,
+      title: filtered.title ?? `${currentInfo.title} (${active.label})`,
+      documentStyle: currentInfo.documentStyle
+    });
+    setConfirmOpen(false);
+  }, [state, mergeSuggestions, submitResume, currentInfo]);
+
   const activeJdKeywords =
-    state.phase === 'results'
-      ? (state.results[state.activeModelIdx]?.jdKeywords ?? [])
+    state.phase === 'generating' || state.phase === 'results'
+      ? (state.models[state.activeModelIdx]?.result?.jdKeywords ?? [])
       : [];
 
   return (
@@ -140,7 +203,10 @@ export default function AiMultiModelPage() {
 
           {/* Resume — label + dropdown in one row */}
           <div className="flex items-center gap-3">
-            <label htmlFor="resume-select" className="w-28 shrink-0 text-sm font-medium">
+            <label
+              htmlFor="resume-select"
+              className="w-28 shrink-0 text-sm font-medium"
+            >
               Resume
             </label>
             <select
@@ -166,7 +232,10 @@ export default function AiMultiModelPage() {
 
           {/* System Prompt — label + dropdown row, then accordion */}
           <div className="flex items-center gap-3">
-            <label htmlFor="prompt-select" className="w-28 shrink-0 text-sm font-medium">
+            <label
+              htmlFor="prompt-select"
+              className="w-28 shrink-0 text-sm font-medium"
+            >
               System Prompt
             </label>
             <select
@@ -223,15 +292,18 @@ export default function AiMultiModelPage() {
 
           {/* Rules — label + dropdown row, then accordion */}
           <div className="flex items-center gap-3">
-            <label htmlFor="rule-select" className="w-28 shrink-0 text-sm font-medium">
+            <label
+              htmlFor="rule-select"
+              className="w-28 shrink-0 text-sm font-medium"
+            >
               Rules
             </label>
             <select
               id="rule-select"
               className="border-input bg-background h-9 flex-1 rounded-md border px-3 text-sm"
               value={
-                systemRules?.find((r) => r.content === state.systemRule)
-                  ?._id ?? ''
+                systemRules?.find((r) => r.content === state.systemRule)?._id ??
+                ''
               }
               onChange={(e) => {
                 const selected = systemRules?.find(
@@ -288,7 +360,7 @@ export default function AiMultiModelPage() {
                 </span>
               )}
             </label>
-            {state.phase === 'results' ? (
+            {state.phase !== 'idle' ? (
               <div className="border-input bg-muted/30 min-h-0 flex-1 overflow-y-auto rounded-md border p-3">
                 <JdKeywordHighlight
                   text={state.jobDescription}
@@ -319,23 +391,23 @@ export default function AiMultiModelPage() {
 
           {/* Sticky bottom button */}
           <div className="bg-background flex shrink-0 gap-2 border-t pt-3">
-            <Button
-              onClick={handleGenerate}
-              disabled={
-                isGenerating ||
-                isLoadingResume ||
-                !effectiveResumeId ||
-                (state.phase === 'idle' && !state.jobDescription.trim())
-              }
-              className="flex-1"
-            >
-              {isGenerating && <Loader2 className="size-4 animate-spin" />}
-              {isGenerating ? 'Generating…' : 'Generate'}
-            </Button>
-            {state.phase === 'results' && (
+            {state.phase === 'idle' ? (
+              <Button
+                onClick={handleGenerate}
+                disabled={
+                  isLoadingResume ||
+                  !effectiveResumeId ||
+                  !state.jobDescription.trim()
+                }
+                className="flex-1"
+              >
+                Generate
+              </Button>
+            ) : (
               <Button
                 variant="outline"
                 onClick={() => dispatch({ type: 'RESET' })}
+                className="flex-1"
               >
                 Reset
               </Button>
@@ -345,9 +417,9 @@ export default function AiMultiModelPage() {
 
         {/* Right panel — results */}
         <div className="flex h-full min-h-0 flex-col overflow-hidden">
-          {state.phase === 'results' ? (
+          {state.phase === 'generating' || state.phase === 'results' ? (
             <AiMultiModelPanel
-              results={state.results}
+              models={state.models}
               activeModelIdx={state.activeModelIdx}
               currentData={currentData}
               onSetActiveModel={(idx) =>
@@ -368,23 +440,38 @@ export default function AiMultiModelPage() {
               onRemoveSkill={(category, skillIdx) =>
                 dispatch({ type: 'REMOVE_SKILL', category, skillIdx })
               }
-              onApply={() => handleAction('apply')}
-              onCreateVersion={() => handleAction('create-version')}
+              onCreateVersion={() => setConfirmOpen(true)}
             />
           ) : (
             <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-              {isGenerating ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="size-5 animate-spin" />
-                  Querying 3 models in parallel…
-                </span>
-              ) : (
-                'Results will appear here'
-              )}
+              Results will appear here
             </div>
           )}
         </div>
       </MultiModelLayout>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Create new version?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will create the{' '}
+              <strong>
+                {state.phase === 'generating' || state.phase === 'results'
+                  ? state.models[state.activeModelIdx]?.config.label
+                  : ''}
+              </strong>{' '}
+              version.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCreateVersion}>
+              Create
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

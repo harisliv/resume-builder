@@ -1,16 +1,23 @@
 import { createDefaultSelection } from '@/types/aiSuggestions';
-import type { TRawModelResult, TModelResult } from '@/types/aiSuggestions';
+import type { TRawModelResult, TModelResult, TModelSlot, TModelConfig } from '@/types/aiSuggestions';
 
 /** State for the multi-model comparison page. */
 export type TMultiModelState =
   | { phase: 'idle'; jobDescription: string; systemPrompt: string; systemRule: string; error: string | null }
-  | { phase: 'generating'; jobDescription: string; systemPrompt: string; systemRule: string }
+  | {
+      phase: 'generating';
+      jobDescription: string;
+      systemPrompt: string;
+      systemRule: string;
+      models: TModelSlot[];
+      activeModelIdx: number;
+    }
   | {
       phase: 'results';
       jobDescription: string;
       systemPrompt: string;
       systemRule: string;
-      results: TModelResult[];
+      models: TModelSlot[];
       activeModelIdx: number;
     };
 
@@ -18,9 +25,9 @@ export type TMultiModelAction =
   | { type: 'SET_JOB_DESCRIPTION'; payload: string }
   | { type: 'SET_SYSTEM_PROMPT'; payload: string }
   | { type: 'SET_SYSTEM_RULE'; payload: string }
-  | { type: 'GENERATE_START' }
-  | { type: 'GENERATE_SUCCESS'; payload: { results: TRawModelResult[]; jobDescription: string } }
-  | { type: 'GENERATE_ERROR'; payload: string }
+  | { type: 'GENERATE_START'; payload: { configs: readonly TModelConfig[] } }
+  | { type: 'MODEL_RESULT'; payload: { modelId: string; raw: TRawModelResult } }
+  | { type: 'MODEL_ERROR'; payload: { modelId: string; error: string } }
   | { type: 'SET_ACTIVE_MODEL'; payload: number }
   | { type: 'RESET' }
   | { type: 'TOGGLE_SUMMARY' }
@@ -52,13 +59,26 @@ function toModelResult(raw: TRawModelResult): TModelResult {
   };
 }
 
-/** Updates the active model's result immutably; returns new results array. */
+/** Checks if all model slots are done or errored. */
+function allModelsSettled(models: TModelSlot[]): boolean {
+  return models.every((m) => m.status === 'done' || m.status === 'error');
+}
+
+/** Gets the active model's result from the models array. */
+function getActiveResult(state: { models: TModelSlot[]; activeModelIdx: number }): TModelResult | undefined {
+  return state.models[state.activeModelIdx]?.result;
+}
+
+/** Updates the active model's result immutably. */
 function updateActiveResult(
-  results: TModelResult[],
+  models: TModelSlot[],
   idx: number,
   updater: (r: TModelResult) => TModelResult
-): TModelResult[] {
-  return results.map((r, i) => (i === idx ? updater(r) : r));
+): TModelSlot[] {
+  return models.map((m, i) => {
+    if (i !== idx || !m.result) return m;
+    return { ...m, result: updater(m.result) };
+  });
 }
 
 /** Reducer for multi-model AI comparison page state. */
@@ -76,41 +96,68 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
       if (state.phase !== 'idle') return state;
       return { ...state, systemRule: action.payload };
 
-    case 'GENERATE_START':
+    case 'GENERATE_START': {
       if (state.phase !== 'idle') return state;
-      return { phase: 'generating', jobDescription: state.jobDescription, systemPrompt: state.systemPrompt, systemRule: state.systemRule };
-
-    case 'GENERATE_SUCCESS': {
-      const firstSuccessIdx = action.payload.results.findIndex((r) => !r.error);
+      const models: TModelSlot[] = action.payload.configs.map((config) => ({
+        config,
+        status: 'pending'
+      }));
       return {
-        phase: 'results',
-        jobDescription: action.payload.jobDescription,
+        phase: 'generating',
+        jobDescription: state.jobDescription,
         systemPrompt: state.systemPrompt,
         systemRule: state.systemRule,
-        results: action.payload.results.map(toModelResult),
-        activeModelIdx: firstSuccessIdx >= 0 ? firstSuccessIdx : 0
+        models,
+        activeModelIdx: 0
       };
     }
 
-    case 'GENERATE_ERROR':
-      if (state.phase !== 'generating') return state;
-      return { phase: 'idle', jobDescription: state.jobDescription, systemPrompt: state.systemPrompt, systemRule: state.systemRule, error: action.payload };
+    case 'MODEL_RESULT': {
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const models = state.models.map((m) =>
+        m.config.id === action.payload.modelId
+          ? { ...m, status: 'done' as const, result: toModelResult(action.payload.raw) }
+          : m
+      );
+      let { activeModelIdx } = state;
+      const currentActive = models[activeModelIdx];
+      if (!currentActive?.result || currentActive.status === 'pending') {
+        const firstDone = models.findIndex((m) => m.status === 'done' && m.result && !m.result.error);
+        if (firstDone >= 0) activeModelIdx = firstDone;
+      }
+      const phase = allModelsSettled(models) ? 'results' : 'generating';
+      return { ...state, phase, models, activeModelIdx };
+    }
+
+    case 'MODEL_ERROR': {
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const models = state.models.map((m) =>
+        m.config.id === action.payload.modelId
+          ? {
+              ...m,
+              status: 'error' as const,
+              result: { modelId: m.config.id, label: m.config.label, error: action.payload.error } as TModelResult
+            }
+          : m
+      );
+      const phase = allModelsSettled(models) ? 'results' : 'generating';
+      return { ...state, phase, models, activeModelIdx: state.activeModelIdx };
+    }
 
     case 'SET_ACTIVE_MODEL':
-      if (state.phase !== 'results') return state;
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
       return { ...state, activeModelIdx: action.payload };
 
     case 'RESET':
       return initialMultiModelState;
 
     case 'TOGGLE_SUMMARY': {
-      if (state.phase !== 'results') return state;
-      const { results, activeModelIdx } = state;
-      const r = results[activeModelIdx];
-      if (!r.selection) return state;
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const r = getActiveResult(state);
+      if (!r?.selection) return state;
       return {
         ...state,
-        results: updateActiveResult(results, activeModelIdx, (m) => ({
+        models: updateActiveResult(state.models, state.activeModelIdx, (m) => ({
           ...m,
           selection: { ...m.selection!, summary: !m.selection!.summary }
         }))
@@ -118,10 +165,9 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
     }
 
     case 'TOGGLE_EXPERIENCE_FIELD': {
-      if (state.phase !== 'results') return state;
-      const { results, activeModelIdx } = state;
-      const r = results[activeModelIdx];
-      if (!r.selection) return state;
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const r = getActiveResult(state);
+      if (!r?.selection) return state;
       const { expIdx, field, highlightIdx } = action;
       const experience = [...r.selection.experience];
       const exp = { ...experience[expIdx] };
@@ -134,7 +180,7 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
       experience[expIdx] = exp;
       return {
         ...state,
-        results: updateActiveResult(results, activeModelIdx, (m) => ({
+        models: updateActiveResult(state.models, state.activeModelIdx, (m) => ({
           ...m,
           selection: { ...m.selection!, experience }
         }))
@@ -142,10 +188,9 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
     }
 
     case 'TOGGLE_SKILL': {
-      if (state.phase !== 'results') return state;
-      const { results, activeModelIdx } = state;
-      const r = results[activeModelIdx];
-      if (!r.selection) return state;
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const r = getActiveResult(state);
+      if (!r?.selection) return state;
       const { categoryIdx, skillIdx } = action;
       const skills = [...r.selection.skills];
       if (categoryIdx < 0 || categoryIdx >= skills.length) return state;
@@ -156,7 +201,7 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
       skills[categoryIdx] = cat;
       return {
         ...state,
-        results: updateActiveResult(results, activeModelIdx, (m) => ({
+        models: updateActiveResult(state.models, state.activeModelIdx, (m) => ({
           ...m,
           selection: { ...m.selection!, skills }
         }))
@@ -164,10 +209,9 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
     }
 
     case 'REMOVE_SKILL': {
-      if (state.phase !== 'results') return state;
-      const { results, activeModelIdx } = state;
-      const r = results[activeModelIdx];
-      if (!r.editedSuggestions?.skills || !r.selection) return state;
+      if (state.phase !== 'generating' && state.phase !== 'results') return state;
+      const r = getActiveResult(state);
+      if (!r?.editedSuggestions?.skills || !r.selection) return state;
       const catIdx = r.selection.skills.findIndex((s) => s.name === action.category);
       if (catIdx === -1) return state;
       const nextSkills = r.editedSuggestions.skills.map((cat, i) =>
@@ -182,7 +226,7 @@ export function multiModelReducer(state: TMultiModelState, action: TMultiModelAc
       );
       return {
         ...state,
-        results: updateActiveResult(results, activeModelIdx, (m) => ({
+        models: updateActiveResult(state.models, state.activeModelIdx, (m) => ({
           ...m,
           editedSuggestions: { ...m.editedSuggestions!, skills: nextSkills },
           selection: { ...m.selection!, skills: nextSelSkills }
