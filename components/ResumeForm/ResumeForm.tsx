@@ -16,7 +16,6 @@ import {
   SectionCardActions,
   SectionCardContent
 } from '@/components/ui/section-card';
-import { ErrorMessage } from '@/components/ui/error-message';
 import { Spinner } from '@/components/ui/spinner';
 import { AiSuggestionsDialog } from '@/components/AiSuggestions';
 import { Sparkles } from 'lucide-react';
@@ -30,16 +29,12 @@ import usePrivileges from '@/hooks/usePrivileges';
 export default function ResumeForm({
   onSubmit,
   isPending,
-  isError,
-  error,
   resumeId,
   onApplySuggestions,
   onCreateNewVersion
 }: {
   onSubmit: (data: TResumeForm) => void;
   isPending: boolean;
-  isError: boolean;
-  error: unknown;
   resumeId?: Id<'resumes'>;
   onApplySuggestions?: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
@@ -58,12 +53,6 @@ export default function ResumeForm({
         <SectionCardHeader>
           <SectionCardTitle icon={FileText}>Resume Form</SectionCardTitle>
           <SectionCardActions>
-            {isError && (
-              <ErrorMessage>
-                Error:{' '}
-                {error instanceof Error ? error.message : 'An error occurred'}
-              </ErrorMessage>
-            )}
             {resumeId && (
               <Tooltip>
                 <TooltipTrigger asChild>
