@@ -7,6 +7,7 @@ import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/ai
 import { internal } from './_generated/api';
 import { action } from './_generated/server';
 import { getAuthenticatedUser, getUserRole } from './auth';
+import { buildUserPrompt } from './formatResumePrompt';
 import { SYSTEM_PROMPT_5, SYSTEM_SCHEMA_RULES } from './systemPropts';
 
 const suggestionsValidator = v.object({
@@ -27,7 +28,8 @@ const suggestionsValidator = v.object({
         values: v.array(v.string())
       })
     )
-  )
+  ),
+  jdKeywords: v.optional(v.array(v.string()))
 });
 
 /** Ensures model does not rename/add/remove skill categories. */
@@ -72,7 +74,8 @@ export const generateResumeSuggestions = action({
     suggestions: v.optional(suggestionsValidator),
     error: v.optional(v.string()),
     cost: v.optional(v.number()),
-    durationMs: v.optional(v.number())
+    durationMs: v.optional(v.number()),
+    jdKeywords: v.optional(v.array(v.string()))
   }),
   handler: async (ctx, args) => {
     const userId = await getAuthenticatedUser(ctx);
@@ -99,21 +102,23 @@ export const generateResumeSuggestions = action({
 
     const anthropic = createAnthropic({ apiKey });
 
-    const resumeContent = {
-      summary: resume.personalInfo?.summary,
-      experience: resume.experience?.map((exp) => ({
-        company: exp.company,
-        position: exp.position,
-        description: exp.description,
-        highlights: exp.highlights
-      })),
-      skills: resume.skills
-    };
     const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
       category.name.trim()
     );
 
-    const prompt = `Resume:\n${JSON.stringify(resumeContent, null, 2)}\n\nJob Description:\n${args.jobDescription}`;
+    const prompt = buildUserPrompt(
+      {
+        summary: resume.personalInfo?.summary,
+        experience: resume.experience?.map((exp) => ({
+          company: exp.company,
+          position: exp.position,
+          description: exp.description,
+          highlights: exp.highlights
+        })),
+        skills: resume.skills
+      },
+      args.jobDescription
+    );
 
     const start = Date.now();
     try {
@@ -128,7 +133,7 @@ export const generateResumeSuggestions = action({
       assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
       const cost = calculateCost(usage.inputTokens ?? 0, usage.outputTokens ?? 0);
 
-      return { modelId: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', suggestions, cost, durationMs };
+      return { modelId: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6', suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
     } catch (e) {
       const durationMs = Date.now() - start;
       const errorMsg = e instanceof Error ? e.message : String(e);

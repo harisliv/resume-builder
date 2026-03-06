@@ -45,7 +45,8 @@ function toModelResult(raw: TRawModelResult): TModelResult {
     editedSuggestions: structuredClone(raw.suggestions),
     selection: createDefaultSelection(raw.suggestions),
     cost: raw.cost,
-    durationMs: raw.durationMs
+    durationMs: raw.durationMs,
+    jdKeywords: raw.jdKeywords ?? raw.suggestions.jdKeywords
   };
 }
 

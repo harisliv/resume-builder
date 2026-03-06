@@ -13,10 +13,11 @@
 
 - `pnpm dev` (assume already running)
 - `pnpm convex` (assume already running)
+- `pnpm compile` (assume already running)
 - `pnpm lint` (DONT)
 - `pnpm format` (DONT)
 
 **In order to validate the code, run:**
 
-- `pnpm compile`
+- `pnpm typeCheck`
 - `pnpm build`

@@ -30,5 +30,12 @@ export default defineSchema({
     userId: v.string(),
     dateKey: v.string(),
     count: v.number()
-  }).index('by_user_date', ['userId', 'dateKey'])
+  }).index('by_user_date', ['userId', 'dateKey']),
+
+  /** Stored system prompts and rules for AI generation. */
+  systemPrompts: defineTable({
+    name: v.string(),
+    content: v.string(),
+    type: v.optional(v.union(v.literal('prompt'), v.literal('rule')))
+  })
 });

@@ -33,6 +33,8 @@ type TAiSuggestionsViewProps = {
     highlightIdx?: number
   ) => void;
   onToggleSkill: (categoryIdx: number, skillIdx: number) => void;
+  /** Optional: remove skill from list (multi-model flow). */
+  onRemoveSkill?: (category: string, skillIdx: number) => void;
 };
 
 /**
@@ -185,6 +187,25 @@ function buildSkillRows(
   return rows;
 }
 
+/** Checks if suggested experience entry has any meaningful change vs current (after trim). */
+function hasExperienceChanged(
+  current: { description?: string; highlights?: { value: string }[] },
+  suggested: { description?: string; highlights?: string[] }
+): boolean {
+  const curDesc = (current.description ?? '').trim();
+  const sugDesc = (suggested.description ?? '').trim();
+  if (sugDesc && sugDesc !== curDesc) return true;
+
+  const curHighlights = (current.highlights ?? []).map((h) => h.value.trim());
+  const sugHighlights = (suggested.highlights ?? []).map((h) => h.trim());
+  if (sugHighlights.length !== curHighlights.length) return true;
+  for (let i = 0; i < sugHighlights.length; i++) {
+    if (sugHighlights[i] !== curHighlights[i]) return true;
+  }
+
+  return false;
+}
+
 /**
  * Tabbed comparison view for AI suggestions with per-field selection
  * and grouped selectable skills.
@@ -195,10 +216,13 @@ export function AiSuggestionsView({
   selection,
   onToggleSummary,
   onToggleExperienceField,
-  onToggleSkill
+  onToggleSkill,
+  onRemoveSkill
 }: TAiSuggestionsViewProps) {
   const hasSummary = !!suggestions.summary;
-  const hasExperience = !!suggestions.experience?.length;
+  const hasExperience = !!suggestions.experience?.some((exp, idx) =>
+    hasExperienceChanged(currentData.experience[idx] ?? {}, exp)
+  );
   const suggestedSkillEntries = (suggestions.skills ?? []).map((category) => ({
     name: category.name.trim(),
     values: category.values.map((skill) => skill.trim())
@@ -267,7 +291,7 @@ export function AiSuggestionsView({
             <div className="space-y-6">
               {suggestions.experience!.map((exp, idx) => {
                 const current = currentData.experience[idx];
-                if (!current || (!exp.description && !exp.highlights?.length))
+                if (!current || !hasExperienceChanged(current, exp))
                   return null;
 
                 const currentHighlights = (current.highlights ?? []).map((h) => h.value);

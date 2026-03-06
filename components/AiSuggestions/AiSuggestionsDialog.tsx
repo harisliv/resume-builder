@@ -196,6 +196,7 @@ export function AiSuggestionsDialog({
           <ResultsPhase
             result={state.result}
             currentData={currentData}
+            jobDescription={state.jobDescription}
             dispatch={dispatch}
             isAdmin={isAdmin}
             isRegenerating={state.isRegenerating}

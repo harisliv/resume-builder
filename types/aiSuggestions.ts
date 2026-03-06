@@ -18,7 +18,9 @@ export const suggestionsSchema = z.object({
       })
     )
     .optional(),
-  skills: suggestionSkillsSchema.optional()
+  skills: suggestionSkillsSchema.optional(),
+  /** JD keywords/phrases the LLM used to drive resume changes. */
+  jdKeywords: z.array(z.string()).optional()
 });
 
 const suggestionOutputExperienceItemSchema = z.object({
@@ -34,7 +36,8 @@ export const suggestionsOutputSchema = z.object({
   title: z.string().nullable(),
   summary: z.string().nullable(),
   experience: z.array(suggestionOutputExperienceItemSchema).nullable(),
-  skills: suggestionSkillsSchema.nullable()
+  skills: suggestionSkillsSchema.nullable(),
+  jdKeywords: z.array(z.string()).nullable()
 });
 
 export type TAiSuggestions = z.infer<typeof suggestionsSchema>;
@@ -51,7 +54,8 @@ export function normalizeSuggestionsOutput(
         description: item.description ?? undefined,
         highlights: item.highlights ?? undefined
       })) ?? undefined,
-    skills: output.skills ?? undefined
+    skills: output.skills ?? undefined,
+    jdKeywords: output.jdKeywords ?? undefined
   };
 }
 
@@ -71,6 +75,7 @@ export type TRawModelResult = {
   error?: string;
   cost?: number;
   durationMs?: number;
+  jdKeywords?: string[];
 };
 
 /** Per-model state held in the results phase (editedSuggestions + selection). */
@@ -82,6 +87,7 @@ export type TModelResult = {
   error?: string;
   cost?: number;
   durationMs?: number;
+  jdKeywords?: string[];
 };
 
 /** Creates a fully-selected TSuggestionSelection from suggestions. */

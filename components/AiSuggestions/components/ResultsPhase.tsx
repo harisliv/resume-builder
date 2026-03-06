@@ -11,11 +11,13 @@ import {
   ResultsScrollArea
 } from '../styles/ai-suggestions-dialog.styles';
 import { AiSuggestionsView } from '../AiSuggestionsView';
+import { JdKeywordHighlight } from '../utils/JdKeywordHighlight';
 import type { TDialogAction } from '../utils/dialogReducer';
 
 type TResultsPhaseProps = {
   result: TModelResult;
   currentData: TResumeForm;
+  jobDescription: string;
   dispatch: Dispatch<TDialogAction>;
   isAdmin: boolean;
   isRegenerating: boolean;
@@ -31,6 +33,7 @@ type TResultsPhaseProps = {
 export function ResultsPhase({
   result,
   currentData,
+  jobDescription,
   dispatch,
   isAdmin,
   isRegenerating,
@@ -40,6 +43,7 @@ export function ResultsPhase({
   onCreateVersion
 }: TResultsPhaseProps) {
   const hasError = !!result.error;
+  const jdKeywords = result.jdKeywords ?? [];
 
   return (
     <ResultsContainer>
@@ -52,18 +56,34 @@ export function ResultsPhase({
       )}
       <ResultsScrollArea>
         {!hasError && (
-          <AiSuggestionsView
-            suggestions={result.editedSuggestions!}
-            currentData={currentData}
-            selection={result.selection!}
-            onToggleSummary={() => dispatch({ type: 'TOGGLE_SUMMARY' })}
-            onToggleExperienceField={(expIdx, field, highlightIdx) =>
-              dispatch({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
-            }
-            onToggleSkill={(categoryIdx, skillIdx) =>
-              dispatch({ type: 'TOGGLE_SKILL', categoryIdx, skillIdx })
-            }
-          />
+          <>
+            {jdKeywords.length > 0 && (
+              <details className="mb-4">
+                <summary className="text-muted-foreground cursor-pointer text-sm font-medium">
+                  Job Description ({jdKeywords.length} keywords matched)
+                </summary>
+                <div className="bg-muted/50 mt-2 max-h-48 overflow-y-auto rounded-lg p-3">
+                  <JdKeywordHighlight
+                    text={jobDescription}
+                    keywords={jdKeywords}
+                    className="text-muted-foreground whitespace-pre-wrap text-sm"
+                  />
+                </div>
+              </details>
+            )}
+            <AiSuggestionsView
+              suggestions={result.editedSuggestions!}
+              currentData={currentData}
+              selection={result.selection!}
+              onToggleSummary={() => dispatch({ type: 'TOGGLE_SUMMARY' })}
+              onToggleExperienceField={(expIdx, field, highlightIdx) =>
+                dispatch({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
+              }
+              onToggleSkill={(categoryIdx, skillIdx) =>
+                dispatch({ type: 'TOGGLE_SKILL', categoryIdx, skillIdx })
+              }
+            />
+          </>
         )}
       </ResultsScrollArea>
       <DialogFooter className="shrink-0">
