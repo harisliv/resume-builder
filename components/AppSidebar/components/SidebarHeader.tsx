@@ -11,19 +11,21 @@ import {
 import type { ReactNode } from 'react';
 
 export function SidebarHeader({ children }: { children: ReactNode }) {
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { isCollapsed, isMobile, toggleSidebar } = useSidebar();
 
   return (
     <LayoutHeader collapsed={isCollapsed}>
       <HeaderRow collapsed={isCollapsed}>
         {!isCollapsed && <HeaderTitle>My Resumes</HeaderTitle>}
-        <ToggleButton collapsed={isCollapsed} onClick={toggleSidebar}>
-          {isCollapsed ? (
-            <ChevronRight className="size-5 text-black" />
-          ) : (
-            <ChevronLeft className="size-5" />
-          )}
-        </ToggleButton>
+        {!isMobile && (
+          <ToggleButton collapsed={isCollapsed} onClick={toggleSidebar}>
+            {isCollapsed ? (
+              <ChevronRight className="size-5 text-black" />
+            ) : (
+              <ChevronLeft className="size-5" />
+            )}
+          </ToggleButton>
+        )}
       </HeaderRow>
       {children}
     </LayoutHeader>

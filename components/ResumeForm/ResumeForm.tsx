@@ -56,10 +56,11 @@ export default function ResumeForm({
             {resumeId && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="inline-flex">
+                  <span className="inline-flex shrink-0">
                     <Button
                       type="button"
                       variant="secondary"
+                      size="sm"
                       disabled={isMember}
                       onClick={() => setAiDialogOpen(true)}
                     >
@@ -73,9 +74,10 @@ export default function ResumeForm({
             )}
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="inline-flex">
+                <span className="inline-flex shrink-0">
                   <Button
                     type="submit"
+                    size="sm"
                     disabled={isPending || isMember || !resumeId}
                   >
                     {isPending ? (

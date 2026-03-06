@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-const MOBILE_BREAKPOINT = 768;
+/** Matches Tailwind lg (1024px). Mobile/tablet use Sheet sidebar; desktop uses inline. */
+const MOBILE_BREAKPOINT = 1024;
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(

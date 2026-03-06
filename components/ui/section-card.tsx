@@ -14,7 +14,7 @@ function SectionCard({
   className?: string;
 }) {
   return (
-    <Card className={cn('p-7 flex flex-col h-full', className)}>
+    <Card className={cn('@container/section-card flex h-full min-w-0 flex-col p-7', className)}>
       {children}
     </Card>
   );
@@ -22,7 +22,7 @@ function SectionCard({
 
 function SectionCardHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between mb-6 shrink-0">
+    <div className="mb-6 flex min-w-0 shrink-0 flex-col-reverse gap-3 @xl/section-card:flex-row @xl/section-card:items-center @xl/section-card:justify-between @xl/section-card:gap-3">
       {children}
     </div>
   );
@@ -43,21 +43,25 @@ function SectionCardTitle({
       : 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25';
 
   return (
-    <h3 className="text-xl font-bold flex items-center gap-3 tracking-tight">
-      <div className={cn('p-2.5 rounded-xl', iconGradientClass)}>
+    <h3 className="flex min-w-0 w-full flex-1 items-center gap-3 self-stretch text-xl font-bold tracking-tight @xl/section-card:w-auto @xl/section-card:self-auto">
+      <div className={cn('shrink-0 rounded-xl p-2.5', iconGradientClass)}>
         <HugeiconsIcon icon={icon} strokeWidth={1.5} size={24} />
       </div>
-      {children}
+      <span className="truncate">{children}</span>
     </h3>
   );
 }
 
 function SectionCardActions({ children }: { children: React.ReactNode }) {
-  return <div className="flex items-center gap-3">{children}</div>;
+  return (
+    <div className="flex min-w-0 w-full shrink-0 flex-nowrap items-center justify-end gap-2 @xl/section-card:w-auto">
+      {children}
+    </div>
+  );
 }
 
 function SectionCardContent({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 min-h-0 p-1">{children}</div>;
+  return <div className="min-h-0 flex-1 p-1">{children}</div>;
 }
 
 export {

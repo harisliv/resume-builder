@@ -53,11 +53,12 @@ export default function ResumePreviewWrapper({
         <SectionCardActions>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="inline-flex">
+              <span className="inline-flex shrink-0">
                 <Button
                   type="button"
                   onClick={handleDownload}
                   variant="secondary"
+                  size="sm"
                   disabled={isMember || !hasSelectedResume}
                 >
                   <HugeiconsIcon icon={Download} strokeWidth={2.5} />

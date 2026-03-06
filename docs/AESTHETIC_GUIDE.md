@@ -209,6 +209,8 @@ transition-colors duration-200
 
 ## Layout Patterns
 
+**Breakpoints:** Mobile/tablet use tabs + sheet sidebar below `lg` (1024px). Desktop side-by-side layout at `lg`+.
+
 ### Home Layout (2-column)
 ```tsx
 <div className="w-full max-w-[2000px] mx-auto h-screen overflow-hidden">

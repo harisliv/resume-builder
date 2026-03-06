@@ -21,13 +21,103 @@ import { AppSidebar } from '@/components/AppSidebar';
 import ResumeForm from '@/components/ResumeForm';
 import { ResumePreviewWrapper } from '@/components/ResumePreview';
 import { SidebarInset, SidebarProvider } from '@/ui/sidebar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormProvider } from 'react-hook-form';
 import { HomeLayout } from './home-layout';
+import { MobileHeader } from './MobileHeader';
+import { useShowTabs } from '@/hooks/useShowTabs';
+
+/** Inner content that uses useShowTabs (must be inside SidebarProvider). */
+function HomeContent({
+  mobileTab,
+  setMobileTab,
+  formForm,
+  infoForm,
+  selectedResumeId,
+  handleSubmit,
+  isPending,
+  handleApplySuggestions,
+  handleCreateNewVersion
+}: {
+  mobileTab: 'form' | 'preview';
+  setMobileTab: (v: 'form' | 'preview') => void;
+  formForm: ReturnType<typeof useForm<z.infer<typeof resumeFormSchema>>>;
+  infoForm: ReturnType<typeof useForm<z.infer<typeof resumeInfoSchema>>>;
+  selectedResumeId: Id<'resumes'> | undefined;
+  handleSubmit: (data: z.infer<typeof resumeFormSchema>) => void;
+  isPending: boolean;
+  handleApplySuggestions: (suggestions: TAiSuggestions) => void;
+  handleCreateNewVersion: (suggestions: TAiSuggestions) => void;
+}) {
+  const showTabs = useShowTabs();
+
+  return (
+    <>
+      {showTabs && (
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <Tabs
+            value={mobileTab}
+            onValueChange={(v) => setMobileTab(v as 'form' | 'preview')}
+            className="flex min-h-0 min-w-0 flex-1 flex-col"
+          >
+            <MobileHeader>
+              <TabsList className="ml-auto grid min-w-0 flex-1 grid-cols-2">
+                <TabsTrigger value="form">Form</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
+            </MobileHeader>
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
+              <TabsContent value="form" className="mt-0 h-full min-w-0">
+                <FormProvider {...formForm}>
+                  <ResumeForm
+                    onSubmit={handleSubmit}
+                    isPending={isPending}
+                    resumeId={selectedResumeId}
+                    onApplySuggestions={handleApplySuggestions}
+                    onCreateNewVersion={handleCreateNewVersion}
+                  />
+                </FormProvider>
+              </TabsContent>
+              <TabsContent value="preview" className="mt-0 h-full min-w-0">
+                <ResumePreviewWrapper
+                  formControl={formForm.control}
+                  infoControl={infoForm.control}
+                  hasSelectedResume={!!selectedResumeId}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      )}
+      {!showTabs && (
+        <div className="min-h-0 min-w-0 flex-1">
+          <HomeLayout>
+            <FormProvider {...formForm}>
+              <ResumeForm
+                onSubmit={handleSubmit}
+                isPending={isPending}
+                resumeId={selectedResumeId}
+                onApplySuggestions={handleApplySuggestions}
+                onCreateNewVersion={handleCreateNewVersion}
+              />
+            </FormProvider>
+            <ResumePreviewWrapper
+              formControl={formForm.control}
+              infoControl={infoForm.control}
+              hasSelectedResume={!!selectedResumeId}
+            />
+          </HomeLayout>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
+  const [mobileTab, setMobileTab] = useState<'form' | 'preview'>('form');
 
   const {
     form: formValues,
@@ -114,7 +204,9 @@ export default function Home() {
           description: suggestions.experience[idx].description
         }),
         ...(suggestions.experience?.[idx]?.highlights && {
-          highlights: suggestions.experience[idx].highlights.map((h) => ({ value: h }))
+          highlights: suggestions.experience[idx].highlights.map((h) => ({
+            value: h
+          }))
         })
       })),
       skills: suggestions.skills
@@ -168,22 +260,17 @@ export default function Home() {
         />
       </FormProvider>
       <SidebarInset>
-        <HomeLayout>
-          <FormProvider {...formForm}>
-            <ResumeForm
-              onSubmit={handleSubmit}
-              isPending={isPending}
-              resumeId={selectedResumeId}
-              onApplySuggestions={handleApplySuggestions}
-              onCreateNewVersion={handleCreateNewVersion}
-            />
-          </FormProvider>
-          <ResumePreviewWrapper
-            formControl={formForm.control}
-            infoControl={infoForm.control}
-            hasSelectedResume={!!selectedResumeId}
-          />
-        </HomeLayout>
+        <HomeContent
+          mobileTab={mobileTab}
+          setMobileTab={setMobileTab}
+          formForm={formForm}
+          infoForm={infoForm}
+          selectedResumeId={selectedResumeId}
+          handleSubmit={handleSubmit}
+          isPending={isPending}
+          handleApplySuggestions={handleApplySuggestions}
+          handleCreateNewVersion={handleCreateNewVersion}
+        />
       </SidebarInset>
     </SidebarProvider>
   );
