@@ -52,7 +52,7 @@ export default function Home() {
     mode: 'onChange'
   });
 
-  const { mutate: submitResume, isPending, isError, error } = useResumeSubmit();
+  const { mutate: submitResume, isPending } = useResumeSubmit();
   const { mutate: deleteResume } = useDeleteResume();
 
   const handleResumeSelect = (id: string) => {
@@ -192,8 +192,6 @@ export default function Home() {
                   <ResumeForm
                     onSubmit={handleSubmit}
                     isPending={isPending}
-                    isError={isError}
-                    error={error}
                     resumeId={selectedResumeId}
                     onApplySuggestions={handleApplySuggestions}
                     onCreateNewVersion={handleCreateNewVersion}
@@ -218,8 +216,6 @@ export default function Home() {
               <ResumeForm
                 onSubmit={handleSubmit}
                 isPending={isPending}
-                isError={isError}
-                error={error}
                 resumeId={selectedResumeId}
                 onApplySuggestions={handleApplySuggestions}
                 onCreateNewVersion={handleCreateNewVersion}
