@@ -2,7 +2,7 @@ import { v } from 'convex/values';
 import { internalMutation } from './_generated/server';
 
 /** Max AI generations per day for non-admin users. */
-const DAILY_LIMIT = 0;
+const DAILY_LIMIT = 5;
 
 /** Returns current UTC date as YYYY-MM-DD. */
 function getDateKey(): string {
