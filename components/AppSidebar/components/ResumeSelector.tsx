@@ -16,13 +16,15 @@ type Props = {
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
   onDelete: (id: string) => void;
+  onImportPdf: () => void;
 };
 
 /** Resume dropdown with inline rename/delete per option. */
 export function ResumeSelector({
   onResumeSelect,
   onCreateNew,
-  onDelete
+  onDelete,
+  onImportPdf
 }: Props) {
   const { control, setValue } = useFormContext<TResumeInfo>();
   const currentId = useWatch({ control, name: 'id' }) ?? '';
@@ -57,9 +59,13 @@ export function ResumeSelector({
           onCreateNew(title);
           close();
         }}
+        onImportPdf={() => {
+          onImportPdf();
+          close();
+        }}
       />
     ),
-    [onCreateNew]
+    [onCreateNew, onImportPdf]
   );
 
   return (

@@ -14,6 +14,7 @@ import {
   type TResumeData
 } from '@/types/schema';
 import type { TAiSuggestions } from '@/types/aiSuggestions';
+import { PdfUploadDialog } from '@/components/PdfUpload/PdfUploadDialog';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { useDeleteResume } from '@/hooks/useDeleteResume';
@@ -118,6 +119,7 @@ export default function Home() {
     Id<'resumes'> | undefined
   >(undefined);
   const [mobileTab, setMobileTab] = useState<'form' | 'preview'>('form');
+  const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
 
   const {
     form: formValues,
@@ -172,6 +174,26 @@ export default function Home() {
           title: title ?? 'Untitled Resume'
         });
         formForm.reset(resumeFormDefaultValues);
+        setSelectedResumeId(data.id);
+      }
+    });
+  };
+
+  /** Creates a new resume from parsed PDF data. */
+  const handlePdfParsed = (title: string, formData: TResumeForm) => {
+    const newResumeData: TResumeData = {
+      ...resumeInfoDefaultValues,
+      ...formData,
+      title
+    };
+    submitResume(newResumeData, {
+      onSuccess: (data) => {
+        infoForm.reset({
+          ...resumeInfoDefaultValues,
+          id: data.id,
+          title
+        });
+        formForm.reset(formData);
         setSelectedResumeId(data.id);
       }
     });
@@ -256,9 +278,15 @@ export default function Home() {
           onResumeSelect={handleResumeSelect}
           onCreateNew={handleCreateNew}
           onDelete={handleDeleteResume}
+          onImportPdf={() => setPdfDialogOpen(true)}
           isLoadingResume={isLoadingResume}
         />
       </FormProvider>
+      <PdfUploadDialog
+        open={pdfDialogOpen}
+        onOpenChange={setPdfDialogOpen}
+        onParsed={handlePdfParsed}
+      />
       <SidebarInset>
         <HomeContent
           mobileTab={mobileTab}

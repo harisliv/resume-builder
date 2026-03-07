@@ -46,3 +46,7 @@ next-env.d.ts
 # next-agents-md
 .next-docs/
 .claude
+
+# private config (local overrides)
+components/AiMultiModel/utils/modelConfig.ts
+convex/systemPrompts.ts.worktrees

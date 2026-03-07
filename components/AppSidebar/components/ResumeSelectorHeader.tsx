@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Plus, Check, X } from 'lucide-react';
+import { Plus, Check, X, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
@@ -14,9 +14,11 @@ import { CreateResumeRow } from '../styles/nav-selector.styles';
 import usePrivileges from '@/hooks/usePrivileges';
 
 export function ResumeSelectorHeader({
-  onCreateNew
+  onCreateNew,
+  onImportPdf
 }: {
   onCreateNew: (title?: string) => void;
+  onImportPdf: () => void;
 }) {
   const { getDisabledTooltip } = usePrivileges();
   const createTooltip = getDisabledTooltip(true);
@@ -84,22 +86,41 @@ export function ResumeSelectorHeader({
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span>
-          <DropdownMenuItem
-            disabled={!!createTooltip}
-            onClick={() => setIsCreating(true)}
-            onSelect={(e) => e.preventDefault()}
-          >
-            <Plus className="mr-2 size-4" />
-            Create New Resume
-          </DropdownMenuItem>
-        </span>
-      </TooltipTrigger>
-      {createTooltip && (
-        <TooltipContent side="right">{createTooltip}</TooltipContent>
-      )}
-    </Tooltip>
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span>
+            <DropdownMenuItem
+              disabled={!!createTooltip}
+              onClick={() => setIsCreating(true)}
+              onSelect={(e) => e.preventDefault()}
+            >
+              <Plus className="mr-2 size-4" />
+              Create New Resume
+            </DropdownMenuItem>
+          </span>
+        </TooltipTrigger>
+        {createTooltip && (
+          <TooltipContent side="right">{createTooltip}</TooltipContent>
+        )}
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span>
+            <DropdownMenuItem
+              disabled={!!createTooltip}
+              onClick={onImportPdf}
+              onSelect={(e) => e.preventDefault()}
+            >
+              <Upload className="mr-2 size-4" />
+              Import PDF
+            </DropdownMenuItem>
+          </span>
+        </TooltipTrigger>
+        {createTooltip && (
+          <TooltipContent side="right">{createTooltip}</TooltipContent>
+        )}
+      </Tooltip>
+    </>
   );
 }

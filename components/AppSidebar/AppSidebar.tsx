@@ -14,6 +14,7 @@ export type TAppSidebarResumeProps = {
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
   onDelete: (id: string) => void;
+  onImportPdf: () => void;
   isLoadingResume?: boolean;
 };
 
@@ -21,6 +22,7 @@ export function AppSidebar({
   onResumeSelect,
   onCreateNew,
   onDelete,
+  onImportPdf,
   isLoadingResume = false,
   ...props
 }: TAppSidebarResumeProps & React.ComponentProps<typeof Sidebar>) {
@@ -31,6 +33,7 @@ export function AppSidebar({
           onResumeSelect={onResumeSelect}
           onCreateNew={onCreateNew}
           onDelete={onDelete}
+          onImportPdf={onImportPdf}
         />
       </SidebarHeader>
       <SidebarBody>
