@@ -1,5 +1,5 @@
 import { v } from 'convex/values';
-import { internalQuery, mutation, query } from './_generated/server';
+import { internalQuery, query } from './_generated/server';
 
 const providerValidator = v.union(v.literal('anthropic'), v.literal('google'), v.literal('openai'));
 
@@ -18,30 +18,6 @@ export const list = query({
   args: {},
   returns: v.array(rowValidator),
   handler: async (ctx) => ctx.db.query('modelConfigs').collect()
-});
-
-/** Returns the default model config. */
-export const getDefault = query({
-  args: {},
-  returns: v.union(rowValidator, v.null()),
-  handler: async (ctx) => {
-    const all = await ctx.db.query('modelConfigs').collect();
-    return all.find((m) => m.isDefault) ?? null;
-  }
-});
-
-/** Sets a model as default, clearing isDefault on others. */
-export const setDefault = mutation({
-  args: { id: v.id('modelConfigs') },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const all = await ctx.db.query('modelConfigs').collect();
-    for (const row of all) {
-      if (row.isDefault) await ctx.db.patch(row._id, { isDefault: false });
-    }
-    await ctx.db.patch(args.id, { isDefault: true });
-    return null;
-  }
 });
 
 /** Internal query for model configs (used by actions). */
