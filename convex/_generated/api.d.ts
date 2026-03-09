@@ -18,6 +18,7 @@ import type * as resumes from "../resumes.js";
 import type * as seedSystemPrompts from "../seedSystemPrompts.js";
 import type * as seeds_models from "../seeds/models.js";
 import type * as seeds_prompts from "../seeds/prompts.js";
+import type * as seeds_seedAll from "../seeds/seedAll.js";
 import type * as seeds_seedModels from "../seeds/seedModels.js";
 import type * as seeds_seedPrompts from "../seeds/seedPrompts.js";
 import type * as systemPrompts from "../systemPrompts.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   seedSystemPrompts: typeof seedSystemPrompts;
   "seeds/models": typeof seeds_models;
   "seeds/prompts": typeof seeds_prompts;
+  "seeds/seedAll": typeof seeds_seedAll;
   "seeds/seedModels": typeof seeds_seedModels;
   "seeds/seedPrompts": typeof seeds_seedPrompts;
   systemPrompts: typeof systemPrompts;
