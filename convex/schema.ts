@@ -36,6 +36,16 @@ export default defineSchema({
   systemPrompts: defineTable({
     name: v.string(),
     content: v.string(),
-    type: v.optional(v.union(v.literal('prompt'), v.literal('rule')))
-  })
+    type: v.optional(v.union(v.literal('prompt'), v.literal('rule'))),
+    isDefault: v.optional(v.boolean())
+  }).index('by_type_and_default', ['type', 'isDefault']),
+
+  /** Model configurations for AI generation. */
+  modelConfigs: defineTable({
+    provider: v.union(v.literal('anthropic'), v.literal('google'), v.literal('openai')),
+    modelId: v.string(),
+    label: v.string(),
+    pricing: v.object({ input: v.number(), output: v.number() }),
+    isDefault: v.optional(v.boolean())
+  }).index('by_default', ['isDefault'])
 });
