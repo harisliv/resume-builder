@@ -53,5 +53,4 @@ convex/systemPrompts.ts.worktrees
 
 # Secret seed config and scripts
 convex/seeds/
-scripts/seed.sh
-.env*.local
+scripts

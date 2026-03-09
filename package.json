@@ -17,7 +17,9 @@
     "seed": "bash scripts/seed.sh",
     "seed:prod": "bash scripts/seed.sh --prod",
     "seed:all": "bash scripts/seed.sh --all",
-    "seed:preview": "bash scripts/seed.sh --preview-name"
+    "seed:preview": "bash scripts/seed.sh --preview-name",
+    "env:preview": "bash scripts/env-preview.sh"
+
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.46",
