@@ -15,7 +15,6 @@ import type * as formatResumePrompt from "../formatResumePrompt.js";
 import type * as modelConfigs from "../modelConfigs.js";
 import type * as parseResumePdf from "../parseResumePdf.js";
 import type * as resumes from "../resumes.js";
-import type * as seedSystemPrompts from "../seedSystemPrompts.js";
 import type * as seeds_models from "../seeds/models.js";
 import type * as seeds_prompts from "../seeds/prompts.js";
 import type * as seeds_resume from "../seeds/resume.js";
@@ -40,7 +39,6 @@ declare const fullApi: ApiFromModules<{
   modelConfigs: typeof modelConfigs;
   parseResumePdf: typeof parseResumePdf;
   resumes: typeof resumes;
-  seedSystemPrompts: typeof seedSystemPrompts;
   "seeds/models": typeof seeds_models;
   "seeds/prompts": typeof seeds_prompts;
   "seeds/resume": typeof seeds_resume;
