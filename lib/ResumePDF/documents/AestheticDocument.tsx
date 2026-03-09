@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Link, StyleSheet } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import '../fonts';
+import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { MailIcon } from '../icons/MailIcon';
 import { PhoneIcon } from '../icons/PhoneIcon';
@@ -368,7 +369,7 @@ const AestheticExperienceGroup = ({
         {firstEntry && (
           <View style={{ marginTop: 4 }}>
             <Text style={[styles.company, { color: colors.secondary }]}>
-              {firstEntry.position}
+              {formatPosition(firstEntry.position, firstEntry.projectName)}
             </Text>
             {firstEntry.description && (
               <Text style={styles.description}>{firstEntry.description}</Text>
@@ -384,9 +385,9 @@ const AestheticExperienceGroup = ({
       </View>
 
       {remainingEntries.map((exp, ei) => (
-        <View key={`${exp.position}-${ei}`} style={{ marginTop: 4 }} wrap={false}>
+        <View key={`${formatPosition(exp.position, exp.projectName)}-${ei}`} style={{ marginTop: 4 }} wrap={false}>
           <Text style={[styles.company, { color: colors.secondary }]}>
-            {exp.position}
+            {formatPosition(exp.position, exp.projectName)}
           </Text>
           {exp.description && (
             <Text style={styles.description}>{exp.description}</Text>

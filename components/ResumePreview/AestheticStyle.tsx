@@ -11,8 +11,9 @@ import {
   Sparkles,
   Calendar
 } from 'lucide-react';
-import type { TEducation, TExperience } from '@/types/schema';
+import type { TEducation } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { formatPosition } from './formatPosition';
 import { groupExperience } from './groupExperience';
 import { getSkillEntries } from '@/lib/skills';
 
@@ -235,7 +236,7 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="text-[10px] font-semibold"
                           style={{ color: AESTHETIC.secondary }}
                         >
-                          {exp.position}
+                          {formatPosition(exp.position, exp.projectName)}
                         </p>
                         {exp.description && (
                           <p

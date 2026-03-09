@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useState, useCallback } from 'react';
-import { Pencil, Trash2, Check, X } from 'lucide-react';
+import { Pencil, Trash2, Check, X, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import type { NavSelectorOption } from '../types';
@@ -12,6 +12,7 @@ type Props = {
   defaultContent: ReactNode;
   onRename: (id: string, title: string) => void;
   onDelete: (id: string) => void;
+  onSetDefault: (id: string) => void;
 };
 
 /** Prevent radio item selection and dropdown close. */
@@ -42,7 +43,8 @@ export function ResumeOptionActions({
   option,
   defaultContent,
   onRename,
-  onDelete
+  onDelete,
+  onSetDefault
 }: Props) {
   const confirm = useWarningDialog();
   const [isEditing, setIsEditing] = useState(false);
@@ -113,6 +115,17 @@ export function ResumeOptionActions({
             <Button
               size="icon"
               variant="ghost"
+              className="size-7 shrink-0 !text-amber-500/60 hover:!text-amber-500"
+              onClick={() => onSetDefault(option.id)}
+            >
+              <Star
+                className="size-3.5"
+                fill={option.isDefault ? 'currentColor' : 'none'}
+              />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
               className="size-7 shrink-0 !text-primary/60"
               onClick={() => {
                 setEditTitle(option.label);
@@ -125,6 +138,7 @@ export function ResumeOptionActions({
               size="icon"
               variant="ghost"
               className="size-7 shrink-0 !text-destructive/60"
+              disabled={option.isDefault}
               onClick={async () => {
                 const ok = await confirm({
                   title: 'Delete resume?',

@@ -3,6 +3,7 @@ import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
+import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { getSkillEntries } from '@/lib/skills';
 
@@ -237,7 +238,7 @@ export const BoldDocument = ({
                             { color: colors.experience }
                           ]}
                         >
-                          {firstEntry.position}
+                          {formatPosition(firstEntry.position, firstEntry.projectName)}
                         </Text>
                         {firstEntry.description ? (
                           <Text style={boldStyles.itemDescription}>
@@ -289,7 +290,7 @@ export const BoldDocument = ({
                           { color: colors.experience }
                         ]}
                       >
-                        {exp.position}
+                        {formatPosition(exp.position, exp.projectName)}
                       </Text>
                       {exp.description ? (
                         <Text style={boldStyles.itemDescription}>

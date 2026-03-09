@@ -15,7 +15,7 @@
     "compile": "npx tsc -noEmit -w",
     "typeCheck": "npx tsc --noEmit",
     "seed": "bash scripts/seed.sh",
-    "seed:prod": "bash scripts/seed.sh --prod",
+    "seed:prod": "bash scripts/seed-prod.sh",
     "seed:all": "bash scripts/seed.sh --all",
     "seed:preview": "bash scripts/seed.sh --preview-name",
     "env:preview": "bash scripts/env-preview.sh"

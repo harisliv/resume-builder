@@ -21,6 +21,8 @@ const resumeValidator = v.object({
   personalInfo: v.optional(personalInfoValidator),
   experience: v.optional(v.array(experienceValidator)),
   education: v.optional(v.array(educationValidator)),
+  isDefault: v.optional(v.boolean()),
+  isAiImproved: v.optional(v.boolean()),
   skills: v.optional(v.array(skillCategoryValidator)),
   documentStyle: documentStyleValidator
 });
@@ -120,6 +122,35 @@ export const deleteResume = mutation({
   }
 });
 
+/** Set a resume as the user's default. Unsets any previous default. */
+export const setDefaultResume = mutation({
+  args: {
+    id: v.id('resumes')
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await getAuthenticatedUser(ctx);
+    const resume = await ctx.db.get(args.id);
+    if (!resume || resume.userId !== userId) {
+      throw new Error('Unauthorized: Resume does not belong to user');
+    }
+
+    /** Unset previous default. */
+    const userResumes = await ctx.db
+      .query('resumes')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .collect();
+    for (const r of userResumes) {
+      if (r.isDefault) {
+        await ctx.db.patch(r._id, { isDefault: false });
+      }
+    }
+
+    await ctx.db.patch(args.id, { isDefault: true });
+    return null;
+  }
+});
+
 export const getResume = query({
   args: {
     id: v.id('resumes')
@@ -157,7 +188,8 @@ export const listResumeTitles = query({
   returns: v.array(
     v.object({
       _id: v.id('resumes'),
-      title: v.string()
+      title: v.string(),
+      isDefault: v.optional(v.boolean())
     })
   ),
   handler: async (ctx) => {
@@ -168,7 +200,8 @@ export const listResumeTitles = query({
       .collect();
     return resumes.map((resume) => ({
       _id: resume._id,
-      title: resume.title
+      title: resume.title,
+      isDefault: resume.isDefault
     }));
   }
 });

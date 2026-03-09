@@ -13,6 +13,7 @@ export const personalInfoValidator = v.object({
 export const experienceValidator = v.object({
   company: v.optional(v.string()),
   position: v.optional(v.string()),
+  projectName: v.optional(v.string()),
   location: v.optional(v.string()),
   startDate: v.optional(v.string()),
   endDate: v.optional(v.string()),
