@@ -10,7 +10,6 @@ import { internal } from './_generated/api';
 import { action } from './_generated/server';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { buildUserPrompt } from './formatResumePrompt';
-import { SYSTEM_PROMPT_5, SYSTEM_SCHEMA_RULES } from './systemPropts';
 
 const suggestionsValidator = v.object({
   title: v.optional(v.string()),
@@ -84,14 +83,7 @@ export const generateResumeSuggestions = action({
   args: {
     resumeId: v.id('resumes'),
     jobDescription: v.string(),
-    model: v.optional(
-      v.object({
-        provider: v.union(v.literal('anthropic'), v.literal('google'), v.literal('openai')),
-        modelId: v.string(),
-        label: v.string(),
-        pricing: v.object({ input: v.number(), output: v.number() })
-      })
-    ),
+    modelId: v.optional(v.string()),
     systemPromptOverride: v.optional(v.string()),
     systemRuleOverride: v.optional(v.string())
   },
@@ -104,7 +96,21 @@ export const generateResumeSuggestions = action({
     durationMs: v.optional(v.number()),
     jdKeywords: v.optional(v.array(v.string()))
   }),
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{
+    modelId: string;
+    label: string;
+    suggestions?: {
+      title?: string;
+      summary?: string;
+      experience?: { description?: string; highlights?: string[] }[];
+      skills?: { name: string; values: string[] }[];
+      jdKeywords?: string[];
+    };
+    error?: string;
+    cost?: number;
+    durationMs?: number;
+    jdKeywords?: string[];
+  }> => {
     const userId = await getAuthenticatedUser(ctx);
 
     const role = await getUserRole(ctx);
@@ -121,11 +127,17 @@ export const generateResumeSuggestions = action({
       throw new Error('Resume not found');
     }
 
-    const modelConfig = args.model ?? {
-      provider: 'anthropic' as const,
-      modelId: 'claude-sonnet-4-6',
-      label: 'Claude Sonnet 4.6',
-      pricing: { input: 3.0, output: 15.0 }
+    /** Resolve model config from DB. */
+    const allModels = await ctx.runQuery(internal.modelConfigs.listInternal);
+    const resolvedModel = args.modelId
+      ? allModels.find((m: { modelId: string }) => m.modelId === args.modelId)
+      : allModels.find((m: { isDefault?: boolean }) => m.isDefault);
+    if (!resolvedModel) throw new Error('No model config found');
+    const modelConfig = {
+      provider: resolvedModel.provider as string,
+      modelId: resolvedModel.modelId as string,
+      label: resolvedModel.label as string,
+      pricing: resolvedModel.pricing as { input: number; output: number }
     };
 
     const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
@@ -146,8 +158,25 @@ export const generateResumeSuggestions = action({
       args.jobDescription
     );
 
-    const basePrompt = args.systemPromptOverride ?? SYSTEM_PROMPT_5;
-    const rules = args.systemRuleOverride ?? SYSTEM_SCHEMA_RULES;
+    /** Resolve system prompt and rules from DB. */
+    let basePrompt = args.systemPromptOverride;
+    let rules = args.systemRuleOverride;
+    if (!basePrompt) {
+      const defaultPrompt = await ctx.runQuery(
+        internal.systemPrompts.getDefaultInternal,
+        { type: 'prompt' as const }
+      );
+      if (!defaultPrompt) throw new Error('No default system prompt found');
+      basePrompt = defaultPrompt.content;
+    }
+    if (!rules) {
+      const defaultRule = await ctx.runQuery(
+        internal.systemPrompts.getDefaultInternal,
+        { type: 'rule' as const }
+      );
+      if (!defaultRule) throw new Error('No default rule found');
+      rules = defaultRule.content;
+    }
     const systemPrompt = `${basePrompt}\n\n${rules}`;
 
     const start = Date.now();

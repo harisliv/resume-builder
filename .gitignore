@@ -50,3 +50,7 @@ next-env.d.ts
 # private config (local overrides)
 components/AiMultiModel/utils/modelConfig.ts
 convex/systemPrompts.ts.worktrees
+
+# Secret seed config and scripts
+convex/seeds/
+scripts/seed.sh
