@@ -46,3 +46,7 @@ next-env.d.ts
 # next-agents-md
 .next-docs/
 .claude
+
+# Secret seed config and scripts
+convex/seeds/
+scripts/seed.sh

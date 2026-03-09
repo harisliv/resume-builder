@@ -3,10 +3,10 @@
 import { useReducer, useMemo, useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
-import { useAction, useQuery } from 'convex/react';
+import { useAction, useMutation, useQuery } from 'convex/react';
 import type { Id } from '@/convex/_generated/dataModel';
 import { api } from '@/convex/_generated/api';
-import type { TAiSuggestions } from '@/types/aiSuggestions';
+import type { TAiSuggestions, TModelConfig } from '@/types/aiSuggestions';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -32,7 +32,6 @@ import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { buildFilteredSuggestions } from '@/components/AiSuggestions/utils/filterSuggestions';
 import { AiMultiModelPanel } from '@/components/AiMultiModel';
 import { MultiModelLayout } from '@/components/AiMultiModel/styles/ai-multi-model.styles';
-import { MULTI_MODEL_CONFIGS } from '@/components/AiMultiModel/utils/modelConfig';
 import {
   multiModelReducer,
   initialMultiModelState
@@ -52,24 +51,27 @@ export default function AiMultiModelPage() {
     useGetUserResumeTitles();
   const systemPrompts = useQuery(api.systemPrompts.list, { type: 'prompt' });
   const systemRules = useQuery(api.systemPrompts.list, { type: 'rule' });
+  const modelConfigs = useQuery(api.modelConfigs.list);
   const generateSingle = useAction(api.aiSuggestions.generateResumeSuggestions);
+  const createFromEdit = useMutation(api.systemPrompts.createFromEdit);
   const { mutate: submitResume } = useResumeSubmit();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  /** Auto-select first system prompt when loaded. */
+  /** Auto-select default system prompt when loaded. */
   useEffect(() => {
     if (systemPrompts?.length && !state.systemPrompt) {
-      dispatch({
-        type: 'SET_SYSTEM_PROMPT',
-        payload: systemPrompts[0].content
-      });
+      const defaultPrompt =
+        systemPrompts.find((p) => p.isDefault) ?? systemPrompts[0];
+      dispatch({ type: 'SET_SYSTEM_PROMPT', payload: defaultPrompt.content });
     }
   }, [systemPrompts, state.systemPrompt]);
 
-  /** Auto-select first rule when loaded. */
+  /** Auto-select default rule when loaded. */
   useEffect(() => {
     if (systemRules?.length && !state.systemRule) {
-      dispatch({ type: 'SET_SYSTEM_RULE', payload: systemRules[0].content });
+      const defaultRule =
+        systemRules.find((r) => r.isDefault) ?? systemRules[0];
+      dispatch({ type: 'SET_SYSTEM_RULE', payload: defaultRule.content });
     }
   }, [systemRules, state.systemRule]);
 
@@ -87,28 +89,46 @@ export default function AiMultiModelPage() {
     isLoading: isLoadingResume
   } = useGetResumeById(effectiveResumeId);
 
+  /** Saves edited prompt/rule as new DB entry if content was modified. */
+  const saveEditedIfNeeded = useCallback(
+    async (content: string, type: 'prompt' | 'rule', existing: typeof systemPrompts) => {
+      if (!content || existing?.some((e) => e.content === content)) return;
+      const timestamp = new Date().toISOString().slice(0, 16);
+      await createFromEdit({ name: `Edited ${type} ${timestamp}`, content, type });
+    },
+    [createFromEdit]
+  );
+
   const handleGenerate = useCallback(async () => {
     if (
       !effectiveResumeId ||
       state.phase !== 'idle' ||
-      !state.jobDescription.trim()
+      !state.jobDescription.trim() ||
+      !modelConfigs?.length
     )
       return;
-    dispatch({
-      type: 'GENERATE_START',
-      payload: { configs: MULTI_MODEL_CONFIGS }
-    });
 
-    MULTI_MODEL_CONFIGS.forEach((config) => {
+    // Save edited prompts/rules as new DB entries
+    await Promise.all([
+      saveEditedIfNeeded(state.systemPrompt, 'prompt', systemPrompts),
+      saveEditedIfNeeded(state.systemRule, 'rule', systemRules)
+    ]);
+
+    /** Map DB rows to TModelConfig shape (DB has modelId, TModelConfig has id). */
+    const configs: TModelConfig[] = modelConfigs.map((m) => ({
+      provider: m.provider,
+      id: m.modelId as TModelConfig['id'],
+      label: m.label,
+      pricing: m.pricing
+    }));
+
+    dispatch({ type: 'GENERATE_START', payload: { configs } });
+
+    configs.forEach((config) => {
       generateSingle({
         resumeId: effectiveResumeId,
         jobDescription: state.jobDescription,
-        model: {
-          provider: config.provider,
-          modelId: config.id,
-          label: config.label,
-          pricing: config.pricing
-        },
+        modelId: config.id,
         systemPromptOverride: state.systemPrompt || undefined,
         systemRuleOverride: state.systemRule || undefined
       })
@@ -128,7 +148,7 @@ export default function AiMultiModelPage() {
           });
         });
     });
-  }, [effectiveResumeId, state, generateSingle]);
+  }, [effectiveResumeId, state, generateSingle, modelConfigs, systemPrompts, systemRules, saveEditedIfNeeded]);
 
   /** Merges AI suggestions into the current resume form shape. */
   const mergeSuggestions = useCallback(
@@ -397,7 +417,8 @@ export default function AiMultiModelPage() {
                 disabled={
                   isLoadingResume ||
                   !effectiveResumeId ||
-                  !state.jobDescription.trim()
+                  !state.jobDescription.trim() ||
+                  !modelConfigs?.length
                 }
                 className="flex-1"
               >
