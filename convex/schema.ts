@@ -14,6 +14,8 @@ export default defineSchema({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
+    isDefault: v.optional(v.boolean()),
+    isAiImproved: v.optional(v.boolean()),
     skills: v.optional(
       v.array(
         v.object({

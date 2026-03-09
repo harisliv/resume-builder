@@ -25,6 +25,8 @@ import {
   TooltipContent
 } from '@/components/ui/tooltip';
 import usePrivileges from '@/hooks/usePrivileges';
+import { toast } from 'sonner';
+import { getInvalidSubmitDescription } from './getInvalidSubmitDescription';
 
 export default function ResumeForm({
   onSubmit,
@@ -40,12 +42,20 @@ export default function ResumeForm({
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
 }) {
   const form = useFormContext<TResumeForm>();
+  const {
+    formState: { isDirty }
+  } = form;
   const { isMember, getDisabledTooltip } = usePrivileges();
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const saveTooltip = getDisabledTooltip(!!resumeId);
   const aiTooltip = getDisabledTooltip(true);
 
-  const handleSubmit = form.handleSubmit(onSubmit);
+  /** Surfaces invalid submit state instead of failing silently. */
+  const handleSubmit = form.handleSubmit(onSubmit, (errors) => {
+    toast.error('Fix form errors before saving', {
+      description: getInvalidSubmitDescription(errors)
+    });
+  });
 
   return (
     <form noValidate onSubmit={handleSubmit}>
@@ -78,7 +88,7 @@ export default function ResumeForm({
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={isPending || isMember || !resumeId}
+                    disabled={isPending || isMember || !resumeId || !isDirty}
                   >
                     {isPending ? (
                       <>

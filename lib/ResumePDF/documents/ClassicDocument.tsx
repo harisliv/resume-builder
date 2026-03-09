@@ -10,6 +10,7 @@ import { Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type { TResumeData } from '@/types/schema';
 import type { getColors } from '../ResumeStyles';
 import { FONT_FAMILY } from '../fonts';
+import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { CalendarIcon } from '../icons/CalendarIcon';
 import { getSkillEntries } from '@/lib/skills';
@@ -375,7 +376,7 @@ export const ClassicDocument = ({
                       </View>
                       {firstEntry ? (
                         <Text style={classicStyles.experiencePosition}>
-                          {firstEntry.position}
+                          {formatPosition(firstEntry.position, firstEntry.projectName)}
                         </Text>
                       ) : null}
                     </View>
@@ -445,7 +446,7 @@ export const ClassicDocument = ({
                 {restEntries.map((exp, ei) => (
                   <View key={ei} style={{ marginTop: 4 }}>
                     <Text style={classicStyles.experiencePosition}>
-                      {exp.position}
+                      {formatPosition(exp.position, exp.projectName)}
                     </Text>
                     {exp.description ? (
                       <Text style={classicStyles.positionDescription}>

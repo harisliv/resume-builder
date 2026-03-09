@@ -11,7 +11,8 @@ export function useGetUserResumeTitles() {
       const res = await convex.query(api.resumes.listResumeTitles);
       return res.map((item) => ({
         id: item._id,
-        title: item.title
+        title: item.title,
+        isDefault: item.isDefault ?? false
       }));
     },
     enabled: isAuthenticated && !isAuthLoading

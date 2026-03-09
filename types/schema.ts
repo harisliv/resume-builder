@@ -22,6 +22,7 @@ export const personalInfoSchema = z.object({
 export const experienceSchema = z.object({
   company: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
   position: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
+  projectName: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
   location: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
@@ -63,7 +64,7 @@ export const resumeInfoSchema = z.object({
 
 export const skillsSchema = z.object({
   name: z.string().max(50, 'Max 50 chars'),
-  values: z.array(z.object({ value: z.string().max(50, 'Max 50 chars') })).max(10)
+  values: z.array(z.object({ value: z.string().max(50, 'Max 50 chars') })).max(20, 'Max 20 skills')
 });
 
 export const resumeFormSchema = z.object({
@@ -88,6 +89,7 @@ export const personalInfoDefaultValues = {
 export const experienceDefaultValues = {
   company: '',
   position: '',
+  projectName: '',
   location: '',
   startDate: '',
   endDate: '',

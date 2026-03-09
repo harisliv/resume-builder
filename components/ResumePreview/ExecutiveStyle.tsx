@@ -3,6 +3,7 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { formatPosition } from './formatPosition';
 import { groupExperience } from './groupExperience';
 import { getSkillEntries } from '@/lib/skills';
 
@@ -130,7 +131,7 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="font-semibold text-[10px]"
                           style={{ color: palette.experience }}
                         >
-                          {exp.position}
+                          {formatPosition(exp.position, exp.projectName)}
                         </p>
                         {exp.description && (
                           <p className="text-[9px] text-slate-600 leading-relaxed mt-0.5">

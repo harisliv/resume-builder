@@ -9,6 +9,7 @@ import SectionTitle from './styles/section-title';
 import FieldRow from './styles/field-row';
 import Company from './ExperienceFields/Company';
 import Position from './ExperienceFields/Position';
+import ProjectName from './ExperienceFields/ProjectName';
 import Location from './ExperienceFields/Location';
 import { ResumeFormControlledDateRange } from '@/components/ConnectedFields/ControlledDateRange';
 import Description from './ExperienceFields/Description';
@@ -100,9 +101,12 @@ export default function Experience() {
             <StyledAccordionContent>
               <FieldRow cols="half">
                 <Company index={index} />
-                <Position index={index} />
+                <Location index={index} />
               </FieldRow>
-              <Location index={index} />
+              <FieldRow cols="half">
+                <Position index={index} />
+                <ProjectName index={index} />
+              </FieldRow>
               <ResumeFormControlledDateRange
                 startName={`experience.${index}.startDate`}
                 endName={`experience.${index}.endDate`}
