@@ -345,6 +345,30 @@ export const ClassicDocument = ({
         </View>
       )}
 
+      {skillEntries.length > 0 && (
+        <View style={classicStyles.section} wrap={false}>
+          <View
+            style={classicStyles.sectionTitleRow}
+            minPresenceAhead={MIN_PRESENCE.skills}
+          >
+            <View style={classicStyles.sectionBar} />
+            <Text style={classicStyles.sectionTitle}>Skills</Text>
+          </View>
+          <View style={classicStyles.dividerWrap}>
+            <View style={classicStyles.dividerColored} />
+            <View style={classicStyles.dividerSlate} />
+          </View>
+          <View>
+            {skillEntries.map(([category, values]) => (
+              <Text key={category} style={classicStyles.skillsText}>
+                <Text style={classicStyles.skillCategory}>{category}</Text>:{' '}
+                {values.join(', ')}
+              </Text>
+            ))}
+          </View>
+        </View>
+      )}
+
       {experience && experience.length > 0 && (
         <View style={classicStyles.section}>
           <View
@@ -585,30 +609,6 @@ export const ClassicDocument = ({
             </View>
           );
         })()}
-
-      {skillEntries.length > 0 && (
-        <View style={classicStyles.section} wrap={false}>
-          <View
-            style={classicStyles.sectionTitleRow}
-            minPresenceAhead={MIN_PRESENCE.skills}
-          >
-            <View style={classicStyles.sectionBar} />
-            <Text style={classicStyles.sectionTitle}>Skills</Text>
-          </View>
-          <View style={classicStyles.dividerWrap}>
-            <View style={classicStyles.dividerColored} />
-            <View style={classicStyles.dividerSlate} />
-          </View>
-          <View>
-            {skillEntries.map(([category, values]) => (
-              <Text key={category} style={classicStyles.skillsText}>
-                <Text style={classicStyles.skillCategory}>{category}</Text>:{' '}
-                {values.join(', ')}
-              </Text>
-            ))}
-          </View>
-        </View>
-      )}
 
       <View style={classicStyles.footer} fixed>
         <Text

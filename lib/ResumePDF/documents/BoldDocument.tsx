@@ -187,6 +187,43 @@ export const BoldDocument = ({
           </View>
         )}
 
+        {skillEntries.length > 0 && (
+          <View wrap={false}>
+            <View style={boldStyles.sectionHeader} minPresenceAhead={MIN_PRESENCE.skills}>
+              <View
+                style={[
+                  boldStyles.sectionBar,
+                  { backgroundColor: colors.skills }
+                ]}
+              />
+              <Text style={[boldStyles.sectionTitle, { color: colors.skills }]}>
+                Skills
+              </Text>
+            </View>
+            <View>
+              {skillEntries.map(([category, values]) => (
+                <View key={category} style={{ marginBottom: 8 }}>
+                  <Text
+                    style={[
+                      boldStyles.itemSubtitle,
+                      { color: colors.skills, marginBottom: 4 }
+                    ]}
+                  >
+                    {category}
+                  </Text>
+                  <View style={boldStyles.skillsContainer}>
+                    {values.map((skill, index) => (
+                      <Text key={`${category}-${index}`} style={boldStyles.skillTag}>
+                        {skill}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
         {experience && experience.length > 0 && (
           <>
             <View style={boldStyles.sectionHeader} minPresenceAhead={MIN_PRESENCE.experience}>
@@ -430,43 +467,6 @@ export const BoldDocument = ({
             </>
           );
         })()}
-
-        {skillEntries.length > 0 && (
-          <View wrap={false}>
-            <View style={boldStyles.sectionHeader} minPresenceAhead={MIN_PRESENCE.skills}>
-              <View
-                style={[
-                  boldStyles.sectionBar,
-                  { backgroundColor: colors.skills }
-                ]}
-              />
-              <Text style={[boldStyles.sectionTitle, { color: colors.skills }]}>
-                Skills
-              </Text>
-            </View>
-            <View>
-              {skillEntries.map(([category, values]) => (
-                <View key={category} style={{ marginBottom: 8 }}>
-                  <Text
-                    style={[
-                      boldStyles.itemSubtitle,
-                      { color: colors.skills, marginBottom: 4 }
-                    ]}
-                  >
-                    {category}
-                  </Text>
-                  <View style={boldStyles.skillsContainer}>
-                    {values.map((skill, index) => (
-                      <Text key={`${category}-${index}`} style={boldStyles.skillTag}>
-                        {skill}
-                      </Text>
-                    ))}
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
       </View>
     </Page>
   );
