@@ -502,6 +502,54 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
         </View>
       )}
 
+      {/* Skills Section */}
+      {skillEntries.length > 0 && (
+        <View style={styles.section} wrap={false}>
+          <View
+            style={styles.sectionHeader}
+            minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.skills}
+          >
+            <View
+              style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
+            >
+              <SparklesIcon size={14} color={AESTHETIC_COLORS.primary} />
+            </View>
+            <Text style={styles.sectionTitle}>Skills</Text>
+          </View>
+
+          <View>
+            {skillEntries.map(([category, values]) => (
+              <View key={category} style={{ marginBottom: 8 }}>
+                <Text
+                  style={[
+                    styles.company,
+                    { color: AESTHETIC_COLORS.textPrimary, marginBottom: 4 }
+                  ]}
+                >
+                  {category}
+                </Text>
+                <View style={styles.skillsContainer}>
+                  {values.map((skill, index) => (
+                    <Text
+                      key={`${category}-${index}`}
+                      style={[
+                        styles.skillPill,
+                        {
+                          backgroundColor: AESTHETIC_COLORS.primaryLight,
+                          color: AESTHETIC_COLORS.cardBg
+                        }
+                      ]}
+                    >
+                      {skill}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
       {/* Experience Section with new icons */}
       {experienceGroups.length > 0 && (
         <View style={styles.section}>
@@ -587,54 +635,6 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
               </View>
             </View>
           ))}
-        </View>
-      )}
-
-      {/* Skills Section */}
-      {skillEntries.length > 0 && (
-        <View style={styles.section} wrap={false}>
-          <View
-            style={styles.sectionHeader}
-            minPresenceAhead={SECTION_MIN_PRESENCE_AHEAD.skills}
-          >
-            <View
-              style={[styles.iconBadge, { backgroundColor: AESTHETIC_COLORS.primaryTint }]}
-            >
-              <SparklesIcon size={14} color={AESTHETIC_COLORS.primary} />
-            </View>
-            <Text style={styles.sectionTitle}>Skills</Text>
-          </View>
-
-          <View>
-            {skillEntries.map(([category, values]) => (
-              <View key={category} style={{ marginBottom: 8 }}>
-                <Text
-                  style={[
-                    styles.company,
-                    { color: AESTHETIC_COLORS.textPrimary, marginBottom: 4 }
-                  ]}
-                >
-                  {category}
-                </Text>
-                <View style={styles.skillsContainer}>
-                  {values.map((skill, index) => (
-                    <Text
-                      key={`${category}-${index}`}
-                      style={[
-                        styles.skillPill,
-                        {
-                          backgroundColor: AESTHETIC_COLORS.primaryLight,
-                          color: AESTHETIC_COLORS.cardBg
-                        }
-                      ]}
-                    >
-                      {skill}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-            ))}
-          </View>
         </View>
       )}
 
