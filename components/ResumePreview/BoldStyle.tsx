@@ -54,6 +54,44 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
           </div>
         )}
 
+        {skillEntries.length > 0 && (
+          <div>
+            <h2
+              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
+              style={{ color: palette.skills }}
+            >
+              <div
+                className="h-1 w-8 rounded-full"
+                style={{ backgroundColor: palette.skills }}
+              />
+              Skills
+            </h2>
+            <div className="space-y-2">
+              {skillEntries.map(([category, values]) => (
+                <div key={category}>
+                  <p
+                    className="mb-1 text-[9px] font-bold tracking-wide uppercase"
+                    style={{ color: palette.skills }}
+                  >
+                    {category}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((skill: string, index: number) => (
+                      <span
+                        key={`${category}-${index}`}
+                        className="rounded-full px-3 py-1.5 text-[9px] font-semibold text-white"
+                        style={{ backgroundColor: palette.skills }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {experience && experience.length > 0 && (
           <div>
             <h2
@@ -182,44 +220,6 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
                         </p>
                       )}
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {skillEntries.length > 0 && (
-          <div>
-            <h2
-              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
-              style={{ color: palette.skills }}
-            >
-              <div
-                className="h-1 w-8 rounded-full"
-                style={{ backgroundColor: palette.skills }}
-              />
-              Skills
-            </h2>
-            <div className="space-y-2">
-              {skillEntries.map(([category, values]) => (
-                <div key={category}>
-                  <p
-                    className="mb-1 text-[9px] font-bold tracking-wide uppercase"
-                    style={{ color: palette.skills }}
-                  >
-                    {category}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {values.map((skill: string, index: number) => (
-                      <span
-                        key={`${category}-${index}`}
-                        className="rounded-full px-3 py-1.5 text-[9px] font-semibold text-white"
-                        style={{ backgroundColor: palette.skills }}
-                      >
-                        {skill}
-                      </span>
-                    ))}
                   </div>
                 </div>
               ))}

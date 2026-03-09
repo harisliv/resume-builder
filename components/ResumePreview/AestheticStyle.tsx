@@ -166,6 +166,49 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
           </div>
         )}
 
+        {/* Skills */}
+        {skillEntries.length > 0 && (
+          <div>
+            <div className="mb-3 flex items-center gap-2.5">
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-lg"
+                style={{ backgroundColor: AESTHETIC.primaryTint }}
+              >
+                <Sparkles size={14} color={AESTHETIC.primary} />
+              </div>
+              <h2
+                className="text-[16px] font-semibold"
+                style={{ color: AESTHETIC.textPrimary }}
+              >
+                Skills
+              </h2>
+            </div>
+            <div className="space-y-2">
+              {skillEntries.map(([category, values]) => (
+                <div key={category}>
+                  <p
+                    className="mb-1 text-[10px] font-semibold"
+                    style={{ color: AESTHETIC.textPrimary }}
+                  >
+                    {category}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {values.map((skill: string, index: number) => (
+                      <span
+                        key={`${category}-${index}`}
+                        className="text-accent rounded-full px-3 py-1.5 text-[9px]"
+                        style={{ backgroundColor: AESTHETIC.primaryLight }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Experience */}
         {experience && experience.length > 0 && (
           <div>
@@ -336,49 +379,6 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                         {edu.location}
                       </p>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Skills */}
-        {skillEntries.length > 0 && (
-          <div>
-            <div className="mb-3 flex items-center gap-2.5">
-              <div
-                className="flex h-7 w-7 items-center justify-center rounded-lg"
-                style={{ backgroundColor: AESTHETIC.primaryTint }}
-              >
-                <Sparkles size={14} color={AESTHETIC.primary} />
-              </div>
-              <h2
-                className="text-[16px] font-semibold"
-                style={{ color: AESTHETIC.textPrimary }}
-              >
-                Skills
-              </h2>
-            </div>
-            <div className="space-y-2">
-              {skillEntries.map(([category, values]) => (
-                <div key={category}>
-                  <p
-                    className="mb-1 text-[10px] font-semibold"
-                    style={{ color: AESTHETIC.textPrimary }}
-                  >
-                    {category}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {values.map((skill: string, index: number) => (
-                      <span
-                        key={`${category}-${index}`}
-                        className="text-accent rounded-full px-3 py-1.5 text-[9px]"
-                        style={{ backgroundColor: AESTHETIC.primaryLight }}
-                      >
-                        {skill}
-                      </span>
-                    ))}
                   </div>
                 </div>
               ))}

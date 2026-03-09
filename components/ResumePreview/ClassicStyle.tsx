@@ -107,6 +107,40 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
           </div>
         )}
 
+        {skillEntries.length > 0 && (
+          <div>
+            <div
+              className="mb-1 flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase"
+              style={{ color: palette.summary }}
+            >
+              <div
+                className="rounded-sm"
+                style={{
+                  width: 4,
+                  height: 14,
+                  backgroundColor: palette.summary
+                }}
+              />
+              Skills
+            </div>
+            <div className="mb-2 flex flex-col gap-[2px]">
+              <div
+                className="h-px"
+                style={{ backgroundColor: palette.summary }}
+              />
+              <div className="h-px bg-slate-200" />
+            </div>
+            <div className="space-y-1.5 text-[9px] leading-relaxed text-slate-700">
+              {skillEntries.map(([category, values]) => (
+                <p key={category}>
+                  <span className="font-bold">{category}:</span>{' '}
+                  {values.join(', ')}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
         {experience && experience.length > 0 && (
           <div>
             <div
@@ -333,40 +367,6 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {skillEntries.length > 0 && (
-          <div>
-            <div
-              className="mb-1 flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase"
-              style={{ color: palette.summary }}
-            >
-              <div
-                className="rounded-sm"
-                style={{
-                  width: 4,
-                  height: 14,
-                  backgroundColor: palette.summary
-                }}
-              />
-              Skills
-            </div>
-            <div className="mb-2 flex flex-col gap-[2px]">
-              <div
-                className="h-px"
-                style={{ backgroundColor: palette.summary }}
-              />
-              <div className="h-px bg-slate-200" />
-            </div>
-            <div className="space-y-1.5 text-[9px] leading-relaxed text-slate-700">
-              {skillEntries.map(([category, values]) => (
-                <p key={category}>
-                  <span className="font-bold">{category}:</span>{' '}
-                  {values.join(', ')}
-                </p>
               ))}
             </div>
           </div>
