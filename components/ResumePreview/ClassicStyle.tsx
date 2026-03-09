@@ -10,6 +10,7 @@
 import { Calendar } from 'lucide-react';
 import type { TEducation, TExperience } from '@/types/schema';
 import type { IStyleProps } from './types';
+import { formatPosition } from './formatPosition';
 import { groupExperience } from './groupExperience';
 import { getSkillEntries } from '@/lib/skills';
 
@@ -154,7 +155,10 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                             className="text-[10px] font-semibold"
                             style={{ color: palette.experience }}
                           >
-                            {firstEntry.position}
+                            {formatPosition(
+                              firstEntry.position,
+                              firstEntry.projectName
+                            )}
                           </p>
                         )}
                       </div>
@@ -188,7 +192,7 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                       {firstEntry && (
                         <div>
                           {firstEntry.description && (
-                            <p className="mt-0.5 text-[9px] italic leading-relaxed text-slate-600">
+                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600 italic">
                               {firstEntry.description}
                             </p>
                           )}
@@ -214,12 +218,12 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                             className="text-[10px] font-semibold"
                             style={{ color: palette.experience }}
                           >
-                            {exp.position}
+                            {formatPosition(exp.position, exp.projectName)}
                           </p>
                           {exp.description && (
-<p className="mt-0.5 text-[9px] italic leading-relaxed text-slate-600">
-                            {exp.description}
-                          </p>
+                            <p className="mt-0.5 text-[9px] leading-relaxed text-slate-600 italic">
+                              {exp.description}
+                            </p>
                           )}
                           {exp.highlights && exp.highlights.length > 0 && (
                             <ul className="mt-0.5 space-y-0.5">

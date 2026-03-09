@@ -5,6 +5,7 @@ export type NavSelectorOption<T extends string = string> = {
     id: T;
     label: string;
     description?: string;
+    isDefault?: boolean;
 };
 
 export type NavSelectorName = 'palette' | 'font' | 'style' | 'resume';
