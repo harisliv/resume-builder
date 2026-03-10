@@ -21,6 +21,7 @@ export const parsedResumeSchema = z.object({
     z.object({
       company: z.string(),
       position: z.string(),
+      projectName: z.string(),
       location: z.string(),
       startDate: z.string(),
       endDate: z.string(),
@@ -134,6 +135,7 @@ export function normalizeParsedResume(raw: TParsedResume) {
     },
     experience: raw.experience.map((exp) => ({
       ...exp,
+      projectName: cleanText(exp.projectName),
       location: normalizeLocation(exp.location, personalLocation),
       startDate: normalizeMonthYear(exp.startDate),
       endDate: normalizeExperienceEndDate(exp.endDate, exp.current),

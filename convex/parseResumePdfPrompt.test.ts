@@ -19,6 +19,7 @@ describe('PARSE_SYSTEM_PROMPT', () => {
     expect(PARSE_SYSTEM_PROMPT).toContain('"experience"');
     expect(PARSE_SYSTEM_PROMPT).toContain('"startDate": "Jul 2025"');
     expect(PARSE_SYSTEM_PROMPT).toContain('"location": "Madrid, Spain"');
+    expect(PARSE_SYSTEM_PROMPT).toContain('"projectName": "UNFCCC Initiative Self-Service platform"');
   });
 
   it('documents the form-friendly date and phone formats', () => {

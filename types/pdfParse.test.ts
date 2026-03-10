@@ -20,6 +20,7 @@ function makeParsedResume(overrides?: Partial<TParsedResume>): TParsedResume {
       {
         company: 'NTT DATA Europe & Latam',
         position: 'Software Engineer',
+        projectName: 'UNFCCC Initiative Self-Service platform',
         location: ' ',
         startDate: '2023',
         endDate: 'Current',
@@ -30,6 +31,7 @@ function makeParsedResume(overrides?: Partial<TParsedResume>): TParsedResume {
       {
         company: 'Other Co',
         position: 'Engineer',
+        projectName: '',
         location: ' Lisbon, Portugal ',
         startDate: 'January 2025',
         endDate: 'July 2025',
@@ -77,12 +79,14 @@ describe('normalizeParsedResume', () => {
     expect(normalized.personalInfo.phone).toBe('+34612345678');
     expect(normalized.personalInfo.location).toBe('Madrid, Spain');
     expect(normalized.experience[0]).toMatchObject({
+      projectName: 'UNFCCC Initiative Self-Service platform',
       location: 'Madrid, Spain',
       startDate: 'Jan 2023',
       endDate: '',
       current: true
     });
     expect(normalized.experience[1]).toMatchObject({
+      projectName: '',
       location: 'Lisbon, Portugal',
       startDate: 'Jan 2025',
       endDate: 'Jul 2025',

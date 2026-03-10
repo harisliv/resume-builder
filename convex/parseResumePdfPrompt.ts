@@ -18,6 +18,8 @@ Rules:
 - If the same company contains multiple roles, projects, or dated sub-sections, create a separate experience item for each distinct date range.
 - For each experience item, use the nearest date range for that specific role or project. Do not reuse one outer company date range for all items.
 - When a company heading has an overall date range plus nested dated entries, prefer the nested dates for those separate experience items.
+- If a dated role or project block names a platform, initiative, program, or project, extract its full title into projectName.
+- Use projectName for the project title only, and keep description as the short explanatory summary.
 - If an experience location is missing, copy the best available location from personalInfo.location.
 
 Example input:
@@ -43,31 +45,34 @@ Example output:
     {
       "company": "NTT DATA Europe & Latam",
       "position": "Software Engineer",
+      "projectName": "UNFCCC Initiative Self-Service platform",
       "location": "Madrid, Spain",
       "startDate": "Jul 2025",
       "endDate": "",
       "current": true,
-      "description": "ISS platform",
+      "description": "Project for managing and reporting climate initiatives.",
       "highlights": ["Built a multi-step dynamic form"]
     },
     {
       "company": "NTT DATA Europe & Latam",
       "position": "Software Engineer",
+      "projectName": "Internal Operational Blockchain Services Infrastructure",
       "location": "Madrid, Spain",
       "startDate": "Jan 2025",
       "endDate": "Jul 2025",
       "current": false,
-      "description": "IOBSI",
+      "description": "Enterprise-focused blockchain infrastructure based on EBSI principles.",
       "highlights": ["Engineered smart contracts"]
     },
     {
       "company": "NTT DATA Europe & Latam",
       "position": "Software Engineer",
+      "projectName": "UNFCCC ETF",
       "location": "Madrid, Spain",
       "startDate": "Nov 2023",
       "endDate": "Nov 2024",
       "current": false,
-      "description": "UNFCCC ETF",
+      "description": "Platform for global reporting on greenhouse gas emissions and energy consumption.",
       "highlights": ["Implemented web socket functionality"]
     }
   ],

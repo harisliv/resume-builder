@@ -31,6 +31,7 @@ export const parseResumePdf = action({
       v.object({
         company: v.string(),
         position: v.string(),
+        projectName: v.string(),
         location: v.string(),
         startDate: v.string(),
         endDate: v.string(),

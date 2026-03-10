@@ -32,6 +32,7 @@ The parser also needs to target the form's storage formats, not just human-reada
 - Experience dates should be `MMM yyyy`
 - Year-only experience dates should fall back to `Jan YYYY`
 - Current roles should use `current: true` with `endDate: ""`
+- Named platforms/programs/projects inside experience entries should map to `projectName`
 - Education `graduationDate` should prefer year-only
 - Phone numbers should be E.164 or blank
 
