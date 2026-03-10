@@ -9,7 +9,6 @@ import type { TDialogAction, TDialogState } from '../utils/dialogReducer';
 type TMatchJobTabProps = {
   resumeId: Id<'resumes'>;
   currentData: TResumeForm;
-  isAiImproved: boolean;
   state: TDialogState;
   dispatch: React.Dispatch<TDialogAction>;
   isAdmin: boolean;
@@ -20,11 +19,8 @@ type TMatchJobTabProps = {
   onCreateVersion: () => void;
 };
 
-/**
- * "Match Job" tab — existing JD flow, gated on isAiImproved.
- */
+/** Match Job flow — paste JD, get tailored suggestions for AI-improved resumes. */
 export function MatchJobTab({
-  isAiImproved,
   state,
   dispatch,
   isAdmin,
@@ -35,18 +31,6 @@ export function MatchJobTab({
   onCreateVersion,
   currentData
 }: TMatchJobTabProps) {
-  if (!isAiImproved) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-center text-sm text-muted-foreground">
-        <p className="font-medium">Resume not yet AI-improved</p>
-        <p>
-          Use the &quot;General Improve&quot; tab first to enhance your resume
-          before matching it to a job description.
-        </p>
-      </div>
-    );
-  }
-
   if (state.phase === 'results') {
     return (
       <ResultsPhase

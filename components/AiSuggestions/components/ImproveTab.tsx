@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useReducer } from 'react';
+import { useState, useReducer, useEffect } from 'react';
 import { useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -19,10 +19,11 @@ import usePrivileges from '@/hooks/usePrivileges';
 type TImproveTabProps = {
   resumeId: Id<'resumes'>;
   currentData: TResumeForm;
+  onPhaseChange?: (phase: string) => void;
   onApplyImprovements: (newResumeId: Id<'resumes'>) => void;
 };
 
-type TPhase = 'idle' | 'loading' | 'roast' | 'questions' | 'generating' | 'ready';
+type TPhase = 'idle' | 'loading' | 'roast' | 'questions' | 'confirm-generate' | 'generating' | 'ready';
 
 type TSelectionAction =
   | { type: 'INIT'; payload: TSuggestionSelection }
@@ -70,6 +71,7 @@ const emptySelection: TSuggestionSelection = { summary: false, experience: [], s
 export function ImproveTab({
   resumeId,
   currentData,
+  onPhaseChange,
   onApplyImprovements
 }: TImproveTabProps) {
   const [threadId, setThreadId] = useState<Id<'aiThreads'> | null>(null);
@@ -85,6 +87,11 @@ export function ImproveTab({
   const [newTitle, setNewTitle] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const { isAdmin } = usePrivileges();
+
+  /** Notify parent of phase changes for token-loss warnings. */
+  useEffect(() => {
+    onPhaseChange?.(phase);
+  }, [phase, onPhaseChange]);
 
   const createThread = useMutation(api.aiImprove.createThread);
   const sendUserMessage = useMutation(api.aiImprove.sendUserMessage);
@@ -115,8 +122,12 @@ export function ImproveTab({
       setTotalCost(result.cost ?? 0);
       if (result.structuredPayload) {
         setRoastItems(result.structuredPayload.roastItems ?? []);
-        setQuestions(result.structuredPayload.questions ?? []);
-        setAnswers(new Array(result.structuredPayload.questions?.length ?? 0).fill(''));
+        const rawQs = result.structuredPayload.questions ?? [];
+        const normalizedQs = rawQs.map((q) =>
+          typeof q === 'string' ? { question: q, context: '' } : q
+        );
+        setQuestions(normalizedQs);
+        setAnswers(new Array(normalizedQs.length).fill(''));
       }
       setPhase('roast');
     } catch {
@@ -131,52 +142,68 @@ export function ImproveTab({
     setPhase('questions');
   };
 
-  /** Advance to next question or generate patch if all answered. */
-  const advanceOrGenerate = async (updatedAnswers: string[]) => {
+  /** Advance to next question or move to confirmation step. */
+  const advanceOrConfirm = (updatedAnswers: string[]) => {
     setCurrentAnswer('');
     if (currentQuestionIdx < questions.length - 1) {
       setCurrentQuestionIdx(currentQuestionIdx + 1);
     } else {
-      if (!threadId) return;
-      setPhase('generating');
-      try {
-        const answersText = questions
-          .map((q, i) => `Q: ${q.question}\nA: ${updatedAnswers[i] || 'No changes needed, leave as is.'}`)
-          .join('\n\n');
-        await sendUserMessage({ threadId, content: answersText });
-        const result = await generateTurn({ threadId });
-        setTotalCost((prev) => prev + (result.cost ?? 0));
-        if (result.structuredPayload?.resumePatch) {
-          setRawPatch(result.structuredPayload.resumePatch);
-          const parsed = parsePatch(result.structuredPayload.resumePatch);
-          if (parsed) {
-            setSuggestions(parsed);
-            dispatchSelection({ type: 'INIT', payload: createDefaultSelection(parsed) });
-          }
+      setAnswers(updatedAnswers);
+      setPhase('confirm-generate');
+    }
+  };
+
+  /** Generate improvements after user confirms. */
+  const handleGenerate = async () => {
+    if (!threadId) return;
+    setPhase('generating');
+    try {
+      const answersText = questions
+        .map((q, i) => `Q: ${q.question}\nA: ${answers[i] || 'No changes needed, leave as is.'}`)
+        .join('\n\n');
+      await sendUserMessage({ threadId, content: answersText });
+      const result = await generateTurn({ threadId });
+      setTotalCost((prev) => prev + (result.cost ?? 0));
+      if (result.structuredPayload?.resumePatch) {
+        setRawPatch(result.structuredPayload.resumePatch);
+        const parsed = parsePatch(result.structuredPayload.resumePatch);
+        if (parsed) {
+          setSuggestions(parsed);
+          dispatchSelection({ type: 'INIT', payload: createDefaultSelection(parsed) });
         }
-        setPhase('ready');
-      } catch {
-        toast.error('Failed to generate improvements');
-        setPhase('questions');
       }
+      setPhase('ready');
+    } catch {
+      toast.error('Failed to generate improvements');
+      setPhase('confirm-generate');
     }
   };
 
   /** Submit current answer and advance. */
-  const handleNextQuestion = async () => {
+  const handleNextQuestion = () => {
     if (!currentAnswer.trim()) return;
     const newAnswers = [...answers];
     newAnswers[currentQuestionIdx] = currentAnswer.trim();
     setAnswers(newAnswers);
-    await advanceOrGenerate(newAnswers);
+    advanceOrConfirm(newAnswers);
+  };
+
+  /** Go back to previous question, saving current answer. */
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIdx === 0) return;
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIdx] = currentAnswer.trim();
+    setAnswers(newAnswers);
+    setCurrentAnswer(answers[currentQuestionIdx - 1] ?? '');
+    setCurrentQuestionIdx(currentQuestionIdx - 1);
   };
 
   /** Skip question — leave section unchanged. */
-  const handleSkipQuestion = async () => {
+  const handleSkipQuestion = () => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIdx] = '';
     setAnswers(newAnswers);
-    await advanceOrGenerate(newAnswers);
+    advanceOrConfirm(newAnswers);
   };
 
   /** Create new AI-improved resume with selected improvements. */
@@ -261,13 +288,13 @@ export function ImproveTab({
           <div className="text-center text-xs text-muted-foreground">
             {currentQuestionIdx + 1} of {questions.length}
           </div>
-          {questions[currentQuestionIdx].context && (
+          {questions[currentQuestionIdx]?.context && (
             <blockquote className="border-l-2 border-muted-foreground/30 pl-3 text-xs text-muted-foreground italic">
               {questions[currentQuestionIdx].context}
             </blockquote>
           )}
           <div className="rounded-lg bg-muted p-3 text-sm">
-            {questions[currentQuestionIdx].question}
+            {questions[currentQuestionIdx]?.question || 'No question text available'}
           </div>
           <Textarea
             value={currentAnswer}
@@ -283,9 +310,20 @@ export function ImproveTab({
             }}
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {currentAnswer.length}/500
-            </span>
+            <div className="flex items-center gap-2">
+              {currentQuestionIdx > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handlePreviousQuestion}
+                >
+                  Previous
+                </Button>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {currentAnswer.length}/500
+              </span>
+            </div>
             <div className="flex gap-2">
               <Button
                 size="sm"
@@ -304,6 +342,30 @@ export function ImproveTab({
                   : 'Get Improvements'}
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm before generating */}
+      {phase === 'confirm-generate' && (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            All {questions.length} questions answered. Ready to generate improvements?
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setCurrentAnswer(answers[questions.length - 1] ?? '');
+                setCurrentQuestionIdx(questions.length - 1);
+                setPhase('questions');
+              }}
+            >
+              Review Answers
+            </Button>
+            <Button onClick={handleGenerate}>
+              Get Improvements
+            </Button>
           </div>
         </div>
       )}

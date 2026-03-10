@@ -243,6 +243,7 @@ export default function Home() {
   const handleImproveApplied = (newResumeId: Id<'resumes'>) => {
     setSelectedResumeId(newResumeId);
     void queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
+    void queryClient.invalidateQueries({ queryKey: ['resume'] });
   };
 
   const handleCreateNewVersion = (suggestions: TAiSuggestions) => {

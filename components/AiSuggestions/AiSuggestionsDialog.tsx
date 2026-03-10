@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -11,7 +11,6 @@ import {
   DialogDescription,
   DialogHeader
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import usePrivileges from '@/hooks/usePrivileges';
@@ -37,7 +36,8 @@ type TAiSuggestionsDialogProps = {
 };
 
 /**
- * Two-mode AI dialog: "General Improve" (chat) and "Match Job" (JD-based).
+ * AI dialog that auto-selects flow based on resume type.
+ * Not AI-improved → Improve flow. AI-improved → Match Job flow.
  */
 export function AiSuggestionsDialog({
   open,
@@ -49,10 +49,31 @@ export function AiSuggestionsDialog({
   onCreateNewVersion,
   onImproveApplied
 }: TAiSuggestionsDialogProps) {
+  console.log('🚀 ~ isAiImproved:', isAiImproved);
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
-  const [activeTab, setActiveTab] = useState<'improve' | 'match'>('improve');
+  const [improveHasTokens, setImproveHasTokens] = useState(false);
   const { isAdmin } = usePrivileges();
   const confirm = useWarningDialog();
+
+  /** True when either flow has consumed AI tokens. */
+  const hasConsumedTokens = isAiImproved
+    ? state.phase === 'results'
+    : improveHasTokens;
+
+  /** Callback for ImproveTab to signal token consumption. */
+  const handleImprovePhaseChange = useCallback((phase: string) => {
+    setImproveHasTokens(phase !== 'idle');
+  }, []);
+
+  /** Warn on page leave/refresh when tokens consumed. */
+  useEffect(() => {
+    if (!open || !hasConsumedTokens) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [open, hasConsumedTokens]);
   const generateSuggestions = useAction(
     api.aiSuggestions.generateResumeSuggestions
   );
@@ -156,20 +177,22 @@ export function AiSuggestionsDialog({
 
   const handleOpenChange = (next: boolean) => {
     if (!next) {
-      if (state.phase === 'results') {
+      if (hasConsumedTokens) {
         void (async () => {
           const ok = await confirmLoseResults(
-            'Close suggestions?',
-            'You have unapplied AI suggestions. Closing now will discard them.',
-            'Close'
+            'Close AI Assistant?',
+            "AI tokens have already been used in this session. Closing now means those tokens are lost and you'll need to start over.",
+            'Close anyway'
           );
           if (!ok) return;
           dispatch({ type: 'RESET' });
+          setImproveHasTokens(false);
           onOpenChange(false);
         })();
         return;
       }
       dispatch({ type: 'RESET' });
+      setImproveHasTokens(false);
       onOpenChange(false);
       return;
     }
@@ -178,43 +201,23 @@ export function AiSuggestionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContentWrapper>
+      <DialogContentWrapper preventClose={hasConsumedTokens}>
         <DialogHeader>
           <DialogTitleRow>
             <Sparkles className="size-4" />
             AI Resume Assistant
           </DialogTitleRow>
           <DialogDescription>
-            Improve your resume or tailor it to a specific job.
+            {isAiImproved
+              ? 'Tailor your AI-improved resume to a specific job.'
+              : 'Get a brutally honest review and improve your resume with AI.'}
           </DialogDescription>
         </DialogHeader>
-        <Tabs
-          value={activeTab}
-          onValueChange={(v) => setActiveTab(v as 'improve' | 'match')}
-          className="flex min-h-0 flex-1 flex-col"
-        >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="improve">General Improve</TabsTrigger>
-            <TabsTrigger value="match">Match Job</TabsTrigger>
-          </TabsList>
-          <TabsContent
-            value="improve"
-            className="mt-3 flex-1 overflow-hidden"
-          >
-            <ImproveTab
-              resumeId={resumeId}
-              currentData={currentData}
-              onApplyImprovements={(newResumeId) => {
-                onImproveApplied(newResumeId);
-                onOpenChange(false);
-              }}
-            />
-          </TabsContent>
-          <TabsContent value="match" className="mt-3 flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col">
+          {isAiImproved ? (
             <MatchJobTab
               resumeId={resumeId}
               currentData={currentData}
-              isAiImproved={isAiImproved}
               state={state}
               dispatch={dispatch}
               isAdmin={isAdmin}
@@ -224,8 +227,19 @@ export function AiSuggestionsDialog({
               onApply={handleApply}
               onCreateVersion={handleCreateVersion}
             />
-          </TabsContent>
-        </Tabs>
+          ) : (
+            <ImproveTab
+              resumeId={resumeId}
+              currentData={currentData}
+              onPhaseChange={handleImprovePhaseChange}
+              onApplyImprovements={(newResumeId) => {
+                setImproveHasTokens(false);
+                onImproveApplied(newResumeId);
+                onOpenChange(false);
+              }}
+            />
+          )}
+        </div>
       </DialogContentWrapper>
     </Dialog>
   );

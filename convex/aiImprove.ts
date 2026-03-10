@@ -5,7 +5,7 @@ import { getAuthenticatedUser } from './auth';
 const structuredPayloadValidator = v.optional(
   v.object({
     roastItems: v.optional(v.array(v.string())),
-    questions: v.optional(v.array(v.object({ question: v.string(), context: v.string() }))),
+    questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
     resumePatch: v.optional(v.string()),
     isReadyToApply: v.optional(v.boolean())
   })

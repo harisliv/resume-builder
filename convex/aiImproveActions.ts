@@ -12,7 +12,7 @@ import { SYSTEM_PROMPT_ROAST, SYSTEM_PROMPT_APPLY } from './systemPrompts';
 const structuredPayloadValidator = v.optional(
   v.object({
     roastItems: v.optional(v.array(v.string())),
-    questions: v.optional(v.array(v.object({ question: v.string(), context: v.string() }))),
+    questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
     resumePatch: v.optional(v.string()),
     isReadyToApply: v.optional(v.boolean())
   })
@@ -112,9 +112,13 @@ export const generateAssistantTurn = action({
         structuredPayload = {
           roastItems: Array.isArray(parsed.roastItems) ? parsed.roastItems : undefined,
           questions: Array.isArray(parsed.questions)
-            ? parsed.questions.map((q: { question: string; context: string } | string) =>
-                typeof q === 'string' ? { question: q, context: '' } : q
-              )
+            ? parsed.questions.map((q: Record<string, string> | string) => {
+                if (typeof q === 'string') return { question: q, context: '' };
+                return {
+                  question: q.question ?? q.text ?? q.q ?? '',
+                  context: q.context ?? q.resume_line ?? q.c ?? ''
+                };
+              })
             : undefined,
           resumePatch: parsed.resumePatch
             ? (typeof parsed.resumePatch === 'string' ? parsed.resumePatch : JSON.stringify(parsed.resumePatch))
