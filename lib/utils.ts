@@ -34,13 +34,15 @@ export const convertConvexIdToId = (
     experience,
     education,
     skills,
-    documentStyle
+    documentStyle,
+    isAiImproved
   } = data;
   return {
     id: _id,
     userId,
     title: title ?? resumeInfoDefaultValues.title,
     documentStyle: documentStyle ?? resumeInfoDefaultValues.documentStyle,
+    isAiImproved: isAiImproved ?? false,
     personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
     experience: experience ?? resumeFormDefaultValues.experience,
     education: education ?? resumeFormDefaultValues.education,

@@ -39,7 +39,9 @@ WorkOS AuthKit handles authentication via middleware (`proxy.ts`).
   - `ControlledFields/`: Form field wrappers (ControlledInput, ControlledSelect, ControlledTextarea, etc.)
   - `Home/`: Home page component
   - `PdfViewer/`: PDF viewer components
-  - `AiSuggestionsDialog/`: AI resume suggestions dialog (job description → suggested changes)
+  - `AiSuggestions/`: AI resume assistant dialog (2 modes: General Improve chat + Match Job JD flow)
+    - `components/ImproveTab.tsx`: Thread-based chat for resume improvement
+    - `components/MatchJobTab.tsx`: JD-based tailored suggestions (gated on isAiImproved)
   - `ResumeForm/`: Form sections and fields
     - `components/`: Form section components (PersonalInfo, Experience, Education, Skills)
       - `UI/`: section-accordion (shared by Experience, Education, Skills)
@@ -52,6 +54,8 @@ WorkOS AuthKit handles authentication via middleware (`proxy.ts`).
 - **`types/`**: TypeScript types and Zod schemas
 - **`convex/`**: Backend functions, schema, validators
   - `suggestResumeChanges.ts`: Action using AI (Gemini) to suggest resume changes from job description
+  - `aiImprove.ts`: Thread CRUD, apply mutations for AI improve flow
+  - `aiImproveActions.ts`: Assistant generation action for AI improve flow (Node.js runtime)
 - **`lib/ResumePDF/`**: PDF generation logic
   - `components/`: PDF component building blocks
   - `documents/`: PDF document templates

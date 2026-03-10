@@ -18,6 +18,7 @@ import { PdfUploadDialog } from '@/components/PdfUpload/PdfUploadDialog';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { useDeleteResume } from '@/hooks/useDeleteResume';
+import { useQueryClient } from '@tanstack/react-query';
 import { AppSidebar } from '@/components/AppSidebar';
 import ResumeForm from '@/components/ResumeForm';
 import { ResumePreviewWrapper } from '@/components/ResumePreview';
@@ -38,7 +39,9 @@ function HomeContent({
   handleSubmit,
   isPending,
   handleApplySuggestions,
-  handleCreateNewVersion
+  handleCreateNewVersion,
+  isAiImproved,
+  handleImproveApplied
 }: {
   mobileTab: 'form' | 'preview';
   setMobileTab: (v: 'form' | 'preview') => void;
@@ -49,6 +52,8 @@ function HomeContent({
   isPending: boolean;
   handleApplySuggestions: (suggestions: TAiSuggestions) => void;
   handleCreateNewVersion: (suggestions: TAiSuggestions) => void;
+  isAiImproved: boolean;
+  handleImproveApplied: (newResumeId: Id<'resumes'>) => void;
 }) {
   const showTabs = useShowTabs();
 
@@ -74,8 +79,10 @@ function HomeContent({
                     onSubmit={handleSubmit}
                     isPending={isPending}
                     resumeId={selectedResumeId}
+                    isAiImproved={isAiImproved}
                     onApplySuggestions={handleApplySuggestions}
                     onCreateNewVersion={handleCreateNewVersion}
+                    onImproveApplied={handleImproveApplied}
                   />
                 </FormProvider>
               </TabsContent>
@@ -143,6 +150,7 @@ export default function Home() {
 
   const { mutate: submitResume, isPending } = useResumeSubmit();
   const { mutate: deleteResume } = useDeleteResume();
+  const queryClient = useQueryClient();
 
   const handleResumeSelect = (id: string) => {
     setSelectedResumeId(id as Id<'resumes'>);
@@ -253,6 +261,13 @@ export default function Home() {
     );
   };
 
+  /** Select the newly created AI resume and refresh the dropdown. */
+  const handleImproveApplied = (newResumeId: Id<'resumes'>) => {
+    setSelectedResumeId(newResumeId);
+    void queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
+    void queryClient.invalidateQueries({ queryKey: ['resume'] });
+  };
+
   const handleCreateNewVersion = (suggestions: TAiSuggestions) => {
     const infoData = infoForm.getValues();
     const mergedForm = mergeSuggestions(suggestions);
@@ -298,6 +313,8 @@ export default function Home() {
           isPending={isPending}
           handleApplySuggestions={handleApplySuggestions}
           handleCreateNewVersion={handleCreateNewVersion}
+          isAiImproved={infoForm.watch('isAiImproved') ?? false}
+          handleImproveApplied={handleImproveApplied}
         />
       </SidebarInset>
     </SidebarProvider>

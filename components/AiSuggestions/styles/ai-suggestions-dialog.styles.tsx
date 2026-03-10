@@ -2,13 +2,18 @@ import type { ComponentProps } from 'react';
 import { DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
+/** Dialog content wrapper. Pass `preventClose` to block overlay/escape dismissal. */
 export function DialogContentWrapper({
   className,
+  preventClose,
   ...props
-}: ComponentProps<typeof DialogContent>) {
+}: ComponentProps<typeof DialogContent> & { preventClose?: boolean }) {
   return (
     <DialogContent
       className={cn('sm:max-w-5xl max-h-[90vh] flex flex-col overflow-hidden', className)}
+      onInteractOutside={preventClose ? (e) => e.preventDefault() : undefined}
+      onEscapeKeyDown={preventClose ? (e) => e.preventDefault() : undefined}
+      showCloseButton
       {...props}
     />
   );

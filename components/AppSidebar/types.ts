@@ -6,6 +6,7 @@ export type NavSelectorOption<T extends string = string> = {
     label: string;
     description?: string;
     isDefault?: boolean;
+    isAiImproved?: boolean;
 };
 
 export type NavSelectorName = 'palette' | 'font' | 'style' | 'resume';

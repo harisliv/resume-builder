@@ -40,6 +40,7 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
       userId,
       title,
       documentStyle,
+      isAiImproved,
       personalInfo,
       experience,
       education,
@@ -50,7 +51,8 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
         id,
         userId,
         title: title ?? '',
-        documentStyle: documentStyle ?? resumeInfoDefaultValues.documentStyle
+        documentStyle: documentStyle ?? resumeInfoDefaultValues.documentStyle,
+        isAiImproved: isAiImproved ?? false
       },
       form: {
         personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,

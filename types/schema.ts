@@ -59,7 +59,8 @@ export const resumeInfoSchema = z.object({
   id: resumeIdSchema.optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required').max(100, 'Max 100 chars'),
-  documentStyle: documentStyleSchema
+  documentStyle: documentStyleSchema,
+  isAiImproved: z.boolean().optional()
 });
 
 export const skillsSchema = z.object({
@@ -113,7 +114,8 @@ export const resumeInfoDefaultValues = {
     palette: 'aesthetic' as const,
     font: 'inter' as const,
     style: 'modern' as const
-  }
+  },
+  isAiImproved: false
 };
 
 export const resumeFormDefaultValues = {
