@@ -1,5 +1,5 @@
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { internalQuery, mutation, query } from './_generated/server';
 
 const typeValidator = v.union(v.literal('prompt'), v.literal('rule'));
 
@@ -8,7 +8,8 @@ const rowValidator = v.object({
   _creationTime: v.number(),
   name: v.string(),
   content: v.string(),
-  type: typeValidator
+  type: typeValidator,
+  isDefault: v.optional(v.boolean())
 });
 
 /** Lists system prompts/rules filtered by type. Rows without type default to 'prompt'. */
@@ -23,20 +24,20 @@ export const list = query({
   }
 });
 
-/** Creates a new system prompt or rule. */
-export const create = mutation({
+/** Creates a new prompt/rule from an admin edit. Never sets isDefault. */
+export const createFromEdit = mutation({
   args: { name: v.string(), content: v.string(), type: typeValidator },
   returns: v.id('systemPrompts'),
-  handler: async (ctx, args) => {
-    return ctx.db.insert('systemPrompts', args);
-  }
+  handler: async (ctx, args) => ctx.db.insert('systemPrompts', { ...args, isDefault: false })
 });
 
-/** Updates an existing system prompt or rule. */
-export const update = mutation({
-  args: { id: v.id('systemPrompts'), name: v.string(), content: v.string() },
-  returns: v.null(),
+/** Internal query for default prompt/rule (used by actions). */
+export const getDefaultInternal = internalQuery({
+  args: { type: typeValidator },
+  returns: v.union(rowValidator, v.null()),
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { name: args.name, content: args.content });
+    const all = await ctx.db.query('systemPrompts').collect();
+    const normalized = all.map((r) => ({ ...r, type: r.type ?? ('prompt' as const) }));
+    return normalized.find((r) => r.type === args.type && r.isDefault) ?? null;
   }
 });
