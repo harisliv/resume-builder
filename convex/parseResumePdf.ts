@@ -6,18 +6,7 @@ import { v } from 'convex/values';
 import { parsedResumeSchema } from '../types/pdfParse';
 import { action } from './_generated/server';
 import { getAuthenticatedUser } from './auth';
-
-const PARSE_SYSTEM_PROMPT = `You are a resume parser. Extract structured data from the raw text of a PDF resume.
-
-Rules:
-- Extract ALL information faithfully. Do not invent or embellish.
-- For dates, use formats like "Jan 2023", "2023", "Present", etc.
-- Set "current" to true if the experience has no end date or says "Present".
-- Group skills into logical categories (e.g., "Programming Languages", "Tools", "Soft Skills").
-- If a field is not found in the text, return an empty string "" for it. Never return null.
-- For highlights, extract bullet points or key achievements from each experience.
-- Generate a short descriptive title from the person's name or most recent role.
-- Parse phone numbers as-is from the document.`;
+import { PARSE_SYSTEM_PROMPT } from './parseResumePdfPrompt';
 
 /**
  * Parses raw PDF text into structured resume data using AI.

@@ -24,6 +24,17 @@ Created `convex/formatResumePrompt.ts` — a utility that converts raw resume da
 - `(none)` sentinel for empty fields instead of JSON null/undefined
 - Skills as readable `Category: item1, item2` instead of nested objects
 
+### 2.1 Resume Parse Edge Case
+
+For raw PDF resume parsing, prompts need an explicit rule for nested experience blocks under one employer. If one company heading contains multiple dated projects/roles, the model should split them into separate `experience` items, use the nearest date range for each item, and fall back to `personalInfo.location` when an item has no explicit location.
+
+The parser also needs to target the form's storage formats, not just human-readable text:
+- Experience dates should be `MMM yyyy`
+- Year-only experience dates should fall back to `Jan YYYY`
+- Current roles should use `current: true` with `endDate: ""`
+- Education `graduationDate` should prefer year-only
+- Phone numbers should be E.164 or blank
+
 ### 3. (Future) Tool-Call Pattern
 
 ResumeLM (open-source competitor) uses per-section tool calls instead of a single JSON output. This enforces required fields per tool and eliminates nullable ambiguity. Bigger refactor — not implemented yet.
