@@ -9,6 +9,8 @@
  */
 
 import type * as aiAttempts from "../aiAttempts.js";
+import type * as aiImprove from "../aiImprove.js";
+import type * as aiImproveActions from "../aiImproveActions.js";
 import type * as aiSuggestions from "../aiSuggestions.js";
 import type * as auth from "../auth.js";
 import type * as formatResumePrompt from "../formatResumePrompt.js";
@@ -32,6 +34,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
+  aiImprove: typeof aiImprove;
+  aiImproveActions: typeof aiImproveActions;
   aiSuggestions: typeof aiSuggestions;
   auth: typeof auth;
   formatResumePrompt: typeof formatResumePrompt;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogHeader
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import usePrivileges from '@/hooks/usePrivileges';
@@ -21,31 +22,35 @@ import {
 } from './styles/ai-suggestions-dialog.styles';
 import { buildFilteredSuggestions } from './utils/filterSuggestions';
 import { dialogReducer, initialDialogState } from './utils/dialogReducer';
-import { InputPhase } from './components/InputPhase';
-import { ResultsPhase } from './components/ResultsPhase';
+import { ImproveTab } from './components/ImproveTab';
+import { MatchJobTab } from './components/MatchJobTab';
 
 type TAiSuggestionsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resumeId: Id<'resumes'>;
   currentData: TResumeForm;
+  isAiImproved: boolean;
   onApply: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion: (suggestions: TAiSuggestions) => void;
+  onImproveApplied: (newResumeId: Id<'resumes'>) => void;
 };
 
 /**
- * Dialog for generating AI resume suggestions with selective acceptance.
- * Delegates phase rendering to InputPhase and ResultsPhase components.
+ * Two-mode AI dialog: "General Improve" (chat) and "Match Job" (JD-based).
  */
 export function AiSuggestionsDialog({
   open,
   onOpenChange,
   resumeId,
   currentData,
+  isAiImproved,
   onApply,
-  onCreateNewVersion
+  onCreateNewVersion,
+  onImproveApplied
 }: TAiSuggestionsDialogProps) {
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
+  const [activeTab, setActiveTab] = useState<'improve' | 'match'>('improve');
   const { isAdmin } = usePrivileges();
   const confirm = useWarningDialog();
   const generateSuggestions = useAction(
@@ -57,17 +62,13 @@ export function AiSuggestionsDialog({
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'GENERATE_START' });
     try {
-      const result = await generateSuggestions({
-        resumeId,
-        jobDescription
-      });
+      const result = await generateSuggestions({ resumeId, jobDescription });
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch (e) {
-      const msg = 'Failed to generate suggestions';
-      toast.error(msg);
+    } catch {
+      toast.error('Failed to generate suggestions');
       dispatch({ type: 'GENERATE_ERROR' });
     }
   };
@@ -95,7 +96,6 @@ export function AiSuggestionsDialog({
     dispatch({ type: 'BACK' });
   };
 
-  /** Re-runs generation from results using the same job description prompt. */
   const handleRegenerate = async () => {
     if (state.phase !== 'results' || !state.jobDescription.trim()) return;
     const ok = await confirmLoseResults(
@@ -104,22 +104,20 @@ export function AiSuggestionsDialog({
       'Regenerate'
     );
     if (!ok) return;
-
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'REGENERATE_START' });
     try {
-      const result = await generateSuggestions({
-        resumeId,
-        jobDescription
-      });
+      const result = await generateSuggestions({ resumeId, jobDescription });
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch (e) {
-      const msg = 'Failed to generate suggestions';
-      toast.error(msg);
-      dispatch({ type: 'REGENERATE_ERROR', payload: msg });
+    } catch {
+      toast.error('Failed to generate suggestions');
+      dispatch({
+        type: 'REGENERATE_ERROR',
+        payload: 'Failed to generate suggestions'
+      });
     }
   };
 
@@ -171,12 +169,10 @@ export function AiSuggestionsDialog({
         })();
         return;
       }
-
       dispatch({ type: 'RESET' });
       onOpenChange(false);
       return;
     }
-
     onOpenChange(true);
   };
 
@@ -186,33 +182,50 @@ export function AiSuggestionsDialog({
         <DialogHeader>
           <DialogTitleRow>
             <Sparkles className="size-4" />
-            AI Resume Suggestions
+            AI Resume Assistant
           </DialogTitleRow>
           <DialogDescription>
-            Paste a job description to get tailored suggestions for your resume.
+            Improve your resume or tailor it to a specific job.
           </DialogDescription>
         </DialogHeader>
-        {state.phase === 'results' ? (
-          <ResultsPhase
-            result={state.result}
-            currentData={currentData}
-            jobDescription={state.jobDescription}
-            dispatch={dispatch}
-            isAdmin={isAdmin}
-            isRegenerating={state.isRegenerating}
-            onBack={handleBack}
-            onRegenerate={handleRegenerate}
-            onApply={handleApply}
-            onCreateVersion={handleCreateVersion}
-          />
-        ) : (
-          <InputPhase
-            jobDescription={state.jobDescription}
-            isGenerating={state.phase === 'generating'}
-            dispatch={dispatch}
-            onGenerate={handleGenerate}
-          />
-        )}
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as 'improve' | 'match')}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="improve">General Improve</TabsTrigger>
+            <TabsTrigger value="match">Match Job</TabsTrigger>
+          </TabsList>
+          <TabsContent
+            value="improve"
+            className="mt-3 flex-1 overflow-hidden"
+          >
+            <ImproveTab
+              resumeId={resumeId}
+              currentData={currentData}
+              onApplyImprovements={(newResumeId) => {
+                onImproveApplied(newResumeId);
+                onOpenChange(false);
+              }}
+            />
+          </TabsContent>
+          <TabsContent value="match" className="mt-3 flex-1 overflow-hidden">
+            <MatchJobTab
+              resumeId={resumeId}
+              currentData={currentData}
+              isAiImproved={isAiImproved}
+              state={state}
+              dispatch={dispatch}
+              isAdmin={isAdmin}
+              onGenerate={handleGenerate}
+              onBack={handleBack}
+              onRegenerate={handleRegenerate}
+              onApply={handleApply}
+              onCreateVersion={handleCreateVersion}
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContentWrapper>
     </Dialog>
   );

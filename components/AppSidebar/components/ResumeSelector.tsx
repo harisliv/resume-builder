@@ -68,7 +68,8 @@ export function ResumeSelector({
       resumeTitles?.map((r) => ({
         id: r.id,
         label: r.title,
-        isDefault: r.isDefault
+        isDefault: r.isDefault,
+        isAiImproved: r.isAiImproved
       })) ?? [],
     [resumeTitles]
   );

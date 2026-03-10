@@ -83,7 +83,7 @@ export const updateResume = mutation({
       throw new Error('Unauthorized: Resume does not belong to user');
     }
     const { id, ...updates } = args;
-    await ctx.db.replace(id, { userId, ...updates });
+    await ctx.db.replace(id, { userId, ...updates, isAiImproved: resume.isAiImproved });
     return null;
   }
 });
@@ -189,7 +189,8 @@ export const listResumeTitles = query({
     v.object({
       _id: v.id('resumes'),
       title: v.string(),
-      isDefault: v.optional(v.boolean())
+      isDefault: v.optional(v.boolean()),
+      isAiImproved: v.optional(v.boolean())
     })
   ),
   handler: async (ctx) => {
@@ -201,7 +202,8 @@ export const listResumeTitles = query({
     return resumes.map((resume) => ({
       _id: resume._id,
       title: resume.title,
-      isDefault: resume.isDefault
+      isDefault: resume.isDefault,
+      isAiImproved: resume.isAiImproved
     }));
   }
 });
