@@ -1,6 +1,13 @@
 import { useCallback } from 'react';
 import { useAuth } from '@workos-inc/authkit-nextjs/components';
 
+/** Max resumes per role. */
+const RESUME_LIMITS: Record<string, number> = {
+  member: 1,
+  basic: 20,
+  admin: Infinity
+};
+
 /** Returns auth state and a tooltip helper for gated buttons. */
 export default function usePrivileges() {
   const { user, role } = useAuth();
@@ -9,6 +16,7 @@ export default function usePrivileges() {
   const isMember = !isLoggedIn || role === 'member';
   const isBasic = role === 'basic';
   const isAdmin = role === 'admin';
+  const resumeLimit = RESUME_LIMITS[role ?? 'member'] ?? 1;
 
   /** Returns a disabled-reason tooltip, or `null` if the button should be enabled. */
   const getDisabledTooltip = useCallback(
@@ -21,5 +29,5 @@ export default function usePrivileges() {
     [isLoggedIn, isMember]
   );
 
-  return { isLoggedIn, isMember, isBasic, isAdmin, getDisabledTooltip };
+  return { isLoggedIn, isMember, isBasic, isAdmin, resumeLimit, getDisabledTooltip };
 }

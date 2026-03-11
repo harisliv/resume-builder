@@ -30,15 +30,20 @@ export function NavSelector<T extends string = string>({
   disabled = false,
   disabledTooltip,
   loading = false,
+  labelSuffix,
+  open: controlledOpen,
+  onOpenChange,
   dropdownHeader,
   renderOptionContent
 }: NavSelectorProps<T>) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const dropdownOpen = controlledOpen ?? internalOpen;
+  const setDropdownOpen = onOpenChange ?? setInternalOpen;
   const { isMobile, isCollapsed, setOpen } = useSidebar();
   const { label, tooltip, OptionIcon } = NAV_SELECTOR_VARIANTS[name];
 
   /** Stable callback to close the dropdown programmatically. */
-  const closeDropdown = useCallback(() => setDropdownOpen(false), []);
+  const closeDropdown = useCallback(() => setDropdownOpen(false), [setDropdownOpen]);
 
   const handleCollapsedClick = (e: MouseEvent) => {
     if (isCollapsed) {
@@ -103,7 +108,14 @@ export function NavSelector<T extends string = string>({
             {typeof dropdownHeader === 'function'
               ? dropdownHeader(closeDropdown)
               : dropdownHeader}
-            <DropdownMenuLabel>{label}</DropdownMenuLabel>
+            <DropdownMenuLabel className="flex items-center justify-between">
+              {label}
+              {labelSuffix && (
+                <span className="text-muted-foreground text-xs font-medium">
+                  {labelSuffix}
+                </span>
+              )}
+            </DropdownMenuLabel>
             <DropdownMenuRadioGroup
               value={value}
               onValueChange={(v) => {

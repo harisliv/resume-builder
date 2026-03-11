@@ -1,17 +1,17 @@
 'use node';
 
-import { v } from 'convex/values';
-import { action } from './_generated/server';
-import { internal } from './_generated/api';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
+import { v } from 'convex/values';
+import { internal } from './_generated/api';
+import { action } from './_generated/server';
+import { buildMockImproveTurn, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { formatResumePrompt } from './formatResumePrompt';
-import { SYSTEM_PROMPT_ROAST, SYSTEM_PROMPT_APPLY } from './systemPrompts';
+import { SYSTEM_PROMPT_APPLY, SYSTEM_PROMPT_QUESTIONS } from './systemPrompts';
 
 const structuredPayloadValidator = v.optional(
   v.object({
-    roastItems: v.optional(v.array(v.string())),
     questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
     resumePatch: v.optional(v.string()),
     isReadyToApply: v.optional(v.boolean())
@@ -28,8 +28,9 @@ export const generateAssistantTurn = action({
   }),
   handler: async (ctx, { threadId }) => {
     const userId = await getAuthenticatedUser(ctx);
+    const mockAiEnabled = isMockAiEnabled();
     const role = await getUserRole(ctx);
-    if (role !== 'admin') {
+    if (role !== 'admin' && !mockAiEnabled) {
       await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, {
         userId
       });
@@ -70,7 +71,27 @@ export const generateAssistantTurn = action({
 
     /** Use roast prompt on first turn, apply prompt when user has answered questions. */
     const isFirstTurn = messages.length === 0;
-    const basePrompt = isFirstTurn ? SYSTEM_PROMPT_ROAST : SYSTEM_PROMPT_APPLY;
+
+    if (mockAiEnabled) {
+      const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
+      const result = buildMockImproveTurn({
+        resume,
+        isFirstTurn,
+        answersText: lastUserMessage?.content ?? ''
+      });
+      await ctx.runMutation(internal.aiImprove.saveAssistantMessage, {
+        threadId,
+        content: result.content,
+        structuredPayload: result.structuredPayload
+      });
+      return {
+        content: result.content,
+        structuredPayload: result.structuredPayload,
+        cost: 0
+      };
+    }
+
+    const basePrompt = isFirstTurn ? SYSTEM_PROMPT_QUESTIONS : SYSTEM_PROMPT_APPLY;
     const systemPrompt = `${basePrompt}\n\nCurrent resume:\n${resumeText}`;
 
     const anthropic = createAnthropic({
@@ -79,7 +100,7 @@ export const generateAssistantTurn = action({
     /** For apply turn, only send the last user message (answers) — no history needed. */
     const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
     const aiMessages = isFirstTurn
-      ? [{ role: 'user' as const, content: 'Roast my resume.' }]
+      ? [{ role: 'user' as const, content: 'Analyze my resume and ask me targeted questions.' }]
       : [{ role: 'user' as const, content: lastUserMessage?.content ?? '' }];
 
     const { text, usage } = await generateText({
@@ -96,11 +117,10 @@ export const generateAssistantTurn = action({
 
     let structuredPayload:
       | {
-          roastItems?: string[];
-          questions?: { question: string; context: string }[];
-          resumePatch?: string;
-          isReadyToApply?: boolean;
-        }
+        questions?: { question: string; context: string }[];
+        resumePatch?: string;
+        isReadyToApply?: boolean;
+      }
       | undefined;
 
     try {
@@ -110,15 +130,14 @@ export const generateAssistantTurn = action({
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[1]);
         structuredPayload = {
-          roastItems: Array.isArray(parsed.roastItems) ? parsed.roastItems : undefined,
           questions: Array.isArray(parsed.questions)
             ? parsed.questions.map((q: Record<string, string> | string) => {
-                if (typeof q === 'string') return { question: q, context: '' };
-                return {
-                  question: q.question ?? q.text ?? q.q ?? '',
-                  context: q.context ?? q.resume_line ?? q.c ?? ''
-                };
-              })
+              if (typeof q === 'string') return { question: q, context: '' };
+              return {
+                question: q.question ?? q.text ?? q.q ?? '',
+                context: q.context ?? q.resume_line ?? q.c ?? ''
+              };
+            })
             : undefined,
           resumePatch: parsed.resumePatch
             ? (typeof parsed.resumePatch === 'string' ? parsed.resumePatch : JSON.stringify(parsed.resumePatch))

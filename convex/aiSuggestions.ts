@@ -8,6 +8,7 @@ import { v } from 'convex/values';
 import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/aiSuggestions';
 import { internal } from './_generated/api';
 import { action } from './_generated/server';
+import { buildMockResumeSuggestions, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { buildUserPrompt } from './formatResumePrompt';
 
@@ -112,9 +113,10 @@ export const generateResumeSuggestions = action({
     jdKeywords?: string[];
   }> => {
     const userId = await getAuthenticatedUser(ctx);
+    const mockAiEnabled = isMockAiEnabled();
 
     const role = await getUserRole(ctx);
-    if (role !== 'admin') {
+    if (role !== 'admin' && !mockAiEnabled) {
       await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, { userId });
     }
 
@@ -158,29 +160,50 @@ export const generateResumeSuggestions = action({
       args.jobDescription
     );
 
-    /** Resolve system prompt and rules from DB. */
-    let basePrompt = args.systemPromptOverride;
-    let rules = args.systemRuleOverride;
-    if (!basePrompt) {
-      const defaultPrompt = await ctx.runQuery(
-        internal.systemPrompts.getDefaultInternal,
-        { type: 'prompt' as const }
-      );
-      if (!defaultPrompt) throw new Error('No default system prompt found');
-      basePrompt = defaultPrompt.content;
-    }
-    if (!rules) {
-      const defaultRule = await ctx.runQuery(
-        internal.systemPrompts.getDefaultInternal,
-        { type: 'rule' as const }
-      );
-      if (!defaultRule) throw new Error('No default rule found');
-      rules = defaultRule.content;
-    }
-    const systemPrompt = `${basePrompt}\n\n${rules}`;
-
     const start = Date.now();
     try {
+      if (mockAiEnabled) {
+        const suggestions = buildMockResumeSuggestions({
+          resume: {
+            personalInfo: resume.personalInfo,
+            experience: resume.experience,
+            skills: resume.skills
+          },
+          jobDescription: args.jobDescription
+        });
+        const durationMs = Date.now() - start;
+        assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
+        return {
+          modelId: modelConfig.modelId,
+          label: `${modelConfig.label} (mock)`,
+          suggestions,
+          cost: 0,
+          durationMs,
+          jdKeywords: suggestions.jdKeywords
+        };
+      }
+
+      /** Resolve system prompt and rules from DB. */
+      let basePrompt = args.systemPromptOverride;
+      let rules = args.systemRuleOverride;
+      if (!basePrompt) {
+        const defaultPrompt = await ctx.runQuery(
+          internal.systemPrompts.getDefaultInternal,
+          { type: 'prompt' as const }
+        );
+        if (!defaultPrompt) throw new Error('No default system prompt found');
+        basePrompt = defaultPrompt.content;
+      }
+      if (!rules) {
+        const defaultRule = await ctx.runQuery(
+          internal.systemPrompts.getDefaultInternal,
+          { type: 'rule' as const }
+        );
+        if (!defaultRule) throw new Error('No default rule found');
+        rules = defaultRule.content;
+      }
+      const systemPrompt = `${basePrompt}\n\n${rules}`;
+
       const aiModel = createModel(modelConfig.provider, modelConfig.modelId);
       const { output, usage } = await generateText({
         model: aiModel,

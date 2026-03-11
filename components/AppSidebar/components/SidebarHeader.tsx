@@ -5,9 +5,9 @@ import { useSidebar } from '@/ui/sidebar';
 import {
   LayoutHeader,
   HeaderRow,
-  HeaderTitle,
   ToggleButton
 } from '../styles/sidebar-layout.styles';
+import { UserStatus } from './UserStatus';
 import type { ReactNode } from 'react';
 
 export function SidebarHeader({ children }: { children: ReactNode }) {
@@ -16,7 +16,7 @@ export function SidebarHeader({ children }: { children: ReactNode }) {
   return (
     <LayoutHeader collapsed={isCollapsed}>
       <HeaderRow collapsed={isCollapsed}>
-        {!isCollapsed && <HeaderTitle>My Resumes</HeaderTitle>}
+        {!isCollapsed && <UserStatus />}
         {!isMobile && (
           <ToggleButton collapsed={isCollapsed} onClick={toggleSidebar}>
             {isCollapsed ? (

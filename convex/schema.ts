@@ -54,10 +54,9 @@ export default defineSchema({
     threadId: v.id('aiThreads'),
     role: v.union(v.literal('user'), v.literal('assistant')),
     content: v.string(),
-    /** Structured payload from assistant (roast items, questions, resume patch). */
+    /** Structured payload from assistant (questions, resume patch). */
     structuredPayload: v.optional(
       v.object({
-        roastItems: v.optional(v.array(v.string())),
         questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
         resumePatch: v.optional(v.string()),
         isReadyToApply: v.optional(v.boolean())

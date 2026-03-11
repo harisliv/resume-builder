@@ -49,7 +49,6 @@ export function AiSuggestionsDialog({
   onCreateNewVersion,
   onImproveApplied
 }: TAiSuggestionsDialogProps) {
-  console.log('🚀 ~ isAiImproved:', isAiImproved);
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
   const [improveHasTokens, setImproveHasTokens] = useState(false);
   const { isAdmin } = usePrivileges();

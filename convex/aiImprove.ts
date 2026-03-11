@@ -4,7 +4,6 @@ import { getAuthenticatedUser } from './auth';
 
 const structuredPayloadValidator = v.optional(
   v.object({
-    roastItems: v.optional(v.array(v.string())),
     questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
     resumePatch: v.optional(v.string()),
     isReadyToApply: v.optional(v.boolean())
@@ -154,6 +153,31 @@ export const applyImprovements = mutation({
 
     await ctx.db.patch(threadId, { status: 'completed' });
     return newResumeId;
+  }
+});
+
+/** Test-only: deletes a thread and all related messages. */
+export const cleanupThreadForTesting = mutation({
+  args: { threadId: v.id('aiThreads') },
+  returns: v.null(),
+  handler: async (ctx, { threadId }) => {
+    if (process.env.NODE_ENV !== 'test') {
+      throw new Error('cleanupThreadForTesting is test-only');
+    }
+    const userId = await getAuthenticatedUser(ctx);
+    const thread = await ctx.db.get(threadId);
+    if (!thread || thread.userId !== userId) {
+      throw new Error('Thread not found or unauthorized');
+    }
+    const messages = await ctx.db
+      .query('aiThreadMessages')
+      .withIndex('by_thread', (q) => q.eq('threadId', threadId))
+      .collect();
+    for (const message of messages) {
+      await ctx.db.delete(message._id);
+    }
+    await ctx.db.delete(threadId);
+    return null;
   }
 });
 

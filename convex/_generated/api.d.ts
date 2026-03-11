@@ -11,6 +11,7 @@
 import type * as aiAttempts from "../aiAttempts.js";
 import type * as aiImprove from "../aiImprove.js";
 import type * as aiImproveActions from "../aiImproveActions.js";
+import type * as aiMocks from "../aiMocks.js";
 import type * as aiSuggestions from "../aiSuggestions.js";
 import type * as auth from "../auth.js";
 import type * as formatResumePrompt from "../formatResumePrompt.js";
@@ -31,6 +32,7 @@ declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
   aiImprove: typeof aiImprove;
   aiImproveActions: typeof aiImproveActions;
+  aiMocks: typeof aiMocks;
   aiSuggestions: typeof aiSuggestions;
   auth: typeof auth;
   formatResumePrompt: typeof formatResumePrompt;

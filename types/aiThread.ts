@@ -1,6 +1,5 @@
 /** Structured payload from an AI improvement assistant turn. */
 export type TAssistantPayload = {
-  roastItems?: string[];
   questions?: string[];
   resumePatch?: string;
   isReadyToApply?: boolean;

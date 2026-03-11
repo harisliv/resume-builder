@@ -5,13 +5,15 @@ import { useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeForm } from '@/types/schema';
-import type { TAiSuggestions, TSuggestionSelection } from '@/types/aiSuggestions';
+import type {
+  TAiSuggestions,
+  TSuggestionSelection
+} from '@/types/aiSuggestions';
 import { createDefaultSelection } from '@/types/aiSuggestions';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Spinner } from '@/components/ui/spinner';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { AiSuggestionsView } from '../AiSuggestionsView';
 import { toast } from 'sonner';
 import usePrivileges from '@/hooks/usePrivileges';
@@ -23,16 +25,30 @@ type TImproveTabProps = {
   onApplyImprovements: (newResumeId: Id<'resumes'>) => void;
 };
 
-type TPhase = 'idle' | 'loading' | 'roast' | 'questions' | 'confirm-generate' | 'generating' | 'ready';
+type TPhase =
+  | 'idle'
+  | 'loading'
+  | 'questions'
+  | 'confirm-generate'
+  | 'generating'
+  | 'ready';
 
 type TSelectionAction =
   | { type: 'INIT'; payload: TSuggestionSelection }
   | { type: 'TOGGLE_SUMMARY' }
-  | { type: 'TOGGLE_EXPERIENCE_FIELD'; expIdx: number; field: 'description' | 'highlight'; highlightIdx?: number }
+  | {
+      type: 'TOGGLE_EXPERIENCE_FIELD';
+      expIdx: number;
+      field: 'description' | 'highlight';
+      highlightIdx?: number;
+    }
   | { type: 'TOGGLE_SKILL'; categoryIdx: number; skillIdx: number };
 
 /** Reducer for selection state in the ready phase. */
-function selectionReducer(state: TSuggestionSelection, action: TSelectionAction): TSuggestionSelection {
+function selectionReducer(
+  state: TSuggestionSelection,
+  action: TSelectionAction
+): TSuggestionSelection {
   switch (action.type) {
     case 'INIT':
       return action.payload;
@@ -45,14 +61,18 @@ function selectionReducer(state: TSuggestionSelection, action: TSelectionAction)
         exp.description = !exp.description;
       } else if (action.highlightIdx !== undefined) {
         exp.highlights = [...exp.highlights];
-        exp.highlights[action.highlightIdx] = !exp.highlights[action.highlightIdx];
+        exp.highlights[action.highlightIdx] =
+          !exp.highlights[action.highlightIdx];
       }
       experience[action.expIdx] = exp;
       return { ...state, experience };
     }
     case 'TOGGLE_SKILL': {
       const skills = [...state.skills];
-      const cat = { ...skills[action.categoryIdx], selected: [...skills[action.categoryIdx].selected] };
+      const cat = {
+        ...skills[action.categoryIdx],
+        selected: [...skills[action.categoryIdx].selected]
+      };
       cat.selected[action.skillIdx] = !cat.selected[action.skillIdx];
       skills[action.categoryIdx] = cat;
       return { ...state, skills };
@@ -62,11 +82,15 @@ function selectionReducer(state: TSuggestionSelection, action: TSelectionAction)
   }
 }
 
-const emptySelection: TSuggestionSelection = { summary: false, experience: [], skills: [] };
+const emptySelection: TSuggestionSelection = {
+  summary: false,
+  experience: [],
+  skills: []
+};
 
 /**
  * Phased AI improvement tab.
- * Flow: Start → Roast → Questions (one by one) → Generate patch → Review & Apply.
+ * Flow: Start → Questions (one by one) → Generate patch → Review & Apply.
  */
 export function ImproveTab({
   resumeId,
@@ -76,14 +100,18 @@ export function ImproveTab({
 }: TImproveTabProps) {
   const [threadId, setThreadId] = useState<Id<'aiThreads'> | null>(null);
   const [phase, setPhase] = useState<TPhase>('idle');
-  const [roastItems, setRoastItems] = useState<string[]>([]);
-  const [questions, setQuestions] = useState<{ question: string; context: string }[]>([]);
+  const [questions, setQuestions] = useState<
+    { question: string; context: string }[]
+  >([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [suggestions, setSuggestions] = useState<TAiSuggestions | null>(null);
   const [rawPatch, setRawPatch] = useState<string | null>(null);
-  const [selection, dispatchSelection] = useReducer(selectionReducer, emptySelection);
+  const [selection, dispatchSelection] = useReducer(
+    selectionReducer,
+    emptySelection
+  );
   const [newTitle, setNewTitle] = useState('');
   const [totalCost, setTotalCost] = useState(0);
   const { isAdmin } = usePrivileges();
@@ -97,6 +125,18 @@ export function ImproveTab({
   const sendUserMessage = useMutation(api.aiImprove.sendUserMessage);
   const generateTurn = useAction(api.aiImproveActions.generateAssistantTurn);
   const applyImprovements = useMutation(api.aiImprove.applyImprovements);
+  const cleanupThreadForTesting = useMutation(
+    api.aiImprove.cleanupThreadForTesting
+  );
+
+  /** Test-only DB cleanup when component unmounts with an active thread. */
+  useEffect(
+    () => () => {
+      if (process.env.NODE_ENV !== 'test' || !threadId) return;
+      void cleanupThreadForTesting({ threadId });
+    },
+    [threadId, cleanupThreadForTesting]
+  );
 
   /** Parse resumePatch JSON string into TAiSuggestions. */
   const parsePatch = (patchStr: string): TAiSuggestions | null => {
@@ -112,7 +152,7 @@ export function ImproveTab({
     }
   };
 
-  /** Start: create fresh thread and generate roast. */
+  /** Start: create fresh thread and generate questions. */
   const handleStart = async () => {
     setPhase('loading');
     try {
@@ -121,7 +161,6 @@ export function ImproveTab({
       const result = await generateTurn({ threadId: newThreadId });
       setTotalCost(result.cost ?? 0);
       if (result.structuredPayload) {
-        setRoastItems(result.structuredPayload.roastItems ?? []);
         const rawQs = result.structuredPayload.questions ?? [];
         const normalizedQs = rawQs.map((q) =>
           typeof q === 'string' ? { question: q, context: '' } : q
@@ -129,17 +168,12 @@ export function ImproveTab({
         setQuestions(normalizedQs);
         setAnswers(new Array(normalizedQs.length).fill(''));
       }
-      setPhase('roast');
+      setCurrentQuestionIdx(0);
+      setPhase('questions');
     } catch {
-      toast.error('Failed to generate roast');
+      toast.error('Failed to analyze resume');
       setPhase('idle');
     }
-  };
-
-  /** Move from roast to first question. */
-  const handleGoToQuestions = () => {
-    setCurrentQuestionIdx(0);
-    setPhase('questions');
   };
 
   /** Advance to next question or move to confirmation step. */
@@ -159,7 +193,10 @@ export function ImproveTab({
     setPhase('generating');
     try {
       const answersText = questions
-        .map((q, i) => `Q: ${q.question}\nA: ${answers[i] || 'No changes needed, leave as is.'}`)
+        .map(
+          (q, i) =>
+            `Q: ${q.question}\nA: ${answers[i] || 'No changes needed, leave as is.'}`
+        )
         .join('\n\n');
       await sendUserMessage({ threadId, content: answersText });
       const result = await generateTurn({ threadId });
@@ -169,7 +206,10 @@ export function ImproveTab({
         const parsed = parsePatch(result.structuredPayload.resumePatch);
         if (parsed) {
           setSuggestions(parsed);
-          dispatchSelection({ type: 'INIT', payload: createDefaultSelection(parsed) });
+          dispatchSelection({
+            type: 'INIT',
+            payload: createDefaultSelection(parsed)
+          });
         }
       }
       setPhase('ready');
@@ -227,44 +267,19 @@ export function ImproveTab({
       {/* Idle */}
       {phase === 'idle' && (
         <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-          <p className="text-sm text-muted-foreground">
-            Get a brutally honest review of your resume, then answer targeted
-            questions to improve it.
+          <p className="text-muted-foreground text-sm">
+            Answer targeted questions about your resume, then get AI-powered
+            improvements.
           </p>
-          <Button onClick={handleStart}>
-            Start Resume Review
-          </Button>
+          <Button onClick={handleStart}>Start Resume Review</Button>
         </div>
       )}
 
       {/* Loading */}
       {phase === 'loading' && (
-        <div className="flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground">
-          <Spinner className="size-4" /> Roasting your resume...
+        <div className="text-muted-foreground flex flex-1 items-center justify-center gap-2 text-sm">
+          <Spinner className="size-4" /> Analyzing your resume...
         </div>
-      )}
-
-      {/* Roast */}
-      {phase === 'roast' && (
-        <>
-          <ScrollArea className="flex-1 pr-2">
-            <div className="space-y-3">
-              {roastItems.map((item, i) => (
-                <div
-                  key={i}
-                  className="rounded-lg border bg-muted/50 p-3 text-sm"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-          {questions.length > 0 && (
-            <Button onClick={handleGoToQuestions}>
-              Go to Questions ({questions.length})
-            </Button>
-          )}
-        </>
       )}
 
       {/* Questions — one at a time */}
@@ -285,16 +300,17 @@ export function ImproveTab({
               />
             ))}
           </div>
-          <div className="text-center text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-center text-xs">
             {currentQuestionIdx + 1} of {questions.length}
           </div>
           {questions[currentQuestionIdx]?.context && (
-            <blockquote className="border-l-2 border-muted-foreground/30 pl-3 text-xs text-muted-foreground italic">
+            <blockquote className="border-muted-foreground/30 text-muted-foreground border-l-2 pl-3 text-xs italic">
               {questions[currentQuestionIdx].context}
             </blockquote>
           )}
-          <div className="rounded-lg bg-muted p-3 text-sm">
-            {questions[currentQuestionIdx]?.question || 'No question text available'}
+          <div className="bg-muted rounded-lg p-3 text-sm">
+            {questions[currentQuestionIdx]?.question ||
+              'No question text available'}
           </div>
           <Textarea
             value={currentAnswer}
@@ -320,16 +336,12 @@ export function ImproveTab({
                   Previous
                 </Button>
               )}
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {currentAnswer.length}/500
               </span>
             </div>
             <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSkipQuestion}
-              >
+              <Button size="sm" variant="ghost" onClick={handleSkipQuestion}>
                 Leave as is
               </Button>
               <Button
@@ -349,8 +361,9 @@ export function ImproveTab({
       {/* Confirm before generating */}
       {phase === 'confirm-generate' && (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            All {questions.length} questions answered. Ready to generate improvements?
+          <p className="text-muted-foreground text-sm">
+            All {questions.length} questions answered. Ready to generate
+            improvements?
           </p>
           <div className="flex gap-2">
             <Button
@@ -363,16 +376,14 @@ export function ImproveTab({
             >
               Review Answers
             </Button>
-            <Button onClick={handleGenerate}>
-              Get Improvements
-            </Button>
+            <Button onClick={handleGenerate}>Get Improvements</Button>
           </div>
         </div>
       )}
 
       {/* Generating */}
       {phase === 'generating' && (
-        <div className="flex flex-1 items-center justify-center gap-2 text-sm text-muted-foreground">
+        <div className="text-muted-foreground flex flex-1 items-center justify-center gap-2 text-sm">
           <Spinner className="size-4" /> Generating improvements...
         </div>
       )}
@@ -385,17 +396,28 @@ export function ImproveTab({
               suggestions={suggestions}
               currentData={currentData}
               selection={selection}
-              onToggleSummary={() => dispatchSelection({ type: 'TOGGLE_SUMMARY' })}
+              onToggleSummary={() =>
+                dispatchSelection({ type: 'TOGGLE_SUMMARY' })
+              }
               onToggleExperienceField={(expIdx, field, highlightIdx) =>
-                dispatchSelection({ type: 'TOGGLE_EXPERIENCE_FIELD', expIdx, field, highlightIdx })
+                dispatchSelection({
+                  type: 'TOGGLE_EXPERIENCE_FIELD',
+                  expIdx,
+                  field,
+                  highlightIdx
+                })
               }
               onToggleSkill={(categoryIdx, skillIdx) =>
-                dispatchSelection({ type: 'TOGGLE_SKILL', categoryIdx, skillIdx })
+                dispatchSelection({
+                  type: 'TOGGLE_SKILL',
+                  categoryIdx,
+                  skillIdx
+                })
               }
             />
           </div>
           {isAdmin && totalCost > 0 && (
-            <p className="text-xs text-muted-foreground text-right">
+            <p className="text-muted-foreground text-right text-xs">
               Cost: ${totalCost.toFixed(4)}
             </p>
           )}
@@ -404,7 +426,7 @@ export function ImproveTab({
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="New resume title..."
-              className="flex-1 rounded-md border bg-background px-3 py-2 text-sm"
+              className="bg-background flex-1 rounded-md border px-3 py-2 text-sm"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();

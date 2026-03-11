@@ -1,7 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { Check, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { useRenameResume } from '@/hooks/useRenameResume';
 import { useSetDefaultResume } from '@/hooks/useSetDefaultResume';
@@ -10,15 +13,16 @@ import usePrivileges from '@/hooks/usePrivileges';
 import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeInfo } from '@/types/schema';
 import { NavSelector } from './NavSelector';
-import { ResumeSelectorHeader } from './ResumeSelectorHeader';
 import { ResumeOptionActions } from './ResumeOptionActions';
 import type { NavSelectorOption } from '../types';
 
-type Props = {
+type TProps = {
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
   onDelete: (id: string) => void;
-  onImportPdf: () => void;
+  /** When true, opens the dropdown in create mode. */
+  isCreating: boolean;
+  onCreatingChange: (creating: boolean) => void;
 };
 
 /** Resume dropdown with inline rename/delete per option. */
@@ -26,8 +30,9 @@ export function ResumeSelector({
   onResumeSelect,
   onCreateNew,
   onDelete,
-  onImportPdf
-}: Props) {
+  isCreating,
+  onCreatingChange
+}: TProps) {
   const { control, setValue } = useFormContext<TResumeInfo>();
   const currentId = useWatch({ control, name: 'id' }) ?? '';
   const currentTitle = useWatch({ control, name: 'title' });
@@ -35,10 +40,55 @@ export function ResumeSelector({
   const { data: resumeTitles, isLoading: isLoadingTitles } =
     useGetUserResumeTitles();
 
-  const { isMember } = usePrivileges();
+  const { isMember, resumeLimit } = usePrivileges();
   const { mutate: renameResume } = useRenameResume();
   const { mutate: setDefaultResume } = useSetDefaultResume();
   const confirm = useWarningDialog();
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const isDropdownOpen = isCreating || dropdownOpen;
+
+  /** Reset create state when dropdown closes. */
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setDropdownOpen(open);
+      if (!open) {
+        onCreatingChange(false);
+        setNewTitle('');
+      }
+    },
+    [onCreatingChange]
+  );
+
+  const handleConfirmCreate = useCallback(() => {
+    const trimmed = newTitle.trim();
+    if (trimmed) {
+      onCreateNew(trimmed);
+      onCreatingChange(false);
+      setDropdownOpen(false);
+      setNewTitle('');
+    }
+  }, [newTitle, onCreateNew, onCreatingChange]);
+
+  const handleCancelCreate = useCallback(() => {
+    onCreatingChange(false);
+    setDropdownOpen(false);
+    setNewTitle('');
+  }, [onCreatingChange]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleConfirmCreate();
+      } else if (e.key === 'Escape') {
+        handleCancelCreate();
+      }
+    },
+    [handleConfirmCreate, handleCancelCreate]
+  );
 
   /** Auto-select default resume when titles load and nothing is selected. */
   useEffect(() => {
@@ -65,6 +115,11 @@ export function ResumeSelector({
     [resumeTitles, confirm, setDefaultResume]
   );
 
+  const resumeCount = resumeTitles?.length ?? 0;
+  const countSuffix = isFinite(resumeLimit)
+    ? `${resumeCount}/${resumeLimit}`
+    : undefined;
+
   const options: NavSelectorOption[] = useMemo(
     () =>
       resumeTitles?.map((r) => ({
@@ -86,22 +141,37 @@ export function ResumeSelector({
     [renameResume, currentId, setValue]
   );
 
-  /** Render function: wraps onCreateNew to also close the dropdown. */
-  const dropdownHeader = useCallback(
-    (close: () => void) => (
-      <ResumeSelectorHeader
-        onCreateNew={(title) => {
-          onCreateNew(title);
-          close();
-        }}
-        onImportPdf={() => {
-          onImportPdf();
-          close();
-        }}
+  /** Inline input shown at the top of the dropdown when creating. */
+  const dropdownHeader = isCreating ? (
+    <div className="flex items-center gap-2 p-2">
+      <Input
+        value={newTitle}
+        onChange={(e) => setNewTitle(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Resume title..."
+        className="h-8"
+        autoFocus
       />
-    ),
-    [onCreateNew, onImportPdf]
-  );
+      <Button
+        size="icon"
+        variant="ghost"
+        className="size-8 shrink-0"
+        onClick={handleConfirmCreate}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <Check className="size-4" />
+      </Button>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="size-8 shrink-0"
+        onClick={handleCancelCreate}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <X className="size-4" />
+      </Button>
+    </div>
+  ) : undefined;
 
   return (
     <NavSelector
@@ -111,10 +181,13 @@ export function ResumeSelector({
       onChange={onResumeSelect}
       options={options}
       loading={isLoadingTitles}
+      labelSuffix={countSuffix}
       disabled={isLoadingTitles || isMember}
       disabledTooltip={
         isMember ? 'Upgrade your plan to manage multiple resumes.' : undefined
       }
+      open={isDropdownOpen}
+      onOpenChange={handleOpenChange}
       dropdownHeader={dropdownHeader}
       renderOptionContent={(option, defaultContent) => (
         <ResumeOptionActions
