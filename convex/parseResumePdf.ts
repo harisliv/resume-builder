@@ -47,6 +47,7 @@ export const parseResumePdf = action({
         field: v.string(),
         location: v.string(),
         graduationDate: v.string(),
+        current: v.boolean(),
         gpa: v.string()
       })
     ),

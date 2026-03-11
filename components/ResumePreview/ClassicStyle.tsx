@@ -352,7 +352,11 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="text-[8px] font-bold"
                           style={{ color: palette.education }}
                         >
-                          {edu.graduationDate}
+                          {edu.current
+                            ? edu.graduationDate
+                              ? `${edu.graduationDate} (Expected)`
+                              : 'Currently studying'
+                            : edu.graduationDate}
                         </p>
                       </div>
                       <p

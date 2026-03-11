@@ -28,6 +28,7 @@ export const educationValidator = v.object({
   field: v.optional(v.string()),
   location: v.optional(v.string()),
   graduationDate: v.optional(v.string()),
+  current: v.optional(v.boolean()),
   gpa: v.optional(v.string())
 });
 

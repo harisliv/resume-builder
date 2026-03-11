@@ -10,6 +10,7 @@ Rules:
 - If an experience date only includes a year, use "Jan YYYY".
 - Set "current" to true if the experience has no end date or says "Present"/"Current", and output endDate as an empty string "" for current roles.
 - For education, output graduationDate as a year like "2019" when possible.
+- Set education "current" to true if the student is still studying (e.g., "Expected 2026", "Present", or no graduation date with recent enrollment).
 - Group skills into logical categories (e.g., "Programming Languages", "Tools", "Soft Skills").
 - If a field is not found in the text, return an empty string "" for it. Never return null.
 - For highlights, extract bullet points or key achievements from each experience.
@@ -21,6 +22,7 @@ Rules:
 - If a dated role or project block names a platform, initiative, program, or project, extract its full title into projectName.
 - Use projectName for the project title only, and keep description as the short explanatory summary.
 - If an experience location is missing, copy the best available location from personalInfo.location.
+- If a resume section cannot be mapped to personalInfo, experience, or education (e.g., "Certifications", "Awards", "Publications", "Projects", "Languages", "Volunteering", "Interests"), convert its entries into a skills category using the section name and list the items as skill values.
 
 Example input:
 John Doe
@@ -78,7 +80,8 @@ Example output:
   ],
   "education": [
     {
-      "graduationDate": "2019"
+      "graduationDate": "2019",
+      "current": false
     }
   ]
 }`;

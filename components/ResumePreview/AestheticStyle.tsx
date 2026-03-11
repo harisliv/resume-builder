@@ -369,7 +369,11 @@ export function AestheticStyle({ data, palette, fontFamily }: IStyleProps) {
                           className="text-[8px] font-bold"
                           style={{ color: AESTHETIC.accent }}
                         >
-                          {edu.graduationDate}
+                          {edu.current
+                            ? edu.graduationDate
+                              ? `${edu.graduationDate} (Expected)`
+                              : 'Currently studying'
+                            : edu.graduationDate}
                         </p>
                       </div>
                       <p

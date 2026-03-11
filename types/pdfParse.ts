@@ -37,6 +37,7 @@ export const parsedResumeSchema = z.object({
       field: z.string(),
       location: z.string(),
       graduationDate: z.string(),
+      current: z.boolean(),
       gpa: z.string()
     })
   ),
@@ -145,7 +146,8 @@ export function normalizeParsedResume(raw: TParsedResume) {
     education: raw.education.map((edu) => ({
       ...edu,
       location: normalizeLocation(edu.location, personalLocation),
-      graduationDate: normalizeGraduationDate(edu.graduationDate)
+      graduationDate: normalizeGraduationDate(edu.graduationDate),
+      current: edu.current ?? false
     })),
     skills: raw.skills.map((cat) => ({
       name: cleanText(cat.name),

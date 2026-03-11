@@ -47,6 +47,7 @@ function makeParsedResume(overrides?: Partial<TParsedResume>): TParsedResume {
         field: 'CS',
         location: ' Madrid, Spain ',
         graduationDate: '2019',
+        current: false,
         gpa: ''
       }
     ],

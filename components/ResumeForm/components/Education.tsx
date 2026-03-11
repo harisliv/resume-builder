@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
@@ -20,8 +19,8 @@ import {
   StyledAccordionTrigger,
   StyledAccordionContent
 } from './styles/section-accordion';
-import { parseDate } from '@/lib/parse-date';
 
+/** Returns display label for an education accordion item. */
 function educationLabel(institution: string | undefined, index: number) {
   const trimmed = institution?.trim();
   return trimmed ? trimmed : `Education ${index + 1}`;
@@ -31,23 +30,10 @@ export default function Education() {
   const { control, watch } = useFormContext<TResumeForm>();
   const confirm = useWarningDialog();
   const education = watch('education');
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, swap } = useFieldArray({
     control,
     name: 'education'
   });
-
-  /** Indices sorted by graduationDate descending (newest first). */
-  const sortedIndices = useMemo(
-    () =>
-      fields
-        .map((_, i) => i)
-        .sort((a, b) => {
-          const dateA = parseDate(education?.[a]?.graduationDate);
-          const dateB = parseDate(education?.[b]?.graduationDate);
-          return dateB - dateA;
-        }),
-    [fields, education]
-  );
 
   /** Confirms before deleting one education entry. */
   const confirmRemoveEducation = async (index: number) => {
@@ -62,6 +48,13 @@ export default function Education() {
     remove(index);
   };
 
+  /** Swaps two education entries for manual reordering. */
+  const moveEducation = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= fields.length || fromIndex === toIndex)
+      return;
+    swap(fromIndex, toIndex);
+  };
+
   return (
     <div className="space-y-6">
       <div className="mb-4 flex items-center justify-between">
@@ -72,14 +65,18 @@ export default function Education() {
         </Button>
       </div>
       <StyledAccordion defaultValue={['education-0']}>
-        {sortedIndices.map((index) => (
+        {fields.map((field, index) => (
           <StyledAccordionItem
-            key={fields[index].id}
+            key={field.id}
             value={`education-${index}`}
           >
             <StyledAccordionTrigger
               label={educationLabel(education?.[index]?.institution, index)}
               onDelete={() => confirmRemoveEducation(index)}
+              onMoveUp={() => moveEducation(index, index - 1)}
+              onMoveDown={() => moveEducation(index, index + 1)}
+              disableMoveUp={index === 0}
+              disableMoveDown={index === fields.length - 1}
             />
             <StyledAccordionContent>
               <Institution index={index} />

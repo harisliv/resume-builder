@@ -596,7 +596,11 @@ export const ClassicDocument = ({
                       <View style={classicStyles.experienceDateRow}>
                         <CalendarIcon size={8} color={colors.experience} />
                         <Text style={classicStyles.experienceDate}>
-                          {edu.graduationDate}
+                          {edu.current
+                            ? edu.graduationDate
+                              ? `${edu.graduationDate} (Expected)`
+                              : 'Currently studying'
+                            : edu.graduationDate}
                         </Text>
                       </View>
                       <Text style={classicStyles.experienceLocation}>
