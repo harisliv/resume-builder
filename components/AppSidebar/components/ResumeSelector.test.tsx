@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -46,7 +47,7 @@ vi.mock('./NavSelector', () => ({
     dropdownHeader
   }: {
     open?: boolean;
-    dropdownHeader?: unknown;
+    dropdownHeader?: ReactNode;
   }) => (
     <div data-open={String(open)} data-testid="nav-selector">
       {open ? dropdownHeader : null}
