@@ -59,7 +59,7 @@ export function NavSelector<T extends string = string>({
           {disabled && disabledTooltip ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="w-full" tabIndex={0}>
+                <span className="w-full cursor-not-allowed" tabIndex={0}>
                   <MenuButton
                     collapsed={isCollapsed}
                     tooltip={tooltip}
