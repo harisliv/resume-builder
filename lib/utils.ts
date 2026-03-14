@@ -15,11 +15,11 @@ export function cn(...inputs: ClassValue[]) {
 const UNWANTED_CHARS = /[•◦▪▸▹►▻★☆✦✧✓✗✘⁃‣⦿⦾●○◆◇■□–—·]/g;
 
 /**
- * Sanitizes input by stripping bullet/symbol characters and trimming whitespace.
- * Applied on every keystroke in controlled form fields.
+ * Sanitizes input by stripping bullet/symbol characters.
+ * Applied on every keystroke. Trim on submit if needed — trim on keystroke blocks typing spaces.
  */
 export function sanitizeInput(value: string): string {
-  return value.replace(UNWANTED_CHARS, '').trim();
+  return value.replace(UNWANTED_CHARS, '');
 }
 
 export const convertConvexIdToId = (
@@ -34,13 +34,15 @@ export const convertConvexIdToId = (
     experience,
     education,
     skills,
-    documentStyle
+    documentStyle,
+    isAiImproved
   } = data;
   return {
     id: _id,
     userId,
     title: title ?? resumeInfoDefaultValues.title,
     documentStyle: documentStyle ?? resumeInfoDefaultValues.documentStyle,
+    isAiImproved: isAiImproved ?? false,
     personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
     experience: experience ?? resumeFormDefaultValues.experience,
     education: education ?? resumeFormDefaultValues.education,

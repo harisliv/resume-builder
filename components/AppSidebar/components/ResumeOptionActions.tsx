@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useState, useCallback } from 'react';
-import { Pencil, Trash2, Check, X, Star } from 'lucide-react';
+import { Pencil, Trash2, Check, X, Star, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import type { NavSelectorOption } from '../types';
@@ -88,7 +88,12 @@ export function ResumeOptionActions({
           {...inputEventProps}
         />
       ) : (
-        <div className="flex-1 truncate">{defaultContent}</div>
+        <div className="flex flex-1 min-w-0 items-center gap-1.5">
+          {option.isAiImproved && (
+            <Sparkles className="size-3.5 shrink-0 text-violet-500" />
+          )}
+          <div className="flex-1 truncate">{defaultContent}</div>
+        </div>
       )}
       <div className="flex shrink-0 items-center" {...blockProps}>
         {isEditing ? (

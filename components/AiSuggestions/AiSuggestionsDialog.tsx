@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -21,33 +21,58 @@ import {
 } from './styles/ai-suggestions-dialog.styles';
 import { buildFilteredSuggestions } from './utils/filterSuggestions';
 import { dialogReducer, initialDialogState } from './utils/dialogReducer';
-import { InputPhase } from './components/InputPhase';
-import { ResultsPhase } from './components/ResultsPhase';
+import { ImproveTab } from './components/ImproveTab';
+import { MatchJobTab } from './components/MatchJobTab';
 
 type TAiSuggestionsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resumeId: Id<'resumes'>;
   currentData: TResumeForm;
+  isAiImproved: boolean;
   onApply: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion: (suggestions: TAiSuggestions) => void;
+  onImproveApplied: (newResumeId: Id<'resumes'>) => void;
 };
 
 /**
- * Dialog for generating AI resume suggestions with selective acceptance.
- * Delegates phase rendering to InputPhase and ResultsPhase components.
+ * AI dialog that auto-selects flow based on resume type.
+ * Not AI-improved → Improve flow. AI-improved → Match Job flow.
  */
 export function AiSuggestionsDialog({
   open,
   onOpenChange,
   resumeId,
   currentData,
+  isAiImproved,
   onApply,
-  onCreateNewVersion
+  onCreateNewVersion,
+  onImproveApplied
 }: TAiSuggestionsDialogProps) {
   const [state, dispatch] = useReducer(dialogReducer, initialDialogState);
+  const [improveHasTokens, setImproveHasTokens] = useState(false);
   const { isAdmin } = usePrivileges();
   const confirm = useWarningDialog();
+
+  /** True when either flow has consumed AI tokens. */
+  const hasConsumedTokens = isAiImproved
+    ? state.phase === 'results'
+    : improveHasTokens;
+
+  /** Callback for ImproveTab to signal token consumption. */
+  const handleImprovePhaseChange = useCallback((phase: string) => {
+    setImproveHasTokens(phase !== 'idle');
+  }, []);
+
+  /** Warn on page leave/refresh when tokens consumed. */
+  useEffect(() => {
+    if (!open || !hasConsumedTokens) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [open, hasConsumedTokens]);
   const generateSuggestions = useAction(
     api.aiSuggestions.generateResumeSuggestions
   );
@@ -57,17 +82,13 @@ export function AiSuggestionsDialog({
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'GENERATE_START' });
     try {
-      const result = await generateSuggestions({
-        resumeId,
-        jobDescription
-      });
+      const result = await generateSuggestions({ resumeId, jobDescription });
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch (e) {
-      const msg = 'Failed to generate suggestions';
-      toast.error(msg);
+    } catch {
+      toast.error('Failed to generate suggestions');
       dispatch({ type: 'GENERATE_ERROR' });
     }
   };
@@ -95,7 +116,6 @@ export function AiSuggestionsDialog({
     dispatch({ type: 'BACK' });
   };
 
-  /** Re-runs generation from results using the same job description prompt. */
   const handleRegenerate = async () => {
     if (state.phase !== 'results' || !state.jobDescription.trim()) return;
     const ok = await confirmLoseResults(
@@ -104,22 +124,20 @@ export function AiSuggestionsDialog({
       'Regenerate'
     );
     if (!ok) return;
-
     const jobDescription = state.jobDescription.trim();
     dispatch({ type: 'REGENERATE_START' });
     try {
-      const result = await generateSuggestions({
-        resumeId,
-        jobDescription
-      });
+      const result = await generateSuggestions({ resumeId, jobDescription });
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch (e) {
-      const msg = 'Failed to generate suggestions';
-      toast.error(msg);
-      dispatch({ type: 'REGENERATE_ERROR', payload: msg });
+    } catch {
+      toast.error('Failed to generate suggestions');
+      dispatch({
+        type: 'REGENERATE_ERROR',
+        payload: 'Failed to generate suggestions'
+      });
     }
   };
 
@@ -158,61 +176,69 @@ export function AiSuggestionsDialog({
 
   const handleOpenChange = (next: boolean) => {
     if (!next) {
-      if (state.phase === 'results') {
+      if (hasConsumedTokens) {
         void (async () => {
           const ok = await confirmLoseResults(
-            'Close suggestions?',
-            'You have unapplied AI suggestions. Closing now will discard them.',
-            'Close'
+            'Close AI Assistant?',
+            "AI tokens have already been used in this session. Closing now means those tokens are lost and you'll need to start over.",
+            'Close anyway'
           );
           if (!ok) return;
           dispatch({ type: 'RESET' });
+          setImproveHasTokens(false);
           onOpenChange(false);
         })();
         return;
       }
-
       dispatch({ type: 'RESET' });
+      setImproveHasTokens(false);
       onOpenChange(false);
       return;
     }
-
     onOpenChange(true);
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContentWrapper>
+      <DialogContentWrapper preventClose={hasConsumedTokens}>
         <DialogHeader>
           <DialogTitleRow>
             <Sparkles className="size-4" />
-            AI Resume Suggestions
+            AI Resume Assistant
           </DialogTitleRow>
           <DialogDescription>
-            Paste a job description to get tailored suggestions for your resume.
+            {isAiImproved
+              ? 'Tailor your AI-improved resume to a specific job.'
+              : 'Get a brutally honest review and improve your resume with AI.'}
           </DialogDescription>
         </DialogHeader>
-        {state.phase === 'results' ? (
-          <ResultsPhase
-            result={state.result}
-            currentData={currentData}
-            jobDescription={state.jobDescription}
-            dispatch={dispatch}
-            isAdmin={isAdmin}
-            isRegenerating={state.isRegenerating}
-            onBack={handleBack}
-            onRegenerate={handleRegenerate}
-            onApply={handleApply}
-            onCreateVersion={handleCreateVersion}
-          />
-        ) : (
-          <InputPhase
-            jobDescription={state.jobDescription}
-            isGenerating={state.phase === 'generating'}
-            dispatch={dispatch}
-            onGenerate={handleGenerate}
-          />
-        )}
+        <div className="flex min-h-0 flex-1 flex-col">
+          {isAiImproved ? (
+            <MatchJobTab
+              resumeId={resumeId}
+              currentData={currentData}
+              state={state}
+              dispatch={dispatch}
+              isAdmin={isAdmin}
+              onGenerate={handleGenerate}
+              onBack={handleBack}
+              onRegenerate={handleRegenerate}
+              onApply={handleApply}
+              onCreateVersion={handleCreateVersion}
+            />
+          ) : (
+            <ImproveTab
+              resumeId={resumeId}
+              currentData={currentData}
+              onPhaseChange={handleImprovePhaseChange}
+              onApplyImprovements={(newResumeId) => {
+                setImproveHasTokens(false);
+                onImproveApplied(newResumeId);
+                onOpenChange(false);
+              }}
+            />
+          )}
+        </div>
       </DialogContentWrapper>
     </Dialog>
   );

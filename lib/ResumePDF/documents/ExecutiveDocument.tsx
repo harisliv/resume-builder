@@ -436,7 +436,11 @@ export const ExecutiveDocument = ({
                     <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
                       <Text style={styles.entryLocation}>{edu.location}</Text>
                       <Text style={styles.entryDate}>
-                        {edu.graduationDate}
+                        {edu.current
+                          ? edu.graduationDate
+                            ? `${edu.graduationDate} (Expected)`
+                            : 'Currently studying'
+                          : edu.graduationDate}
                       </Text>
                       {edu.gpa && (
                         <Text style={[styles.gpa, { color: colors.skills }]}>

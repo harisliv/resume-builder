@@ -209,7 +209,11 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
                         {edu.location}
                       </p>
                       <p className="font-mono text-[8px] font-bold text-slate-400">
-                        {edu.graduationDate}
+                        {edu.current
+                          ? edu.graduationDate
+                            ? `${edu.graduationDate} (Expected)`
+                            : 'Currently studying'
+                          : edu.graduationDate}
                       </p>
                       {edu.gpa && (
                         <p

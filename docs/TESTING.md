@@ -26,3 +26,9 @@ See `vitest.config.ts` for full configuration:
 - Use Testing Library queries for component interaction
 - Mock external dependencies and API calls with MSW
 - Test user interactions, not implementation details
+
+## AI Workflow Mocking
+
+- Set `MOCK_AI=true` to force AI suggestion/improve flows to return deterministic mock payloads instead of calling model providers
+- `NEXT_PUBLIC_TESTING_FEATURES=true` also enables the same mock AI path for local testing
+- In mock mode, AI attempts are not consumed

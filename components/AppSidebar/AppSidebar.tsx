@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { useState } from 'react';
 import { NavUser } from './components/NavUser';
 import { Sidebar, SidebarRail } from '@/ui/sidebar';
 import { ResumeSelector } from './components/ResumeSelector';
+import { ResumeActions } from './components/ResumeActions';
 import { SidebarHeader } from './components/SidebarHeader';
 import { SidebarBody } from './components/SidebarBody';
 import { SidebarFooter } from './components/SidebarFooter';
@@ -14,6 +16,7 @@ export type TAppSidebarResumeProps = {
   onResumeSelect: (id: string) => void;
   onCreateNew: (title?: string) => void;
   onDelete: (id: string) => void;
+  onImportPdf: () => void;
   isLoadingResume?: boolean;
 };
 
@@ -21,9 +24,12 @@ export function AppSidebar({
   onResumeSelect,
   onCreateNew,
   onDelete,
+  onImportPdf,
   isLoadingResume = false,
   ...props
 }: TAppSidebarResumeProps & React.ComponentProps<typeof Sidebar>) {
+  const [isCreating, setIsCreating] = useState(false);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -31,6 +37,12 @@ export function AppSidebar({
           onResumeSelect={onResumeSelect}
           onCreateNew={onCreateNew}
           onDelete={onDelete}
+          isCreating={isCreating}
+          onCreatingChange={setIsCreating}
+        />
+        <ResumeActions
+          onCreateNew={() => setIsCreating(true)}
+          onImportPdf={onImportPdf}
         />
       </SidebarHeader>
       <SidebarBody>

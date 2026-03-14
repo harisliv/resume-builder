@@ -9,10 +9,15 @@
  */
 
 import type * as aiAttempts from "../aiAttempts.js";
+import type * as aiImprove from "../aiImprove.js";
+import type * as aiImproveActions from "../aiImproveActions.js";
+import type * as aiMocks from "../aiMocks.js";
 import type * as aiSuggestions from "../aiSuggestions.js";
 import type * as auth from "../auth.js";
 import type * as formatResumePrompt from "../formatResumePrompt.js";
 import type * as modelConfigs from "../modelConfigs.js";
+import type * as parseResumePdf from "../parseResumePdf.js";
+import type * as parseResumePdfPrompt from "../parseResumePdfPrompt.js";
 import type * as resumes from "../resumes.js";
 import type * as seeds_models from "../seeds/models.js";
 import type * as seeds_prompts from "../seeds/prompts.js";
@@ -32,10 +37,15 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
+  aiImprove: typeof aiImprove;
+  aiImproveActions: typeof aiImproveActions;
+  aiMocks: typeof aiMocks;
   aiSuggestions: typeof aiSuggestions;
   auth: typeof auth;
   formatResumePrompt: typeof formatResumePrompt;
   modelConfigs: typeof modelConfigs;
+  parseResumePdf: typeof parseResumePdf;
+  parseResumePdfPrompt: typeof parseResumePdfPrompt;
   resumes: typeof resumes;
   "seeds/models": typeof seeds_models;
   "seeds/prompts": typeof seeds_prompts;

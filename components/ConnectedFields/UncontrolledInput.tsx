@@ -13,6 +13,7 @@ export default function UncontrolledInput<TForm extends FieldValues>(props: {
   placeholder?: string;
   autoComplete?: string;
   description?: string;
+  disabled?: boolean;
 }) {
   const { register, formState: { errors } } = useFormContext<TForm>();
   const id = useId();
@@ -34,6 +35,7 @@ export default function UncontrolledInput<TForm extends FieldValues>(props: {
         aria-invalid={!!fieldError}
         placeholder={props.placeholder}
         autoComplete={props.autoComplete ?? 'on'}
+        disabled={props.disabled}
       />
       {props.description && (
         <FieldDescription>{props.description}</FieldDescription>

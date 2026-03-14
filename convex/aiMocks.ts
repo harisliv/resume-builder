@@ -1,0 +1,189 @@
+import type { TAiSuggestions } from '../types/aiSuggestions';
+
+type TMockResumeInput = {
+  personalInfo?: { summary?: string };
+  experience?: {
+    company?: string;
+    position?: string;
+    description?: string;
+    highlights?: ({ value: string } | string)[];
+  }[];
+  skills?: {
+    name: string;
+    values: ({ value: string } | string)[];
+  }[];
+};
+
+type TMockImproveTurnResult = {
+  content: string;
+  structuredPayload?: {
+    questions?: { question: string; context: string }[];
+    resumePatch?: string;
+    isReadyToApply?: boolean;
+  };
+};
+
+const STOP_WORDS = new Set([
+  'about',
+  'across',
+  'after',
+  'again',
+  'among',
+  'build',
+  'built',
+  'could',
+  'first',
+  'using',
+  'their',
+  'there',
+  'these',
+  'those',
+  'would',
+  'with',
+  'from',
+  'have',
+  'role',
+  'senior',
+  'stakeholder'
+]);
+
+/** Returns true when AI actions should use deterministic mock responses. */
+export function isMockAiEnabled(): boolean {
+  return process.env.MOCK_AI === 'true'
+    || process.env.NEXT_PUBLIC_TESTING_FEATURES === 'true';
+}
+
+/** Reads string or `{ value }` entries into plain trimmed strings. */
+function normalizeValues(values?: ({ value: string } | string)[]): string[] {
+  return (values ?? [])
+    .map((value) => (typeof value === 'string' ? value : value.value))
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+/** Extracts a small deterministic keyword set from user-provided text. */
+function extractKeywords(text: string): string[] {
+  const matches = text.match(/[A-Za-z][A-Za-z0-9+#.-]*/g) ?? [];
+  const seen = new Set<string>();
+
+  return matches.filter((match) => {
+    const normalized = match.toLowerCase();
+    if (match.length < 5) return false;
+    if (STOP_WORDS.has(normalized)) return false;
+    if (seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
+  }).slice(0, 5);
+}
+
+/** Pulls out a metric-shaped fragment to make mock copy feel realistic. */
+function extractMetric(text: string): string | undefined {
+  return text.match(/\b\d+(?:\.\d+)?%/)?.[0];
+}
+
+/** Creates a deterministic mock suggestions payload for local workflow testing. */
+export function buildMockResumeSuggestions({
+  resume,
+  jobDescription
+}: {
+  resume: TMockResumeInput;
+  jobDescription: string;
+}): TAiSuggestions {
+  const keywords = extractKeywords(jobDescription);
+  const metric = extractMetric(jobDescription);
+  const summaryLead = resume.personalInfo?.summary?.trim()
+    || 'Product-minded engineer improving resume clarity.';
+  const summaryTail = keywords.length
+    ? `Aligned for ${keywords.slice(0, 3).join(', ')} roles`
+    : 'Aligned for the target role';
+  const summaryMetric = metric ? ` with results like ${metric}` : '';
+
+  return {
+    summary: `${summaryLead.replace(/\.$/, '')}. ${summaryTail}${summaryMetric}.`,
+    experience: (resume.experience ?? []).map((item) => {
+      const baseHighlight = normalizeValues(item.highlights)[0]
+        || `Improved outcomes for ${item.company || 'the team'}`;
+      const rewrittenHighlight = keywords.length
+        ? `${baseHighlight} with emphasis on ${keywords.slice(0, 4).join(', ')}${metric ? `, contributing to ${metric}` : ''}.`
+        : `${baseHighlight}${metric ? `, contributing to ${metric}` : ''}.`;
+
+      return {
+        description: item.description?.trim()
+          ? `${item.description.trim().replace(/\.$/, '')}. Reframed around impact and measurable outcomes.`
+          : undefined,
+        highlights: [rewrittenHighlight]
+      };
+    }),
+    skills: (resume.skills ?? []).map((category, categoryIdx) => {
+      const currentValues = normalizeValues(category.values);
+      const extraValues = categoryIdx === 0
+        ? keywords
+          .map((value) => value.toLowerCase())
+          .filter((value) => !currentValues.some((current) => current.toLowerCase() === value))
+          .slice(0, 2)
+        : [];
+
+      return {
+        name: category.name,
+        values: [...currentValues, ...extraValues]
+      };
+    }),
+    jdKeywords: keywords.map((keyword) => keyword.toLowerCase())
+  };
+}
+
+/** Creates deterministic question/apply responses for the improve workflow. */
+export function buildMockImproveTurn({
+  resume,
+  isFirstTurn,
+  answersText
+}: {
+  resume: TMockResumeInput;
+  isFirstTurn: boolean;
+  answersText?: string;
+}): TMockImproveTurnResult {
+  const firstExperience = resume.experience?.[0];
+  const firstHighlight = normalizeValues(firstExperience?.highlights)[0]
+    || firstExperience?.description
+    || resume.personalInfo?.summary
+    || 'Your strongest work';
+
+  if (isFirstTurn) {
+    const questions = [
+      {
+        question: 'What measurable result came from this work?',
+        context: firstHighlight
+      },
+      {
+        question: 'Which tools or business area mattered most here?',
+        context: firstExperience?.position || 'Recent experience'
+      }
+    ];
+
+    return {
+      content: 'Mock follow-up questions ready.',
+      structuredPayload: {
+        questions,
+        isReadyToApply: false
+      }
+    };
+  }
+
+  const suggestions = buildMockResumeSuggestions({
+    resume,
+    jobDescription: answersText ?? ''
+  });
+  const resumePatch = JSON.stringify({
+    summary: suggestions.summary,
+    experience: suggestions.experience,
+    skills: suggestions.skills
+  });
+
+  return {
+    content: 'Mock improvements generated. Review and apply the suggested changes.',
+    structuredPayload: {
+      resumePatch,
+      isReadyToApply: true
+    }
+  };
+}

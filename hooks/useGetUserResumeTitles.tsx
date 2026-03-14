@@ -12,7 +12,8 @@ export function useGetUserResumeTitles() {
       return res.map((item) => ({
         id: item._id,
         title: item.title,
-        isDefault: item.isDefault ?? false
+        isDefault: item.isDefault ?? false,
+        isAiImproved: item.isAiImproved ?? false
       }));
     },
     enabled: isAuthenticated && !isAuthLoading

@@ -46,7 +46,3 @@ export function OptionDetail(props: ComponentProps<'div'>) {
 export function OptionDescription(props: ComponentProps<'span'>) {
   return <span className="text-muted-foreground text-xs" {...props} />;
 }
-
-export function CreateResumeRow(props: ComponentProps<'div'>) {
-  return <div className="flex items-center gap-2 p-2" {...props} />;
-}

@@ -48,6 +48,7 @@ export const educationSchema = z.object({
   field: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
   location: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
   graduationDate: z.string().optional().or(z.literal('')),
+  current: z.boolean().optional(),
   gpa: z.string().max(100, 'Max 100 chars').optional().or(z.literal(''))
 });
 
@@ -59,19 +60,20 @@ export const resumeInfoSchema = z.object({
   id: resumeIdSchema.optional(),
   userId: z.string().optional(),
   title: z.string().min(1, 'Resume title is required').max(100, 'Max 100 chars'),
-  documentStyle: documentStyleSchema
+  documentStyle: documentStyleSchema,
+  isAiImproved: z.boolean().optional()
 });
 
 export const skillsSchema = z.object({
   name: z.string().max(50, 'Max 50 chars'),
-  values: z.array(z.object({ value: z.string().max(50, 'Max 50 chars') })).max(20, 'Max 20 skills')
+  values: z.array(z.object({ value: z.string().max(150, 'Max 100 chars') })).max(20, 'Max 20 skills')
 });
 
 export const resumeFormSchema = z.object({
   personalInfo: personalInfoSchema,
   experience: z.array(experienceSchema).max(5),
   education: z.array(educationSchema).max(5),
-  skills: z.array(skillsSchema).max(5)
+  skills: z.array(skillsSchema).max(10)
 });
 
 export const resumeSchema = resumeInfoSchema.merge(resumeFormSchema);
@@ -104,6 +106,7 @@ export const educationDefaultValues = {
   field: '',
   location: '',
   graduationDate: '',
+  current: false,
   gpa: ''
 };
 
@@ -113,7 +116,8 @@ export const resumeInfoDefaultValues = {
     palette: 'aesthetic' as const,
     font: 'inter' as const,
     style: 'modern' as const
-  }
+  },
+  isAiImproved: false
 };
 
 export const resumeFormDefaultValues = {

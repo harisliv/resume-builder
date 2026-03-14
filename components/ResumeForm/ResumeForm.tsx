@@ -32,14 +32,18 @@ export default function ResumeForm({
   onSubmit,
   isPending,
   resumeId,
+  isAiImproved,
   onApplySuggestions,
-  onCreateNewVersion
+  onCreateNewVersion,
+  onImproveApplied
 }: {
   onSubmit: (data: TResumeForm) => void;
   isPending: boolean;
   resumeId?: Id<'resumes'>;
+  isAiImproved?: boolean;
   onApplySuggestions?: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
+  onImproveApplied?: (newResumeId: Id<'resumes'>) => void;
 }) {
   const form = useFormContext<TResumeForm>();
   const {
@@ -119,8 +123,10 @@ export default function ResumeForm({
           onOpenChange={setAiDialogOpen}
           resumeId={resumeId}
           currentData={form.getValues()}
+          isAiImproved={isAiImproved ?? false}
           onApply={onApplySuggestions ?? (() => {})}
           onCreateNewVersion={onCreateNewVersion ?? (() => {})}
+          onImproveApplied={onImproveApplied ?? (() => {})}
         />
       )}
     </form>

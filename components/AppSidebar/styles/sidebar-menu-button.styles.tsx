@@ -27,8 +27,7 @@ export function MenuButton({
       type="button"
       className={cn(
         collapsed ? COLLAPSED_BUTTON_CLASS : EXPANDED_BUTTON_CLASS,
-        loading !== undefined &&
-          (loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'),
+        loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         className
       )}
       {...props}

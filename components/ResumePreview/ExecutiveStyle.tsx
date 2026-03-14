@@ -192,7 +192,11 @@ export function ExecutiveStyle({ data, palette, fontFamily }: IStyleProps) {
                         {edu.location}
                       </p>
                       <p className="text-[8px] text-slate-400 font-mono">
-                        {edu.graduationDate}
+                        {edu.current
+                          ? edu.graduationDate
+                            ? `${edu.graduationDate} (Expected)`
+                            : 'Currently studying'
+                          : edu.graduationDate}
                       </p>
                       {edu.gpa && (
                         <p

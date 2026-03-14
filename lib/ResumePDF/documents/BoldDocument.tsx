@@ -451,7 +451,11 @@ export const BoldDocument = ({
                     <View style={{ alignItems: 'flex-end' }}>
                       <Text style={boldStyles.itemLocation}>{edu.location}</Text>
                       <Text style={boldStyles.itemDate}>
-                        {edu.graduationDate}
+                        {edu.current
+                          ? edu.graduationDate
+                            ? `${edu.graduationDate} (Expected)`
+                            : 'Currently studying'
+                          : edu.graduationDate}
                       </Text>
                       {edu.gpa && (
                         <Text

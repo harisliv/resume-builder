@@ -627,7 +627,11 @@ export const AestheticDocument = ({ data, colors }: IAestheticDocumentProps) => 
                         { color: AESTHETIC_COLORS.accent }
                       ]}
                     >
-                      {edu.graduationDate}
+                      {edu.current
+                        ? edu.graduationDate
+                          ? `${edu.graduationDate} (Expected)`
+                          : 'Currently studying'
+                        : edu.graduationDate}
                     </Text>
                   </View>
                   <Text style={styles.locationText}>{edu.location}</Text>
