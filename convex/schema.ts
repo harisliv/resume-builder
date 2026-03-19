@@ -30,7 +30,7 @@ export default defineSchema({
   /** Tracks per-user usage attempts for quota enforcement (AI daily, PDF monthly). */
   aiAttempts: defineTable({
     userId: v.string(),
-    type: v.string(),
+    type: v.optional(v.string()),
     dateKey: v.string(),
     count: v.number()
   })
