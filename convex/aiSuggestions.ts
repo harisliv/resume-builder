@@ -116,8 +116,9 @@ export const generateResumeSuggestions = action({
     const mockAiEnabled = isMockAiEnabled();
 
     const role = await getUserRole(ctx);
-    if (role !== 'admin' && !mockAiEnabled) {
-      await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, { userId });
+    const shouldConsumeAttempt = role !== 'admin' && !mockAiEnabled;
+    if (shouldConsumeAttempt) {
+      await ctx.runMutation(internal.aiAttempts.checkAttempt, { userId, type: 'ai' });
     }
 
     const resume = await ctx.runQuery(internal.resumes.getResumeInternal, {
@@ -173,6 +174,9 @@ export const generateResumeSuggestions = action({
         });
         const durationMs = Date.now() - start;
         assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
+        if (shouldConsumeAttempt) {
+          await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
+        }
         return {
           modelId: modelConfig.modelId,
           label: `${modelConfig.label} (mock)`,
@@ -219,6 +223,9 @@ export const generateResumeSuggestions = action({
         (usage.outputTokens ?? 0) * modelConfig.pricing.output
       ) / 1_000_000;
 
+      if (shouldConsumeAttempt) {
+        await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
+      }
       return { modelId: modelConfig.modelId, label: modelConfig.label, suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
     } catch (e) {
       const durationMs = Date.now() - start;

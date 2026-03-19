@@ -91,10 +91,18 @@ export default function AiMultiModelPage() {
 
   /** Saves edited prompt/rule as new DB entry if content was modified. */
   const saveEditedIfNeeded = useCallback(
-    async (content: string, type: 'prompt' | 'rule', existing: typeof systemPrompts) => {
+    async (
+      content: string,
+      type: 'prompt' | 'rule',
+      existing: typeof systemPrompts
+    ) => {
       if (!content || existing?.some((e) => e.content === content)) return;
       const timestamp = new Date().toISOString().slice(0, 16);
-      await createFromEdit({ name: `Edited ${type} ${timestamp}`, content, type });
+      await createFromEdit({
+        name: `Edited ${type} ${timestamp}`,
+        content,
+        type
+      });
     },
     [createFromEdit]
   );
@@ -139,16 +147,25 @@ export default function AiMultiModelPage() {
           });
         })
         .catch((e) => {
+          const msg = e instanceof Error ? e.message : String(e);
+          const friendly = /credit|balance|billing/i.test(msg)
+            ? 'AI service is temporarily unavailable'
+            : msg;
           dispatch({
             type: 'MODEL_ERROR',
-            payload: {
-              modelId: config.id,
-              error: e instanceof Error ? e.message : String(e)
-            }
+            payload: { modelId: config.id, error: friendly }
           });
         });
     });
-  }, [effectiveResumeId, state, generateSingle, modelConfigs, systemPrompts, systemRules, saveEditedIfNeeded]);
+  }, [
+    effectiveResumeId,
+    state,
+    generateSingle,
+    modelConfigs,
+    systemPrompts,
+    systemRules,
+    saveEditedIfNeeded
+  ]);
 
   /** Merges AI suggestions into the current resume form shape. */
   const mergeSuggestions = useCallback(
@@ -186,17 +203,26 @@ export default function AiMultiModelPage() {
     if (!active?.editedSuggestions || !active.selection) return;
     const filtered = buildFilteredSuggestions(
       active.editedSuggestions,
-      active.selection
+      active.selection,
+      currentData
     );
     const mergedForm = mergeSuggestions(filtered);
     submitResume({
       ...mergedForm,
       id: undefined,
       title: filtered.title ?? `${currentInfo.title} (${active.label})`,
-      documentStyle: currentInfo.documentStyle
+      documentStyle: currentInfo.documentStyle,
+      isAiImproved: true
     });
     setConfirmOpen(false);
-  }, [state, mergeSuggestions, submitResume, currentInfo]);
+  }, [
+    currentData,
+    currentInfo.documentStyle,
+    currentInfo.title,
+    mergeSuggestions,
+    state,
+    submitResume
+  ]);
 
   const activeJdKeywords =
     state.phase === 'generating' || state.phase === 'results'

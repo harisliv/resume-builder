@@ -8,7 +8,6 @@ import { action } from './_generated/server';
 import { buildMockImproveTurn, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { formatResumePrompt } from './formatResumePrompt';
-import { SYSTEM_PROMPT_APPLY, SYSTEM_PROMPT_QUESTIONS } from './systemPrompts';
 
 const structuredPayloadValidator = v.optional(
   v.object({
@@ -30,10 +29,9 @@ export const generateAssistantTurn = action({
     const userId = await getAuthenticatedUser(ctx);
     const mockAiEnabled = isMockAiEnabled();
     const role = await getUserRole(ctx);
-    if (role !== 'admin' && !mockAiEnabled) {
-      await ctx.runMutation(internal.aiAttempts.consumeDailyAttempt, {
-        userId
-      });
+    const shouldConsumeAttempt = role !== 'admin' && !mockAiEnabled;
+    if (shouldConsumeAttempt) {
+      await ctx.runMutation(internal.aiAttempts.checkAttempt, { userId, type: 'ai' });
     }
 
     const context = await ctx.runQuery(
@@ -79,6 +77,9 @@ export const generateAssistantTurn = action({
         isFirstTurn,
         answersText: lastUserMessage?.content ?? ''
       });
+      if (shouldConsumeAttempt) {
+        await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
+      }
       await ctx.runMutation(internal.aiImprove.saveAssistantMessage, {
         threadId,
         content: result.content,
@@ -91,8 +92,13 @@ export const generateAssistantTurn = action({
       };
     }
 
-    const basePrompt = isFirstTurn ? SYSTEM_PROMPT_QUESTIONS : SYSTEM_PROMPT_APPLY;
-    const systemPrompt = `${basePrompt}\n\nCurrent resume:\n${resumeText}`;
+    /** Fetch the appropriate prompt from DB by name. */
+    const promptName = isFirstTurn ? 'AI Improve – Questions' : 'AI Improve – Apply';
+    const dbPrompt: { content: string } | null = await ctx.runQuery(
+      internal.systemPrompts.getByNameInternal, { name: promptName }
+    );
+    if (!dbPrompt) throw new Error(`System prompt "${promptName}" not found. Run seed.`);
+    const systemPrompt: string = `${dbPrompt.content}\n\nCurrent resume:\n${resumeText}`;
 
     const anthropic = createAnthropic({
       apiKey: process.env.ANTHROPIC_API_KEY!
@@ -149,6 +155,9 @@ export const generateAssistantTurn = action({
       // No structured payload found, just chat text
     }
 
+    if (shouldConsumeAttempt) {
+      await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
+    }
     await ctx.runMutation(internal.aiImprove.saveAssistantMessage, {
       threadId,
       content: text,

@@ -34,21 +34,28 @@ export const createResume = mutation({
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
     skills: v.optional(v.array(skillCategoryValidator)),
-    documentStyle: documentStyleValidator
+    documentStyle: documentStyleValidator,
+    isAiImproved: v.optional(v.boolean())
   },
   returns: v.id('resumes'),
   handler: async (ctx, args) => {
     const userId = await getAuthenticatedUser(ctx);
 
-    /** Enforce max 5 resumes for non-admin users. */
+    /** Enforce resume limit based on role. */
     const role = await getUserRole(ctx);
-    if (role !== 'admin') {
+    const RESUME_LIMITS: Record<string, number> = {
+      member: 1,
+      basic: 20,
+      admin: Infinity
+    };
+    const maxResumes = RESUME_LIMITS[role ?? 'member'] ?? 1;
+    if (maxResumes !== Infinity) {
       const existing = await ctx.db
         .query('resumes')
         .withIndex('by_user', (q) => q.eq('userId', userId))
         .collect();
-      if (existing.length >= 5) {
-        throw new Error('Resume limit reached (5). Delete one or upgrade.');
+      if (existing.length >= maxResumes) {
+        throw new Error(`Resume limit reached (${maxResumes}). Delete one or upgrade.`);
       }
     }
 
@@ -59,7 +66,8 @@ export const createResume = mutation({
       experience: args.experience,
       education: args.education,
       skills: args.skills,
-      documentStyle: args.documentStyle
+      documentStyle: args.documentStyle,
+      isAiImproved: args.isAiImproved
     });
     return resumeId;
   }
@@ -83,7 +91,12 @@ export const updateResume = mutation({
       throw new Error('Unauthorized: Resume does not belong to user');
     }
     const { id, ...updates } = args;
-    await ctx.db.replace(id, { userId, ...updates, isAiImproved: resume.isAiImproved });
+    await ctx.db.replace(id, {
+      userId,
+      ...updates,
+      isAiImproved: resume.isAiImproved,
+      isDefault: resume.isDefault
+    });
     return null;
   }
 });

@@ -1,9 +1,11 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Upload, FileText, Loader2 } from 'lucide-react';
-import { useAction } from 'convex/react';
+import { Upload, FileText, Loader2, AlertTriangle } from 'lucide-react';
+import { useAction, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import usePrivileges from '@/hooks/usePrivileges';
+import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { extractTextFromPdf } from '@/lib/pdfParser';
 import { normalizeParsedResume } from '@/types/pdfParse';
 import {
@@ -34,6 +36,11 @@ export function PdfUploadDialog({ open, onOpenChange, onParsed }: Props) {
   const [fileName, setFileName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const parseAction = useAction(api.parseResumePdf.parseResumePdf);
+  const { isAdmin, resumeLimit } = usePrivileges();
+  const pdfAttempts = useQuery(api.aiAttempts.getRemainingAttempts, { type: 'pdf' });
+  const { data: resumeTitles } = useGetUserResumeTitles();
+  const pdfLimitReached = !isAdmin && pdfAttempts?.remaining === 0;
+  const resumeLimitReached = (resumeTitles?.length ?? 0) >= resumeLimit;
 
   const reset = useCallback(() => {
     setStatus('idle');
@@ -122,7 +129,21 @@ export function PdfUploadDialog({ open, onOpenChange, onParsed }: Props) {
             disabled={isProcessing}
           />
 
-          {isProcessing ? (
+          {pdfLimitReached || resumeLimitReached ? (
+            <div className="flex flex-col items-center gap-3 py-6 text-center">
+              <AlertTriangle className="text-destructive size-10" />
+              <p className="text-destructive text-sm font-medium">
+                {resumeLimitReached
+                  ? 'Resume limit reached. Upgrade to create more.'
+                  : `PDF import limit reached (${pdfAttempts?.max}/month).`}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {resumeLimitReached
+                  ? 'Delete an existing resume or upgrade your plan.'
+                  : 'Try again next month.'}
+              </p>
+            </div>
+          ) : isProcessing ? (
             <div className="flex flex-col items-center gap-3 py-6">
               <Loader2 className="text-muted-foreground size-10 animate-spin" />
               <p className="text-muted-foreground text-sm">

@@ -41,7 +41,8 @@ function HomeContent({
   handleApplySuggestions,
   handleCreateNewVersion,
   isAiImproved,
-  handleImproveApplied
+  handleImproveApplied,
+  aiEnabled
 }: {
   mobileTab: 'form' | 'preview';
   setMobileTab: (v: 'form' | 'preview') => void;
@@ -54,6 +55,7 @@ function HomeContent({
   handleCreateNewVersion: (suggestions: TAiSuggestions) => void;
   isAiImproved: boolean;
   handleImproveApplied: (newResumeId: Id<'resumes'>) => void;
+  aiEnabled: boolean;
 }) {
   const showTabs = useShowTabs();
 
@@ -72,7 +74,7 @@ function HomeContent({
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </MobileHeader>
-            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-4">
+            <div className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-4">
               <TabsContent value="form" className="mt-0 h-full min-w-0">
                 <FormProvider {...formForm}>
                   <ResumeForm
@@ -80,6 +82,7 @@ function HomeContent({
                     isPending={isPending}
                     resumeId={selectedResumeId}
                     isAiImproved={isAiImproved}
+                    aiEnabled={aiEnabled}
                     onApplySuggestions={handleApplySuggestions}
                     onCreateNewVersion={handleCreateNewVersion}
                     onImproveApplied={handleImproveApplied}
@@ -105,8 +108,11 @@ function HomeContent({
                 onSubmit={handleSubmit}
                 isPending={isPending}
                 resumeId={selectedResumeId}
+                isAiImproved={isAiImproved}
+                aiEnabled={aiEnabled}
                 onApplySuggestions={handleApplySuggestions}
                 onCreateNewVersion={handleCreateNewVersion}
+                onImproveApplied={handleImproveApplied}
               />
             </FormProvider>
             <ResumePreviewWrapper
@@ -121,7 +127,7 @@ function HomeContent({
   );
 }
 
-export default function Home() {
+export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
@@ -276,7 +282,8 @@ export default function Home() {
         ...infoData,
         ...mergedForm,
         id: undefined,
-        title: suggestions.title ?? `${infoData.title} (AI Tailored)`
+        title: suggestions.title ?? `${infoData.title} (AI Tailored)`,
+        isAiImproved: true
       },
       {
         onSuccess: (data) => {
@@ -315,6 +322,7 @@ export default function Home() {
           handleCreateNewVersion={handleCreateNewVersion}
           isAiImproved={infoForm.watch('isAiImproved') ?? false}
           handleImproveApplied={handleImproveApplied}
+          aiEnabled={aiEnabled}
         />
       </SidebarInset>
     </SidebarProvider>

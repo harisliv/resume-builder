@@ -3,10 +3,10 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
-import { parsedResumeSchema } from '../types/pdfParse';
+import { type TParsedResume, parsedResumeSchema } from '../types/pdfParse';
 import { action } from './_generated/server';
-import { getAuthenticatedUser } from './auth';
-import { PARSE_SYSTEM_PROMPT } from './parseResumePdfPrompt';
+import { internal } from './_generated/api';
+import { getAuthenticatedUser, getUserRole } from './auth';
 
 /**
  * Parses raw PDF text into structured resume data using AI.
@@ -58,20 +58,36 @@ export const parseResumePdf = action({
       })
     )
   }),
-  handler: async (ctx, args) => {
-    await getAuthenticatedUser(ctx);
+  handler: async (ctx, args): Promise<TParsedResume> => {
+    const userId = await getAuthenticatedUser(ctx);
+    const role = await getUserRole(ctx);
+
+    if (role !== 'admin') {
+      await ctx.runMutation(internal.aiAttempts.checkAttempt, { userId, type: 'pdf' });
+    }
 
     const key = process.env.ANTHROPIC_API_KEY;
     if (!key) throw new Error('ANTHROPIC_API_KEY not set');
 
     const model = createAnthropic({ apiKey: key })('claude-sonnet-4-6');
 
-    const { output } = await generateText({
+    /** Fetch parse prompt from DB. */
+    const dbPrompt: { content: string } | null = await ctx.runQuery(
+      internal.systemPrompts.getByNameInternal,
+      { name: 'PDF Resume Parser' }
+    );
+    if (!dbPrompt) throw new Error('System prompt "PDF Resume Parser" not found. Run seed.');
+
+    const { output }: { output: TParsedResume } = await generateText({
       model,
-      system: PARSE_SYSTEM_PROMPT,
+      system: dbPrompt.content,
       prompt: `Parse the following resume text into structured JSON:\n\n${args.rawText}`,
       output: Output.object({ schema: parsedResumeSchema })
     });
+
+    if (role !== 'admin') {
+      await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'pdf' });
+    }
 
     return output;
   }

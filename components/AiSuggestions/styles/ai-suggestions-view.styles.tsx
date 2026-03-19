@@ -2,6 +2,7 @@ import type { ComponentProps } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Circle, CircleDot } from 'lucide-react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -187,6 +188,37 @@ export function RemovableSkillBadge({
         </button>
       )}
     </NewSkillBadge>
+  );
+}
+
+type TVersionFieldProps = ComponentProps<'div'> & {
+  selected: boolean;
+  onSelect: () => void;
+};
+
+/** Clickable radio-style field. Only fires onSelect when not already selected. */
+export function VersionField({
+  selected,
+  onSelect,
+  children,
+  className,
+  ...props
+}: TVersionFieldProps) {
+  return (
+    <div
+      className={cn('flex cursor-pointer items-start gap-2', className)}
+      onClick={() => !selected && onSelect()}
+      {...props}
+    >
+      {selected ? (
+        <CircleDot className="text-primary mt-0.5 size-4 shrink-0" />
+      ) : (
+        <Circle className="text-muted-foreground/50 hover:text-primary/50 mt-0.5 size-4 shrink-0" />
+      )}
+      <div className={cn('flex-1 transition-opacity', !selected && 'opacity-40')}>
+        {children}
+      </div>
+    </div>
   );
 }
 

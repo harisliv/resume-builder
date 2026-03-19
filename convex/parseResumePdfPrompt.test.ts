@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { PARSE_SYSTEM_PROMPT } from './parseResumePdfPrompt';
+import { SEED_PROMPTS } from './seeds/prompts';
 
-describe('PARSE_SYSTEM_PROMPT', () => {
+const PARSE_SYSTEM_PROMPT =
+  SEED_PROMPTS.find((p) => p.name === 'PDF Resume Parser')!.content;
+
+describe('PARSE_SYSTEM_PROMPT (seed)', () => {
   it('instructs the model to split dated sub-roles under one company', () => {
     expect(PARSE_SYSTEM_PROMPT).toContain('same company');
     expect(PARSE_SYSTEM_PROMPT).toContain('separate experience item');

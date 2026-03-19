@@ -33,6 +33,7 @@ export default function ResumeForm({
   isPending,
   resumeId,
   isAiImproved,
+  aiEnabled,
   onApplySuggestions,
   onCreateNewVersion,
   onImproveApplied
@@ -41,6 +42,7 @@ export default function ResumeForm({
   isPending: boolean;
   resumeId?: Id<'resumes'>;
   isAiImproved?: boolean;
+  aiEnabled?: boolean;
   onApplySuggestions?: (suggestions: TAiSuggestions) => void;
   onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
   onImproveApplied?: (newResumeId: Id<'resumes'>) => void;
@@ -67,7 +69,7 @@ export default function ResumeForm({
         <SectionCardHeader>
           <SectionCardTitle icon={FileText}>Resume Form</SectionCardTitle>
           <SectionCardActions>
-            {resumeId && (
+            {aiEnabled && resumeId && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="inline-flex shrink-0">
@@ -117,7 +119,7 @@ export default function ResumeForm({
         </SectionCardContent>
       </SectionCard>
 
-      {resumeId && (
+      {aiEnabled && resumeId && (
         <AiSuggestionsDialog
           open={aiDialogOpen}
           onOpenChange={setAiDialogOpen}

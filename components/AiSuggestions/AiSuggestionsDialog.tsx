@@ -24,6 +24,15 @@ import { dialogReducer, initialDialogState } from './utils/dialogReducer';
 import { ImproveTab } from './components/ImproveTab';
 import { MatchJobTab } from './components/MatchJobTab';
 
+/** Returns a user-friendly error message for AI generation failures. */
+function getAiErrorMessage(e: unknown): string {
+  const msg = e instanceof Error ? e.message : String(e);
+  if (/credit|balance|billing/i.test(msg)) {
+    return 'AI service is temporarily unavailable. Please try again later.';
+  }
+  return 'Failed to generate suggestions';
+}
+
 type TAiSuggestionsDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -83,12 +92,17 @@ export function AiSuggestionsDialog({
     dispatch({ type: 'GENERATE_START' });
     try {
       const result = await generateSuggestions({ resumeId, jobDescription });
+      if (result.error) {
+        toast.error(getAiErrorMessage(result.error));
+        dispatch({ type: 'GENERATE_ERROR' });
+        return;
+      }
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch {
-      toast.error('Failed to generate suggestions');
+    } catch (e) {
+      toast.error(getAiErrorMessage(e));
       dispatch({ type: 'GENERATE_ERROR' });
     }
   };
@@ -128,15 +142,22 @@ export function AiSuggestionsDialog({
     dispatch({ type: 'REGENERATE_START' });
     try {
       const result = await generateSuggestions({ resumeId, jobDescription });
+      if (result.error) {
+        const msg = getAiErrorMessage(result.error);
+        toast.error(msg);
+        dispatch({ type: 'REGENERATE_ERROR', payload: msg });
+        return;
+      }
       dispatch({
         type: 'GENERATE_SUCCESS',
         payload: { result, jobDescription }
       });
-    } catch {
-      toast.error('Failed to generate suggestions');
+    } catch (e) {
+      const msg = getAiErrorMessage(e);
+      toast.error(msg);
       dispatch({
         type: 'REGENERATE_ERROR',
-        payload: 'Failed to generate suggestions'
+        payload: msg
       });
     }
   };
@@ -147,7 +168,8 @@ export function AiSuggestionsDialog({
     if (!result.editedSuggestions || !result.selection) return;
     const filtered = buildFilteredSuggestions(
       result.editedSuggestions,
-      result.selection
+      result.selection,
+      currentData
     );
     const ok = await confirm({
       title: 'Apply suggestions?',
@@ -167,7 +189,8 @@ export function AiSuggestionsDialog({
     if (!result.editedSuggestions || !result.selection) return;
     const filtered = buildFilteredSuggestions(
       result.editedSuggestions,
-      result.selection
+      result.selection,
+      currentData
     );
     onCreateNewVersion(filtered);
     onOpenChange(false);

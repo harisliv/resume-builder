@@ -1,6 +1,8 @@
 'use client';
 
 import { Plus, Upload } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import {
   Tooltip,
   TooltipTrigger,
@@ -20,12 +22,19 @@ export function ResumeActions({
   onCreateNew: () => void;
   onImportPdf: () => void;
 }) {
-  const { getDisabledTooltip, resumeLimit } = usePrivileges();
+  const { getDisabledTooltip, resumeLimit, isAdmin } = usePrivileges();
   const { data: resumeTitles } = useGetUserResumeTitles();
+  const pdfAttempts = useQuery(api.aiAttempts.getRemainingAttempts, {
+    type: 'pdf'
+  });
   const atLimit = (resumeTitles?.length ?? 0) >= resumeLimit;
   const disabledTooltip = atLimit
     ? 'Resume limit reached. Upgrade to create more.'
     : (getDisabledTooltip(true) ?? undefined);
+  const pdfLimitReached = !isAdmin && pdfAttempts?.remaining === 0;
+  const pdfTooltip = pdfLimitReached
+    ? 'PDF import limit reached (3/month). Try again next month.'
+    : disabledTooltip;
   const { isCollapsed } = useSidebar();
 
   return (
@@ -49,8 +58,8 @@ export function ResumeActions({
             label="Import PDF"
             icon={<Upload className="size-4" />}
             onClick={onImportPdf}
-            disabled={!!disabledTooltip}
-            disabledTooltip={disabledTooltip}
+            disabled={!!pdfTooltip}
+            disabledTooltip={pdfTooltip}
             collapsed={isCollapsed}
             variant="teal"
           />
@@ -130,9 +139,7 @@ function ActionButton({
     >
       {!collapsed && <span className="flex-1 text-left">{label}</span>}
       <span
-        className={cn(
-          collapsed ? 'text-sidebar-foreground' : 'text-white/80'
-        )}
+        className={cn(collapsed ? 'text-sidebar-foreground' : 'text-white/80')}
       >
         {icon}
       </span>

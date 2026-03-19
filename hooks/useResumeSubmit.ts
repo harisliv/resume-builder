@@ -16,7 +16,8 @@ async function submitResume(
     experience,
     education,
     skills,
-    documentStyle
+    documentStyle,
+    isAiImproved
   } = data;
 
   if (id) {
@@ -37,7 +38,8 @@ async function submitResume(
       experience,
       education,
       skills,
-      documentStyle
+      documentStyle,
+      isAiImproved
     });
     return { success: true, id: resumeId };
   }
