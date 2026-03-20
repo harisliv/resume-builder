@@ -20,3 +20,9 @@
 
 - `pnpm typeCheck`
 - `pnpm build`
+
+## Convex deploy / seed
+
+- **`pnpm deploy:dev`** — Seeds prompts/models to **dev** (`convex run … --push` with no preview).
+- **`pnpm deploy:preview`** — Same seeds, targets a **Convex preview deployment** named `develop` unless you pass a branch: `bash scripts/deploy.sh preview <branch>`. Preview name must already exist (e.g. from Vercel branch deploys); otherwise Convex returns `PreviewNotFound` (404 on `authorize_preview`). If the Convex dashboard shows **no** preview deployments, use **`pnpm deploy:dev`** until previews are enabled (e.g. connect the repo / enable preview deploys in Convex + hosting).
+- **`pnpm deploy:prod`** — Deploy + seed production.
