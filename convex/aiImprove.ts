@@ -115,29 +115,34 @@ export const applyImprovements = mutation({
 
     const experience = patch.experience && resume.experience
       ? resume.experience.map(
-          (exp: Record<string, unknown>, idx: number) => {
-            const patchExp = patch.experience?.[idx];
-            if (!patchExp) return exp;
-            return {
-              ...exp,
-              ...(patchExp.description && { description: patchExp.description }),
-              ...(patchExp.highlights && {
-                highlights: patchExp.highlights.map((h: string) => ({
-                  value: h
-                }))
-              })
-            };
-          }
-        )
+        (exp: Record<string, unknown>, idx: number) => {
+          const patchExp = patch.experience?.[idx];
+          if (!patchExp) return exp;
+          return {
+            ...exp,
+            ...(patchExp.description && { description: patchExp.description }),
+            ...(patchExp.highlights && {
+              highlights: patchExp.highlights.map((h: { id: string; value: string }) => ({
+                id: h.id,
+                value: h.value
+              }))
+            })
+          };
+        }
+      )
       : resume.experience;
 
     const skills = patch.skills
       ? patch.skills.map(
-          (cat: { name: string; values: string[] }) => ({
-            name: cat.name,
-            values: cat.values.map((val: string) => ({ value: val }))
-          })
-        )
+        (cat: { id: string; name: string; values: { id: string; value: string }[] }) => ({
+          id: cat.id,
+          name: cat.name,
+          values: cat.values.map((val: { id: string; value: string }) => ({
+            id: val.id,
+            value: val.value
+          }))
+        })
+      )
       : resume.skills;
 
     const newResumeId = await ctx.db.insert('resumes', {

@@ -7,20 +7,23 @@ const resume = {
   },
   experience: [
     {
+      id: 'exp1',
       company: 'Acme',
       position: 'Frontend Engineer',
       description: 'Built internal dashboards.',
-      highlights: [{ value: 'Built React dashboards for ops teams' }]
+      highlights: [{ id: 'h1', value: 'Built React dashboards for ops teams' }]
     }
   ],
   skills: [
     {
+      id: 'cat1',
       name: 'Frontend',
-      values: [{ value: 'React' }, { value: 'TypeScript' }]
+      values: [{ id: 's1', value: 'React' }, { id: 's2', value: 'TypeScript' }]
     },
     {
+      id: 'cat2',
       name: 'Tools',
-      values: [{ value: 'Figma' }]
+      values: [{ id: 's3', value: 'Figma' }]
     }
   ]
 };
@@ -52,11 +55,11 @@ describe('buildMockResumeSuggestions', () => {
     });
 
     expect(suggestions.summary).toContain('React');
-    expect(suggestions.experience?.[0]?.highlights?.[0]).toContain('analytics');
+    expect(suggestions.experience?.[0]?.highlights?.[0]?.value).toContain('analytics');
     expect(
       suggestions.skills?.map((category: { name: string }) => category.name)
     ).toEqual(['Frontend', 'Tools']);
-    expect(suggestions.skills?.[0]?.values).toContain('analytics');
+    expect(suggestions.skills?.[0]?.values.map((v) => v.value)).toContain('analytics');
   });
 });
 

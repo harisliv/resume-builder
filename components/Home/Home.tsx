@@ -241,14 +241,19 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
         }),
         ...(suggestions.experience?.[idx]?.highlights && {
           highlights: suggestions.experience[idx].highlights.map((h) => ({
-            value: h
+            id: h.id,
+            value: h.value
           }))
         })
       })),
       skills: suggestions.skills
         ? suggestions.skills.map((cat) => ({
+            id: cat.id,
             name: cat.name,
-            values: cat.values.map((v) => ({ value: v }))
+            values: cat.values.map((v) => ({
+              id: v.id,
+              value: v.value
+            }))
           }))
         : currentForm.skills
     };

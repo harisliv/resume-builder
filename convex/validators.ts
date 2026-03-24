@@ -11,6 +11,7 @@ export const personalInfoValidator = v.object({
 });
 
 export const experienceValidator = v.object({
+  id: v.string(),
   company: v.optional(v.string()),
   position: v.optional(v.string()),
   projectName: v.optional(v.string()),
@@ -19,10 +20,13 @@ export const experienceValidator = v.object({
   endDate: v.optional(v.string()),
   current: v.optional(v.boolean()),
   description: v.optional(v.string()),
-  highlights: v.optional(v.array(v.object({ value: v.string() })))
+  highlights: v.optional(
+    v.array(v.object({ id: v.string(), value: v.string() }))
+  )
 });
 
 export const educationValidator = v.object({
+  id: v.string(),
   institution: v.optional(v.string()),
   degree: v.optional(v.string()),
   field: v.optional(v.string()),
@@ -30,6 +34,31 @@ export const educationValidator = v.object({
   graduationDate: v.optional(v.string()),
   current: v.optional(v.boolean()),
   gpa: v.optional(v.string())
+});
+
+/** Validator for a skill category with named values. */
+export const skillsValidator = v.object({
+  id: v.string(),
+  name: v.string(),
+  values: v.array(v.object({ id: v.string(), value: v.string() }))
+});
+
+/** Validator for a single item in a custom section. */
+export const customSectionItemValidator = v.object({
+  id: v.string(),
+  title: v.string(),
+  subtitle: v.optional(v.string()),
+  from: v.optional(v.string()),
+  to: v.optional(v.string()),
+  location: v.optional(v.string()),
+  description: v.optional(v.string())
+});
+
+/** Validator for a custom resume section (e.g., Hobbies, Certifications). */
+export const customSectionValidator = v.object({
+  id: v.string(),
+  sectionTitle: v.string(),
+  items: v.array(customSectionItemValidator)
 });
 
 export const documentStyleValidator = v.object({

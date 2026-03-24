@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,7 +35,8 @@ export default function Highlights({ index }: { index: number }) {
 
   /** Moves a highlight up or down within one experience entry. */
   const moveHighlight = (fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= fields.length || fromIndex === toIndex) return;
+    if (toIndex < 0 || toIndex >= fields.length || fromIndex === toIndex)
+      return;
     swap(fromIndex, toIndex);
   };
 
@@ -56,7 +58,9 @@ export default function Highlights({ index }: { index: number }) {
                 aria-label="Move highlight up"
                 aria-disabled={highlightIndex === 0}
                 className="text-muted-foreground hover:bg-background/80 hover:text-foreground aria-disabled:pointer-events-none aria-disabled:opacity-40"
-                onClick={() => moveHighlight(highlightIndex, highlightIndex - 1)}
+                onClick={() =>
+                  moveHighlight(highlightIndex, highlightIndex - 1)
+                }
               >
                 <HugeiconsIcon icon={ArrowUp01Icon} className="h-3 w-3" />
               </Button>
@@ -67,7 +71,9 @@ export default function Highlights({ index }: { index: number }) {
                 aria-label="Move highlight down"
                 aria-disabled={highlightIndex === fields.length - 1}
                 className="text-muted-foreground hover:bg-background/80 hover:text-foreground aria-disabled:pointer-events-none aria-disabled:opacity-40"
-                onClick={() => moveHighlight(highlightIndex, highlightIndex + 1)}
+                onClick={() =>
+                  moveHighlight(highlightIndex, highlightIndex + 1)
+                }
               >
                 <HugeiconsIcon icon={ArrowDown01Icon} className="h-3 w-3" />
               </Button>
@@ -84,7 +90,7 @@ export default function Highlights({ index }: { index: number }) {
               id={`highlight-${index}-${highlightIndex}`}
               placeholder="Enter a highlight"
               rows={1}
-              className="flex-1 min-h-10! max-h-24 resize-none"
+              className="max-h-24 min-h-10! flex-1 resize-none"
             />
             <Button
               type="button"
@@ -103,7 +109,7 @@ export default function Highlights({ index }: { index: number }) {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => append({ value: '' })}
+          onClick={() => append({ id: nanoid(), value: '' })}
           className="w-full"
         >
           <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />

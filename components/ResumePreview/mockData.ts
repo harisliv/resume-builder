@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import type { TResumeData } from '@/types/schema';
 import { resumeInfoDefaultValues } from '@/types/schema';
 
@@ -14,6 +15,7 @@ export const mockPersonalInfo = {
 
 export const mockExperience = [
   {
+    id: nanoid(),
     company: 'NTT DATA Europe & Latam',
     position: 'Front End Lead, UNFCCC ISS',
     location: 'Athens, Greece',
@@ -23,11 +25,12 @@ export const mockExperience = [
     description:
       'Promoted to Front End Lead for the UNFCCC International Sustainability Standards project.',
     highlights: [
-      { value: 'Led frontend architecture for climate reporting platform' },
-      { value: 'Managed team of 4 frontend engineers' }
+      { id: nanoid(), value: 'Led frontend architecture for climate reporting platform' },
+      { id: nanoid(), value: 'Managed team of 4 frontend engineers' }
     ]
   },
   {
+    id: nanoid(),
     company: 'NTT DATA Europe & Latam',
     position: 'Smart Contract Engineer, IOBSI',
     location: 'Athens, Greece',
@@ -37,11 +40,12 @@ export const mockExperience = [
     description:
       'Engineered smart contracts and frontend interfaces for blockchain-based identity solutions.',
     highlights: [
-      { value: 'Built Solidity smart contracts for decentralized identity' },
-      { value: 'Integrated Web3 wallet authentication' }
+      { id: nanoid(), value: 'Built Solidity smart contracts for decentralized identity' },
+      { id: nanoid(), value: 'Integrated Web3 wallet authentication' }
     ]
   },
   {
+    id: nanoid(),
     company: 'NTT DATA Europe & Latam',
     position: 'Deputy Team Leader, UNFCCC ETF',
     location: 'Athens, Greece',
@@ -51,11 +55,12 @@ export const mockExperience = [
     description:
       'Led general tasks and sprint planning for the UNFCCC Enhanced Transparency Framework.',
     highlights: [
-      { value: 'Coordinated cross-functional team of 8 engineers' },
-      { value: 'Delivered project milestones ahead of schedule' }
+      { id: nanoid(), value: 'Coordinated cross-functional team of 8 engineers' },
+      { id: nanoid(), value: 'Delivered project milestones ahead of schedule' }
     ]
   },
   {
+    id: nanoid(),
     company: 'Tech Innovations Inc',
     position: 'Software Developer',
     location: 'Seattle, WA',
@@ -65,14 +70,15 @@ export const mockExperience = [
     description:
       'Developed full-stack web applications using modern frameworks. Collaborated with design team to implement responsive UI components.',
     highlights: [
-      { value: 'Improved test coverage to 85%' },
-      { value: 'Built RESTful APIs' }
+      { id: nanoid(), value: 'Improved test coverage to 85%' },
+      { id: nanoid(), value: 'Built RESTful APIs' }
     ]
   }
 ];
 
 export const mockEducation = [
   {
+    id: nanoid(),
     institution: 'University of California',
     degree: 'Bachelor of Science',
     field: 'Computer Science',
@@ -81,6 +87,7 @@ export const mockEducation = [
     gpa: '3.8'
   },
   {
+    id: nanoid(),
     institution: 'MIT',
     degree: 'Master of Science',
     field: 'Computer Science',
@@ -91,11 +98,11 @@ export const mockEducation = [
 ];
 
 export const mockSkills = [
-  { name: 'Languages', values: [{ value: 'JavaScript' }, { value: 'TypeScript' }, { value: 'Python' }] },
-  { name: 'Frontend', values: [{ value: 'React' }] },
-  { name: 'Backend', values: [{ value: 'Node.js' }] },
-  { name: 'Data', values: [{ value: 'PostgreSQL' }] },
-  { name: 'DevOps', values: [{ value: 'Docker' }, { value: 'AWS' }] }
+  { id: nanoid(), name: 'Languages', values: [{ id: nanoid(), value: 'JavaScript' }, { id: nanoid(), value: 'TypeScript' }, { id: nanoid(), value: 'Python' }] },
+  { id: nanoid(), name: 'Frontend', values: [{ id: nanoid(), value: 'React' }] },
+  { id: nanoid(), name: 'Backend', values: [{ id: nanoid(), value: 'Node.js' }] },
+  { id: nanoid(), name: 'Data', values: [{ id: nanoid(), value: 'PostgreSQL' }] },
+  { id: nanoid(), name: 'DevOps', values: [{ id: nanoid(), value: 'Docker' }, { id: nanoid(), value: 'AWS' }] }
 ];
 
 /** Homepage default mock as TResumeData — used when no resume selected. */

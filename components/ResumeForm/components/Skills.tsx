@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import type { TResumeForm } from '@/types/schema';
 import SectionTitle from './styles/section-title';
@@ -80,8 +81,9 @@ export default function Skills() {
           type="button"
           onClick={() =>
             append({
+              id: nanoid(),
               name: getNextCategoryName(getValues('skills') ?? []),
-              values: [{ value: '' }]
+              values: [{ id: nanoid(), value: '' }]
             })
           }
         >

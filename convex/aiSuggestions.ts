@@ -1,8 +1,6 @@
 'use node';
 
 import { createAnthropic } from '@ai-sdk/anthropic';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { createOpenAI } from '@ai-sdk/openai';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
 import { normalizeSuggestionsOutput, suggestionsOutputSchema } from '../types/aiSuggestions';
@@ -19,74 +17,43 @@ const suggestionsValidator = v.object({
     v.array(
       v.object({
         description: v.optional(v.string()),
-        highlights: v.optional(v.array(v.string()))
+        highlights: v.optional(v.array(v.object({ id: v.string(), value: v.string() })))
       })
     )
   ),
   skills: v.optional(
     v.array(
       v.object({
+        id: v.string(),
         name: v.string(),
-        values: v.array(v.string())
+        values: v.array(v.object({ id: v.string(), value: v.string() }))
       })
     )
   ),
   jdKeywords: v.optional(v.array(v.string()))
 });
 
-/** Ensures model does not rename/add/remove skill categories. */
-function assertSkillCategoriesMatchInput(
-  inputCategoryNames: string[],
-  parsed: { skills?: { name: string; values: string[] }[] }
-) {
-  if (!parsed.skills) return;
-  const suggestedCategoryNames = parsed.skills.map((category) => category.name.trim());
-  if (inputCategoryNames.length !== suggestedCategoryNames.length) {
-    throw new Error('Invalid skills categories: category count must match input.');
-  }
-  for (let i = 0; i < inputCategoryNames.length; i += 1) {
-    if (inputCategoryNames[i] !== suggestedCategoryNames[i]) {
-      throw new Error(
-        'Invalid skills categories: category names/order must match input exactly.'
-      );
-    }
-  }
-}
 
-/** Creates a provider-specific model instance. */
-function createModel(provider: string, modelId: string) {
-  switch (provider) {
-    case 'google': {
-      const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-      if (!key) throw new Error('GOOGLE_GENERATIVE_AI_API_KEY not set');
-      return createGoogleGenerativeAI({ apiKey: key })(modelId);
+/** Reads model config from env vars. Defaults to Claude Sonnet 4.6. */
+function getModelConfig() {
+  const modelId = process.env.AI_MODEL_ID;
+  if (!modelId) throw new Error('AI_MODEL_ID env var not set');
+  return {
+    modelId,
+    pricing: {
+      input: Number(process.env.AI_MODEL_PRICING_INPUT ?? 0),
+      output: Number(process.env.AI_MODEL_PRICING_OUTPUT ?? 0)
     }
-    case 'anthropic': {
-      const key = process.env.ANTHROPIC_API_KEY;
-      if (!key) throw new Error('ANTHROPIC_API_KEY not set');
-      return createAnthropic({ apiKey: key })(modelId);
-    }
-    case 'openai': {
-      const key = process.env.OPENAI_API_KEY;
-      if (!key) throw new Error('OPENAI_API_KEY not set');
-      return createOpenAI({ apiKey: key })(modelId);
-    }
-    default:
-      throw new Error(`Unknown provider: ${provider}`);
-  }
+  };
 }
 
 /**
- * Generates resume suggestions using Claude Sonnet with extended thinking
- * and structured output.
+ * Generates resume suggestions using Claude Sonnet with structured output.
  */
 export const generateResumeSuggestions = action({
   args: {
     resumeId: v.id('resumes'),
-    jobDescription: v.string(),
-    modelId: v.optional(v.string()),
-    systemPromptOverride: v.optional(v.string()),
-    systemRuleOverride: v.optional(v.string())
+    jobDescription: v.string()
   },
   returns: v.object({
     modelId: v.string(),
@@ -103,8 +70,8 @@ export const generateResumeSuggestions = action({
     suggestions?: {
       title?: string;
       summary?: string;
-      experience?: { description?: string; highlights?: string[] }[];
-      skills?: { name: string; values: string[] }[];
+      experience?: { description?: string; highlights?: { id: string; value: string }[] }[];
+      skills?: { id: string; name: string; values: { id: string; value: string }[] }[];
       jdKeywords?: string[];
     };
     error?: string;
@@ -130,19 +97,6 @@ export const generateResumeSuggestions = action({
       throw new Error('Resume not found');
     }
 
-    /** Resolve model config from DB. */
-    const allModels = await ctx.runQuery(internal.modelConfigs.listInternal);
-    const resolvedModel = args.modelId
-      ? allModels.find((m: { modelId: string }) => m.modelId === args.modelId)
-      : allModels.find((m: { isDefault?: boolean }) => m.isDefault);
-    if (!resolvedModel) throw new Error('No model config found');
-    const modelConfig = {
-      provider: resolvedModel.provider as string,
-      modelId: resolvedModel.modelId as string,
-      label: resolvedModel.label as string,
-      pricing: resolvedModel.pricing as { input: number; output: number }
-    };
-
     const inputSkillCategoryNames = (resume.skills ?? []).map((category) =>
       category.name.trim()
     );
@@ -151,6 +105,7 @@ export const generateResumeSuggestions = action({
       {
         summary: resume.personalInfo?.summary,
         experience: resume.experience?.map((exp) => ({
+          id: exp.id,
           company: exp.company,
           position: exp.position,
           description: exp.description,
@@ -173,13 +128,13 @@ export const generateResumeSuggestions = action({
           jobDescription: args.jobDescription
         });
         const durationMs = Date.now() - start;
-        assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
         if (shouldConsumeAttempt) {
           await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
         }
+        const { modelId } = getModelConfig();
         return {
-          modelId: modelConfig.modelId,
-          label: `${modelConfig.label} (mock)`,
+          modelId,
+          label: modelId,
           suggestions,
           cost: 0,
           durationMs,
@@ -187,28 +142,17 @@ export const generateResumeSuggestions = action({
         };
       }
 
-      /** Resolve system prompt and rules from DB. */
-      let basePrompt = args.systemPromptOverride;
-      let rules = args.systemRuleOverride;
-      if (!basePrompt) {
-        const defaultPrompt = await ctx.runQuery(
-          internal.systemPrompts.getDefaultInternal,
-          { type: 'prompt' as const }
-        );
-        if (!defaultPrompt) throw new Error('No default system prompt found');
-        basePrompt = defaultPrompt.content;
-      }
-      if (!rules) {
-        const defaultRule = await ctx.runQuery(
-          internal.systemPrompts.getDefaultInternal,
-          { type: 'rule' as const }
-        );
-        if (!defaultRule) throw new Error('No default rule found');
-        rules = defaultRule.content;
-      }
-      const systemPrompt = `${basePrompt}\n\n${rules}`;
+      const dbPrompt = await ctx.runQuery(
+        internal.systemPrompts.getByTypeInternal,
+        { type: 'jd-optimizer' }
+      );
+      if (!dbPrompt) throw new Error('No jd-optimizer system prompt found');
+      const systemPrompt = dbPrompt.content;
 
-      const aiModel = createModel(modelConfig.provider, modelConfig.modelId);
+      const { modelId, pricing } = getModelConfig();
+      const key = process.env.ANTHROPIC_API_KEY;
+      if (!key) throw new Error('ANTHROPIC_API_KEY not set');
+      const aiModel = createAnthropic({ apiKey: key })(modelId);
       const { output, usage } = await generateText({
         model: aiModel,
         system: systemPrompt,
@@ -217,21 +161,22 @@ export const generateResumeSuggestions = action({
       });
       const durationMs = Date.now() - start;
       const suggestions = normalizeSuggestionsOutput(output);
-      assertSkillCategoriesMatchInput(inputSkillCategoryNames, suggestions);
+
       const cost = (
-        (usage.inputTokens ?? 0) * modelConfig.pricing.input +
-        (usage.outputTokens ?? 0) * modelConfig.pricing.output
+        (usage.inputTokens ?? 0) * pricing.input +
+        (usage.outputTokens ?? 0) * pricing.output
       ) / 1_000_000;
 
       if (shouldConsumeAttempt) {
         await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
       }
-      return { modelId: modelConfig.modelId, label: modelConfig.label, suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
+      return { modelId, label: modelId, suggestions, cost, durationMs, jdKeywords: suggestions.jdKeywords };
     } catch (e) {
+      const { modelId } = getModelConfig();
       const durationMs = Date.now() - start;
       const errorMsg = e instanceof Error ? e.message : String(e);
       console.error('[generateResumeSuggestions] failed:', errorMsg);
-      return { modelId: modelConfig.modelId, label: modelConfig.label, error: errorMsg, durationMs };
+      return { modelId, label: modelId, error: errorMsg, durationMs };
     }
   }
 });

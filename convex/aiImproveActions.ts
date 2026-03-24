@@ -3,8 +3,8 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
 import { v } from 'convex/values';
-import { internal } from './_generated/api';
 import { action } from './_generated/server';
+import { internal } from './_generated/api';
 import { buildMockImproveTurn, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { formatResumePrompt } from './formatResumePrompt';
@@ -42,8 +42,8 @@ export const generateAssistantTurn = action({
       messages: { role: string; content: string }[];
       resume: {
         personalInfo?: { summary?: string };
-        experience?: { company?: string; position?: string; description?: string; highlights?: { value: string }[] }[];
-        skills?: { name: string; values: string[] | { value: string }[] }[];
+        experience?: { id: string; company?: string; position?: string; description?: string; highlights?: { id: string; value: string }[] }[];
+        skills?: { id: string; name: string; values: { id: string; value: string }[] }[];
       };
     } | null;
     if (!context) throw new Error('Thread not found or unauthorized');
@@ -53,11 +53,13 @@ export const generateAssistantTurn = action({
       summary: resume.personalInfo?.summary,
       experience: resume.experience?.map(
         (exp: {
+          id: string;
           company?: string;
           position?: string;
           description?: string;
-          highlights?: { value: string }[];
+          highlights?: { id: string; value: string }[];
         }) => ({
+          id: exp.id,
           company: exp.company,
           position: exp.position,
           description: exp.description,
@@ -92,17 +94,19 @@ export const generateAssistantTurn = action({
       };
     }
 
-    /** Fetch the appropriate prompt from DB by name. */
-    const promptName = isFirstTurn ? 'AI Improve – Questions' : 'AI Improve – Apply';
+    /** Fetch the appropriate prompt from DB by type. */
+    const promptType = isFirstTurn ? 'improve-questions' : 'improve-apply';
     const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByNameInternal, { name: promptName }
+      internal.systemPrompts.getByTypeInternal, { type: promptType }
     );
-    if (!dbPrompt) throw new Error(`System prompt "${promptName}" not found. Run seed.`);
+    if (!dbPrompt) throw new Error(`System prompt "${promptType}" not found. Run seed.`);
     const systemPrompt: string = `${dbPrompt.content}\n\nCurrent resume:\n${resumeText}`;
 
-    const anthropic = createAnthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY!
-    });
+    const modelId = process.env.AI_MODEL_ID;
+    if (!modelId) throw new Error('AI_MODEL_ID env var not set');
+    const key = process.env.ANTHROPIC_API_KEY;
+    if (!key) throw new Error('ANTHROPIC_API_KEY env var not set');
+    const anthropic = createAnthropic({ apiKey: key });
     /** For apply turn, only send the last user message (answers) — no history needed. */
     const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
     const aiMessages = isFirstTurn
@@ -110,7 +114,7 @@ export const generateAssistantTurn = action({
       : [{ role: 'user' as const, content: lastUserMessage?.content ?? '' }];
 
     const { text, usage } = await generateText({
-      model: anthropic('claude-sonnet-4-6'),
+      model: anthropic(modelId),
       system: systemPrompt,
       messages: aiMessages
     });

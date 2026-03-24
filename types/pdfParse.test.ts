@@ -95,8 +95,10 @@ describe('normalizeParsedResume', () => {
     });
     expect(normalized.education[0].graduationDate).toBe('2019');
     expect(normalized.education[0].location).toBe('Madrid, Spain');
-    expect(normalized.skills[0].values).toEqual([{ value: 'TypeScript' }]);
-    expect(normalized.experience[0].highlights).toEqual([{ value: 'Built forms' }]);
+    expect(normalized.skills[0].values).toMatchObject([{ value: 'TypeScript' }]);
+    expect(normalized.skills[0].values[0].id).toBeDefined();
+    expect(normalized.experience[0].highlights).toMatchObject([{ value: 'Built forms' }]);
+    expect(normalized.experience[0].highlights[0].id).toBeDefined();
   });
 
   it('blanks invalid phone numbers', () => {

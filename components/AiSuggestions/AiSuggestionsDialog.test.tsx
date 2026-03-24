@@ -85,14 +85,15 @@ function makeResumeForm(): TResumeForm {
         company: 'Acme',
         position: 'Frontend Engineer',
         description: 'Built dashboard',
-        highlights: [{ value: 'Built dashboard' }]
+        highlights: [{ id: 'h1', value: 'Built dashboard' }]
       }
     ],
     education: [],
     skills: [
       {
+        id: 'sk1',
         name: 'Frontend',
-        values: [{ value: 'React' }]
+        values: [{ id: 'sv1', value: 'React' }]
       }
     ]
   };
@@ -133,13 +134,14 @@ describe('AiSuggestionsDialog', () => {
         experience: [
           {
             description: 'Sharper description',
-            highlights: ['Improved conversion by 20%.']
+            highlights: [{ id: 'h1', value: 'Improved conversion by 20%.' }]
           }
         ],
         skills: [
           {
+            id: 'cat1',
             name: 'Frontend',
-            values: ['React', 'analytics']
+            values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'analytics' }]
           }
         ],
         jdKeywords: ['react']
@@ -173,13 +175,14 @@ describe('AiSuggestionsDialog', () => {
         experience: [
           {
             description: 'Sharper description',
-            highlights: ['Improved conversion by 20%.']
+            highlights: [{ id: 'h1', value: 'Improved conversion by 20%.' }]
           }
         ],
         skills: [
           {
+            id: 'cat1',
             name: 'Frontend',
-            values: ['React', 'analytics']
+            values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'analytics' }]
           }
         ]
       });
@@ -196,13 +199,14 @@ describe('AiSuggestionsDialog', () => {
         experience: [
           {
             description: 'Sharper description',
-            highlights: ['Improved conversion by 20%.']
+            highlights: [{ id: 'h1', value: 'Improved conversion by 20%.' }]
           }
         ],
         skills: [
           {
+            id: 'cat1',
             name: 'Frontend',
-            values: ['React', 'analytics']
+            values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'analytics' }]
           }
         ],
         jdKeywords: ['react']
@@ -234,13 +238,14 @@ describe('AiSuggestionsDialog', () => {
         experience: [
           {
             description: 'Sharper description',
-            highlights: ['Improved conversion by 20%.']
+            highlights: [{ id: 'h1', value: 'Improved conversion by 20%.' }]
           }
         ],
         skills: [
           {
+            id: 'cat1',
             name: 'Frontend',
-            values: ['React', 'analytics']
+            values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'analytics' }]
           }
         ]
       });

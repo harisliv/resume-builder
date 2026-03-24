@@ -2,7 +2,7 @@ import { authkit } from '@workos-inc/authkit-nextjs';
 import { type NextRequest, NextResponse } from 'next/server';
 
 /** Routes restricted to admin role only. */
-const ADMIN_ONLY_PATHS = ['/ai', '/compare'];
+const ADMIN_ONLY_PATHS = ['/compare'];
 
 /** Paths that don't require authentication. */
 const UNAUTHENTICATED_PATHS = ['/', '/sign-in', '/sign-up', '/callback'];

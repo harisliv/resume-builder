@@ -48,14 +48,15 @@ function makeResumeForm(): TResumeForm {
         company: 'Acme',
         position: 'Frontend Engineer',
         description: 'Built internal dashboards.',
-        highlights: [{ value: 'Built React dashboards for ops teams' }]
+        highlights: [{ id: 'h1', value: 'Built React dashboards for ops teams' }]
       }
     ],
     education: [],
     skills: [
       {
+        id: 'sk1',
         name: 'Frontend',
-        values: [{ value: 'React' }, { value: 'TypeScript' }]
+        values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'TypeScript' }]
       }
     ]
   };
@@ -100,13 +101,14 @@ describe('ImproveTab', () => {
             experience: [
               {
                 description: 'Improved description.',
-                highlights: ['Increased conversion by 20%.']
+                highlights: [{ id: 'h1', value: 'Increased conversion by 20%.' }]
               }
             ],
             skills: [
               {
+                id: 'sk1',
                 name: 'Frontend',
-                values: ['React', 'TypeScript', 'analytics']
+                values: [{ id: 'sv1', value: 'React' }, { id: 'sv2', value: 'TypeScript' }, { id: 'new1', value: 'analytics' }]
               }
             ]
           }),

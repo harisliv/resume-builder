@@ -25,11 +25,11 @@ export function buildFilteredSuggestions(
       const currentSet = new Set(currentValues.map((v) => v.toLowerCase()));
 
       return {
+        id: category.id,
         name: category.name,
         values: category.values.filter((skill, skillIdx) => {
           if (selected[skillIdx] ?? true) return true;
-          // Unchecked: keep only if skill exists in current (old version stays)
-          return currentSet.has(skill.toLowerCase());
+          return currentSet.has(skill.value.toLowerCase());
         })
       };
     })
@@ -44,24 +44,24 @@ export function buildFilteredSuggestions(
       const sel = selection.experience[idx];
       const currentExp = currentData.experience[idx];
       const currentHighlights = (currentExp?.highlights ?? []).map((h) => h.value);
+      const suggestedHighlightValues = (exp.highlights ?? []).map((h) => h.value);
 
-      // Map unchecked highlights to their current version
-      const suggestedHighlights = exp.highlights ?? [];
       const { suggestedToCurrent } = buildHighlightMatchMaps(
         currentHighlights,
-        suggestedHighlights
+        suggestedHighlightValues
       );
 
-      const highlights = suggestedHighlights
+      const highlights = (exp.highlights ?? [])
         .map((h, i) => {
           if (sel?.highlights[i]) return h;
-          // Unchecked: use matched current highlight, or drop if new
           const matchedCurrentIdx = suggestedToCurrent[i];
-          return matchedCurrentIdx >= 0
-            ? currentHighlights[matchedCurrentIdx]
-            : null;
+          if (matchedCurrentIdx >= 0) {
+            const matched = currentExp?.highlights?.[matchedCurrentIdx];
+            return matched ? { id: matched.id, value: matched.value } : null;
+          }
+          return null;
         })
-        .filter((h): h is string => h !== null);
+        .filter((h): h is { id: string; value: string } => h !== null);
 
       return {
         description: sel?.description

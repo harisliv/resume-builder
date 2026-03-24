@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import * as z from 'zod';
 import { format, isValid, parse } from 'date-fns';
 import { parsePhoneNumber } from 'react-phone-number-input';
@@ -136,22 +137,25 @@ export function normalizeParsedResume(raw: TParsedResume) {
     },
     experience: raw.experience.map((exp) => ({
       ...exp,
+      id: nanoid(),
       projectName: cleanText(exp.projectName),
       location: normalizeLocation(exp.location, personalLocation),
       startDate: normalizeMonthYear(exp.startDate),
       endDate: normalizeExperienceEndDate(exp.endDate, exp.current),
       current: exp.current || ['present', 'current'].includes(cleanText(exp.endDate).toLowerCase()),
-      highlights: exp.highlights.map((h) => ({ value: h }))
+      highlights: exp.highlights.map((h) => ({ id: nanoid(), value: h }))
     })),
     education: raw.education.map((edu) => ({
       ...edu,
+      id: nanoid(),
       location: normalizeLocation(edu.location, personalLocation),
       graduationDate: normalizeGraduationDate(edu.graduationDate),
       current: edu.current ?? false
     })),
     skills: raw.skills.map((cat) => ({
+      id: nanoid(),
       name: cleanText(cat.name),
-      values: cat.values.map((v) => ({ value: v }))
+      values: cat.values.map((v) => ({ id: nanoid(), value: v }))
     }))
   };
 }

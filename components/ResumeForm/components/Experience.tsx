@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import type { TResumeForm } from '@/types/schema';
-import { experienceDefaultValues } from '@/types/schema';
+import { createExperienceDefaults } from '@/types/schema';
 import SectionTitle from './styles/section-title';
 import FieldRow from './styles/field-row';
 import Company from './ExperienceFields/Company';
@@ -79,7 +79,7 @@ export default function Experience() {
     <div className="space-y-6">
       <div className="mb-4 flex items-center justify-between">
         <SectionTitle>Work Experience</SectionTitle>
-        <Button type="button" onClick={() => append(experienceDefaultValues)}>
+        <Button type="button" onClick={() => append(createExperienceDefaults())}>
           <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
           Add Experience
         </Button>

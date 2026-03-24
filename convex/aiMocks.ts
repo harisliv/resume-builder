@@ -1,16 +1,19 @@
+import { nanoid } from 'nanoid';
 import type { TAiSuggestions } from '../types/aiSuggestions';
 
 type TMockResumeInput = {
   personalInfo?: { summary?: string };
   experience?: {
+    id: string;
     company?: string;
     position?: string;
     description?: string;
-    highlights?: ({ value: string } | string)[];
+    highlights?: ({ id: string; value: string } | string)[];
   }[];
   skills?: {
+    id: string;
     name: string;
-    values: ({ value: string } | string)[];
+    values: ({ id: string; value: string } | string)[];
   }[];
 };
 
@@ -54,11 +57,17 @@ export function isMockAiEnabled(): boolean {
 }
 
 /** Reads string or `{ value }` entries into plain trimmed strings. */
-function normalizeValues(values?: ({ value: string } | string)[]): string[] {
+function normalizeValues(values?: ({ id: string; value: string } | string)[]): string[] {
   return (values ?? [])
     .map((value) => (typeof value === 'string' ? value : value.value))
     .map((value) => value.trim())
     .filter(Boolean);
+}
+
+/** Extracts IDs from `{ id, value }` entries. Returns empty string for plain strings. */
+function normalizeIds(values?: ({ id: string; value: string } | string)[]): string[] {
+  return (values ?? [])
+    .map((value) => (typeof value === 'string' ? '' : value.id));
 }
 
 /** Extracts a small deterministic keyword set from user-provided text. */
@@ -111,11 +120,12 @@ export function buildMockResumeSuggestions({
         description: item.description?.trim()
           ? `${item.description.trim().replace(/\.$/, '')}. Reframed around impact and measurable outcomes.`
           : undefined,
-        highlights: [rewrittenHighlight]
+        highlights: [{ id: normalizeIds(item.highlights)?.[0] ?? nanoid(), value: rewrittenHighlight }]
       };
     }),
     skills: (resume.skills ?? []).map((category, categoryIdx) => {
       const currentValues = normalizeValues(category.values);
+      const currentIds = normalizeIds(category.values);
       const extraValues = categoryIdx === 0
         ? keywords
           .map((value) => value.toLowerCase())
@@ -124,8 +134,12 @@ export function buildMockResumeSuggestions({
         : [];
 
       return {
+        id: category.id ?? nanoid(),
         name: category.name,
-        values: [...currentValues, ...extraValues]
+        values: [
+          ...currentValues.map((v, i) => ({ id: currentIds[i] ?? nanoid(), value: v })),
+          ...extraValues.map((v) => ({ id: nanoid(), value: v }))
+        ]
       };
     }),
     jdKeywords: keywords.map((keyword) => keyword.toLowerCase())

@@ -37,7 +37,9 @@ export function PdfUploadDialog({ open, onOpenChange, onParsed }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const parseAction = useAction(api.parseResumePdf.parseResumePdf);
   const { isAdmin, resumeLimit } = usePrivileges();
-  const pdfAttempts = useQuery(api.aiAttempts.getRemainingAttempts, { type: 'pdf' });
+  const pdfAttempts = useQuery(api.aiAttempts.getRemainingAttempts, {
+    type: 'pdf'
+  });
   const { data: resumeTitles } = useGetUserResumeTitles();
   const pdfLimitReached = !isAdmin && pdfAttempts?.remaining === 0;
   const resumeLimitReached = (resumeTitles?.length ?? 0) >= resumeLimit;

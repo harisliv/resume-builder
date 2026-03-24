@@ -37,8 +37,6 @@ type TAiSuggestionsViewProps = {
     highlightIdx?: number
   ) => void;
   onToggleSkill: (categoryIdx: number, skillIdx: number) => void;
-  /** Optional: remove skill from list (multi-model flow). */
-  onRemoveSkill?: (category: string, skillIdx: number) => void;
 };
 
 type THighlightRow = {
@@ -134,14 +132,14 @@ function buildSkillRows(
 /** Checks if suggested experience entry has any meaningful change vs current (after trim). */
 function hasExperienceChanged(
   current: { description?: string; highlights?: { value: string }[] },
-  suggested: { description?: string; highlights?: string[] }
+  suggested: { description?: string; highlights?: { id: string; value: string }[] }
 ): boolean {
   const curDesc = (current.description ?? '').trim();
   const sugDesc = (suggested.description ?? '').trim();
   if (sugDesc && sugDesc !== curDesc) return true;
 
   const curHighlights = (current.highlights ?? []).map((h) => h.value.trim());
-  const sugHighlights = (suggested.highlights ?? []).map((h) => h.trim());
+  const sugHighlights = (suggested.highlights ?? []).map((h) => h.value.trim());
   if (sugHighlights.length !== curHighlights.length) return true;
   for (let i = 0; i < sugHighlights.length; i++) {
     if (sugHighlights[i] !== curHighlights[i]) return true;
@@ -165,8 +163,7 @@ export function AiSuggestionsView({
   selection,
   onToggleSummary,
   onToggleExperienceField,
-  onToggleSkill,
-  onRemoveSkill
+  onToggleSkill
 }: TAiSuggestionsViewProps) {
   const hasSummary = !!suggestions.summary;
   const hasExperience = !!suggestions.experience?.some((exp, idx) =>
@@ -174,7 +171,7 @@ export function AiSuggestionsView({
   );
   const suggestedSkillEntries = (suggestions.skills ?? []).map((category) => ({
     name: category.name.trim(),
-    values: category.values.map((skill) => skill.trim())
+    values: category.values.map((skill) => skill.value.trim())
   }));
   const hasSkills = suggestedSkillEntries.some((category) =>
     category.values.some(Boolean)
@@ -249,7 +246,7 @@ export function AiSuggestionsView({
                   return null;
 
                 const currentHighlights = (current.highlights ?? []).map((h) => h.value);
-                const suggestedHighlights = exp.highlights ?? [];
+                const suggestedHighlights = (exp.highlights ?? []).map((h) => h.value);
                 const { suggestedToCurrent } = buildHighlightMatchMaps(
                   currentHighlights,
                   suggestedHighlights
