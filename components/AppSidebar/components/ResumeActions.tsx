@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Upload } from 'lucide-react';
+import { Crosshair, Plus, Sparkles, Upload } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import {
@@ -14,13 +14,21 @@ import usePrivileges from '@/hooks/usePrivileges';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
 import { cn } from '@/lib/utils';
 
-/** Action buttons for creating/importing resumes, shown below the selector. */
+/** Action buttons for creating/importing resumes and AI actions. */
 export function ResumeActions({
   onCreateNew,
-  onImportPdf
+  onImportPdf,
+  onImproveResume,
+  onMatchJob,
+  selectedResumeId,
+  isAiImproved = false
 }: {
   onCreateNew: () => void;
   onImportPdf: () => void;
+  onImproveResume: () => void;
+  onMatchJob: () => void;
+  selectedResumeId?: string;
+  isAiImproved?: boolean;
 }) {
   const { getDisabledTooltip, resumeLimit, isAdmin } = usePrivileges();
   const { data: resumeTitles } = useGetUserResumeTitles();
@@ -36,6 +44,20 @@ export function ResumeActions({
     ? 'PDF import limit reached (3/month). Try again next month.'
     : disabledTooltip;
   const { isCollapsed } = useSidebar();
+
+  const improveDisabled = !selectedResumeId || isAiImproved;
+  const improveTooltip = !selectedResumeId
+    ? 'Select a resume first.'
+    : isAiImproved
+      ? 'Already AI-improved. Use Match Job instead.'
+      : undefined;
+
+  const matchDisabled = !selectedResumeId || !isAiImproved;
+  const matchTooltip = !selectedResumeId
+    ? 'Select a resume first.'
+    : !isAiImproved
+      ? 'Improve your resume first.'
+      : undefined;
 
   return (
     <SidebarMenu className="mt-3 gap-0">
@@ -53,7 +75,7 @@ export function ResumeActions({
         </ActionRow>
       </SidebarMenuItem>
       <SidebarMenuItem>
-        <ActionRow collapsed={isCollapsed} isLast>
+        <ActionRow collapsed={isCollapsed} isLast={false}>
           <ActionButton
             label="Import PDF"
             icon={<Upload className="size-4" />}
@@ -62,6 +84,32 @@ export function ResumeActions({
             disabledTooltip={pdfTooltip}
             collapsed={isCollapsed}
             variant="teal"
+          />
+        </ActionRow>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <ActionRow collapsed={isCollapsed} isLast={false}>
+          <ActionButton
+            label="Improve Resume"
+            icon={<Sparkles className="size-4" />}
+            onClick={onImproveResume}
+            disabled={improveDisabled}
+            disabledTooltip={improveTooltip}
+            collapsed={isCollapsed}
+            variant="amber"
+          />
+        </ActionRow>
+      </SidebarMenuItem>
+      <SidebarMenuItem>
+        <ActionRow collapsed={isCollapsed} isLast>
+          <ActionButton
+            label="Match Job"
+            icon={<Crosshair className="size-4" />}
+            onClick={onMatchJob}
+            disabled={matchDisabled}
+            disabledTooltip={matchTooltip}
+            collapsed={isCollapsed}
+            variant="violet"
           />
         </ActionRow>
       </SidebarMenuItem>
@@ -104,7 +152,11 @@ const COLLAPSED_BUTTON_CLASS =
 const EXPANDED_VARIANT_CLASSES = {
   indigo:
     'bg-gradient-to-br from-primary to-primary/80 border-primary/20 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/30 text-white',
-  teal: 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-500/20 shadow-md shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/30 text-white'
+  teal: 'bg-gradient-to-br from-emerald-500 to-emerald-600 border-emerald-500/20 shadow-md shadow-emerald-500/25 hover:shadow-lg hover:shadow-emerald-500/30 text-white',
+  amber:
+    'bg-gradient-to-br from-amber-500 to-orange-500 border-amber-500/20 shadow-md shadow-amber-500/25 hover:shadow-lg hover:shadow-amber-500/30 text-white',
+  violet:
+    'bg-gradient-to-br from-violet-500 to-purple-600 border-violet-500/20 shadow-md shadow-violet-500/25 hover:shadow-lg hover:shadow-violet-500/30 text-white'
 } as const;
 
 /** Action button: collapsed = black icon no bg; expanded = colored gradient with white icon. */
@@ -123,7 +175,7 @@ function ActionButton({
   disabled: boolean;
   disabledTooltip: string | undefined;
   collapsed: boolean;
-  variant: 'indigo' | 'teal';
+  variant: 'indigo' | 'teal' | 'amber' | 'violet';
 }) {
   const button = (
     <button

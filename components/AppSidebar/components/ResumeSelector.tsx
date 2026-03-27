@@ -38,7 +38,10 @@ export function ResumeSelector({
   const currentTitle = useWatch({ control, name: 'title' });
 
   const { data: resumeTitles, isLoading: isLoadingTitles } =
-    useGetUserResumeTitles();
+    useGetUserResumeTitles() as {
+      data: { id: string; title: string; isDefault?: boolean; isAiImproved?: boolean }[] | undefined;
+      isLoading: boolean;
+    };
 
   const { isMember, resumeLimit } = usePrivileges();
   const { mutate: renameResume } = useRenameResume();
