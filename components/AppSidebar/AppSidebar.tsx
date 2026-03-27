@@ -18,6 +18,14 @@ export type TAppSidebarResumeProps = {
   onDelete: (id: string) => void;
   onImportPdf: () => void;
   isLoadingResume?: boolean;
+  /** Currently selected resume ID — used for Match Job button. */
+  selectedResumeId?: string;
+  /** Whether the selected resume is AI-improved. */
+  isAiImproved?: boolean;
+  /** Opens the Match Job modal. */
+  onMatchJob?: () => void;
+  /** Opens the Improve Resume modal. */
+  onImproveResume?: () => void;
 };
 
 export function AppSidebar({
@@ -26,6 +34,10 @@ export function AppSidebar({
   onDelete,
   onImportPdf,
   isLoadingResume = false,
+  selectedResumeId,
+  isAiImproved = false,
+  onMatchJob,
+  onImproveResume,
   ...props
 }: TAppSidebarResumeProps & React.ComponentProps<typeof Sidebar>) {
   const [isCreating, setIsCreating] = useState(false);
@@ -43,6 +55,10 @@ export function AppSidebar({
         <ResumeActions
           onCreateNew={() => setIsCreating(true)}
           onImportPdf={onImportPdf}
+          onImproveResume={onImproveResume ?? (() => {})}
+          onMatchJob={onMatchJob ?? (() => {})}
+          selectedResumeId={selectedResumeId}
+          isAiImproved={isAiImproved}
         />
       </SidebarHeader>
       <SidebarBody>

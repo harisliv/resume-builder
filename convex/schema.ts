@@ -54,8 +54,15 @@ export default defineSchema({
     /** Structured payload from assistant (questions, resume patch). */
     structuredPayload: v.optional(
       v.object({
-        questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
+        questions: v.optional(v.array(v.union(v.string(), v.object({
+          question: v.string(),
+          context: v.string(),
+          targetType: v.union(v.literal('highlight'), v.literal('description'), v.literal('summary')),
+          experienceId: v.optional(v.string()),
+          highlightId: v.optional(v.string())
+        })))),
         resumePatch: v.optional(v.string()),
+        toolCallEdits: v.optional(v.string()),
         isReadyToApply: v.optional(v.boolean())
       })
     )

@@ -1,11 +1,19 @@
+import { nanoid } from 'nanoid';
 import { v } from 'convex/values';
-import { internalMutation, internalQuery, mutation, query } from './_generated/server';
+import { internalMutation, internalQuery, mutation } from './_generated/server';
 import { getAuthenticatedUser } from './auth';
 
 const structuredPayloadValidator = v.optional(
   v.object({
-    questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
+    questions: v.optional(v.array(v.union(v.string(), v.object({
+      question: v.string(),
+      context: v.string(),
+      targetType: v.union(v.literal('highlight'), v.literal('description'), v.literal('summary')),
+      experienceId: v.optional(v.string()),
+      highlightId: v.optional(v.string())
+    })))),
     resumePatch: v.optional(v.string()),
+    toolCallEdits: v.optional(v.string()),
     isReadyToApply: v.optional(v.boolean())
   })
 );
@@ -40,32 +48,6 @@ export const createThread = mutation({
   }
 });
 
-/** Lists messages for a thread, ordered by creation time. */
-export const listThreadMessages = query({
-  args: { threadId: v.id('aiThreads') },
-  returns: v.array(
-    v.object({
-      _id: v.id('aiThreadMessages'),
-      _creationTime: v.number(),
-      threadId: v.id('aiThreads'),
-      role: v.union(v.literal('user'), v.literal('assistant')),
-      content: v.string(),
-      structuredPayload: structuredPayloadValidator
-    })
-  ),
-  handler: async (ctx, { threadId }) => {
-    const userId = await getAuthenticatedUser(ctx);
-    const thread = await ctx.db.get(threadId);
-    if (!thread || thread.userId !== userId) {
-      throw new Error('Thread not found or unauthorized');
-    }
-    return await ctx.db
-      .query('aiThreadMessages')
-      .withIndex('by_thread', (q) => q.eq('threadId', threadId))
-      .collect();
-  }
-});
-
 /** Appends a user message to the thread. */
 export const sendUserMessage = mutation({
   args: {
@@ -87,15 +69,14 @@ export const sendUserMessage = mutation({
   }
 });
 
-/** Creates a new AI-improved resume clone from the original + patch. */
-export const applyImprovements = mutation({
+/** Applies accepted AI edits to the current resume in-place. */
+export const applyImproveEdits = mutation({
   args: {
     threadId: v.id('aiThreads'),
-    resumePatch: v.string(),
-    title: v.string()
+    edits: v.string()
   },
-  returns: v.id('resumes'),
-  handler: async (ctx, { threadId, resumePatch, title }) => {
+  returns: v.null(),
+  handler: async (ctx, { threadId, edits: editsJson }) => {
     const userId = await getAuthenticatedUser(ctx);
     const thread = await ctx.db.get(threadId);
     if (!thread || thread.userId !== userId) {
@@ -106,82 +87,48 @@ export const applyImprovements = mutation({
       throw new Error('Resume not found or unauthorized');
     }
 
-    const patch = JSON.parse(resumePatch);
+    const edits = JSON.parse(editsJson) as {
+      type: string;
+      experienceId?: string;
+      highlightId?: string;
+      categoryId?: string;
+      newValue?: string;
+      value?: string;
+      newValues?: string[];
+    }[];
 
-    /** Clone base fields from original resume. */
-    const personalInfo = resume.personalInfo
-      ? { ...resume.personalInfo, ...(patch.summary && { summary: patch.summary }) }
-      : resume.personalInfo;
+    let personalInfo = resume.personalInfo;
+    let experience = resume.experience;
 
-    const experience = patch.experience && resume.experience
-      ? resume.experience.map(
-        (exp: Record<string, unknown>, idx: number) => {
-          const patchExp = patch.experience?.[idx];
-          if (!patchExp) return exp;
-          return {
-            ...exp,
-            ...(patchExp.description && { description: patchExp.description }),
-            ...(patchExp.highlights && {
-              highlights: patchExp.highlights.map((h: { id: string; value: string }) => ({
-                id: h.id,
-                value: h.value
-              }))
-            })
-          };
-        }
-      )
-      : resume.experience;
+    for (const edit of edits) {
+      switch (edit.type) {
+        case 'updateSummary':
+          personalInfo = personalInfo
+            ? { ...personalInfo, summary: edit.newValue ?? '' }
+            : personalInfo;
+          break;
+        case 'updateHighlight':
+          experience = experience?.map((exp: { id: string; highlights?: { id: string; value: string }[]; [k: string]: unknown }) => {
+            if (exp.id !== edit.experienceId) return exp;
+            return {
+              ...exp,
+              highlights: exp.highlights?.map((h: { id: string; value: string }) =>
+                h.id === edit.highlightId ? { ...h, value: edit.newValue ?? '' } : h
+              )
+            };
+          });
+          break;
+        case 'updateDescription':
+          experience = experience?.map((exp: { id: string; [k: string]: unknown }) => {
+            if (exp.id !== edit.experienceId) return exp;
+            return { ...exp, description: edit.newValue ?? '' };
+          });
+          break;
+      }
+    }
 
-    const skills = patch.skills
-      ? patch.skills.map(
-        (cat: { id: string; name: string; values: { id: string; value: string }[] }) => ({
-          id: cat.id,
-          name: cat.name,
-          values: cat.values.map((val: { id: string; value: string }) => ({
-            id: val.id,
-            value: val.value
-          }))
-        })
-      )
-      : resume.skills;
-
-    const newResumeId = await ctx.db.insert('resumes', {
-      userId,
-      title,
-      personalInfo,
-      experience,
-      education: resume.education,
-      skills,
-      documentStyle: resume.documentStyle,
-      isAiImproved: true
-    });
-
+    await ctx.db.patch(thread.resumeId, { personalInfo, experience, isAiImproved: true });
     await ctx.db.patch(threadId, { status: 'completed' });
-    return newResumeId;
-  }
-});
-
-/** Test-only: deletes a thread and all related messages. */
-export const cleanupThreadForTesting = mutation({
-  args: { threadId: v.id('aiThreads') },
-  returns: v.null(),
-  handler: async (ctx, { threadId }) => {
-    if (process.env.NODE_ENV !== 'test') {
-      throw new Error('cleanupThreadForTesting is test-only');
-    }
-    const userId = await getAuthenticatedUser(ctx);
-    const thread = await ctx.db.get(threadId);
-    if (!thread || thread.userId !== userId) {
-      throw new Error('Thread not found or unauthorized');
-    }
-    const messages = await ctx.db
-      .query('aiThreadMessages')
-      .withIndex('by_thread', (q) => q.eq('threadId', threadId))
-      .collect();
-    for (const message of messages) {
-      await ctx.db.delete(message._id);
-    }
-    await ctx.db.delete(threadId);
     return null;
   }
 });
@@ -226,6 +173,65 @@ export const getThreadContext = internalQuery({
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       resume
     };
+  }
+});
+
+/** Creates a new resume version with accumulated keyword edits applied. */
+export const applyKeywordEdits = mutation({
+  args: {
+    resumeId: v.id('resumes'),
+    title: v.string(),
+    highlightEdits: v.array(v.object({
+      experienceId: v.string(),
+      highlightId: v.string(),
+      newText: v.string()
+    })),
+    skillAdditions: v.array(v.object({
+      categoryId: v.string(),
+      value: v.string()
+    }))
+  },
+  returns: v.id('resumes'),
+  handler: async (ctx, { resumeId, title, highlightEdits, skillAdditions }) => {
+    const userId = await getAuthenticatedUser(ctx);
+    const resume = await ctx.db.get(resumeId);
+    if (!resume || resume.userId !== userId) throw new Error('Resume not found');
+
+    const experience = resume.experience?.map((exp: { id: string; highlights?: { id: string; value: string }[]; [key: string]: unknown }) => {
+      const editsForExp = highlightEdits.filter(e => e.experienceId === exp.id);
+      if (!editsForExp.length) return exp;
+      return {
+        ...exp,
+        highlights: exp.highlights?.map((h: { id: string; value: string }) => {
+          const edit = editsForExp.find(e => e.highlightId === h.id);
+          return edit ? { ...h, value: edit.newText } : h;
+        })
+      };
+    });
+
+    const skills = resume.skills?.map((cat: { id: string; name: string; values: { id: string; value: string }[] }) => {
+      const additions = skillAdditions.filter(a => a.categoryId === cat.id);
+      if (!additions.length) return cat;
+      return {
+        ...cat,
+        values: [
+          ...cat.values,
+          ...additions.map(a => ({ id: nanoid(), value: a.value }))
+        ]
+      };
+    });
+
+    return await ctx.db.insert('resumes', {
+      userId,
+      title,
+      personalInfo: resume.personalInfo,
+      experience,
+      education: resume.education,
+      skills,
+      customSections: resume.customSections,
+      documentStyle: resume.documentStyle,
+      isAiImproved: true
+    });
   }
 });
 
