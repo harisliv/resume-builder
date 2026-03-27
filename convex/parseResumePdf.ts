@@ -68,15 +68,17 @@ export const parseResumePdf = action({
 
     const key = process.env.ANTHROPIC_API_KEY;
     if (!key) throw new Error('ANTHROPIC_API_KEY not set');
+    const modelId = process.env.AI_MODEL_ID;
+    if (!modelId) throw new Error('AI_MODEL_ID env var not set');
 
-    const model = createAnthropic({ apiKey: key })('claude-sonnet-4-6');
+    const model = createAnthropic({ apiKey: key })(modelId);
 
     /** Fetch parse prompt from DB. */
     const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByNameInternal,
-      { name: 'PDF Resume Parser' }
+      internal.systemPrompts.getByTypeInternal,
+      { type: 'pdf-parser' }
     );
-    if (!dbPrompt) throw new Error('System prompt "PDF Resume Parser" not found. Run seed.');
+    if (!dbPrompt) throw new Error('System prompt "pdf-parser" not found. Run seed.');
 
     const { output }: { output: TParsedResume } = await generateText({
       model,

@@ -20,4 +20,4 @@ For project structure, see [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md
 For PDF styling guidelines, see [docs/PDF_STYLING_GUIDE.md](docs/PDF_STYLING_GUIDE.md)
 For aesthetic design guide and styling, see [docs/AESTHETIC_GUIDE.md](docs/AESTHETIC_GUIDE.md)
 For Next.js docs index (agents), see [docs/NEXT_AGENTS_MD.md](docs/NEXT_AGENTS_MD.md)
-For AI prompt strategy and research, see [docs/AI_PROMPT_STRATEGY.md](docs/AI_PROMPT_STRATEGY.md)
+For prompts check convex/seeds and scripts/deploy.sh

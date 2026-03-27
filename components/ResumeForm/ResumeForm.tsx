@@ -7,7 +7,6 @@ import { FileText, Save } from '@hugeicons/core-free-icons';
 import ResumeFormTabs from './components/ResumeFormTabs';
 import { useFormContext } from 'react-hook-form';
 import type { TResumeForm } from '@/types/schema';
-import type { TAiSuggestions } from '@/types/aiSuggestions';
 import type { Id } from '@/convex/_generated/dataModel';
 import {
   SectionCard,
@@ -34,8 +33,6 @@ export default function ResumeForm({
   resumeId,
   isAiImproved,
   aiEnabled,
-  onApplySuggestions,
-  onCreateNewVersion,
   onImproveApplied
 }: {
   onSubmit: (data: TResumeForm) => void;
@@ -43,8 +40,6 @@ export default function ResumeForm({
   resumeId?: Id<'resumes'>;
   isAiImproved?: boolean;
   aiEnabled?: boolean;
-  onApplySuggestions?: (suggestions: TAiSuggestions) => void;
-  onCreateNewVersion?: (suggestions: TAiSuggestions) => void;
   onImproveApplied?: (newResumeId: Id<'resumes'>) => void;
 }) {
   const form = useFormContext<TResumeForm>();
@@ -126,8 +121,6 @@ export default function ResumeForm({
           resumeId={resumeId}
           currentData={form.getValues()}
           isAiImproved={isAiImproved ?? false}
-          onApply={onApplySuggestions ?? (() => {})}
-          onCreateNewVersion={onCreateNewVersion ?? (() => {})}
           onImproveApplied={onImproveApplied ?? (() => {})}
         />
       )}

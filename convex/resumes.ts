@@ -2,16 +2,13 @@ import { v } from 'convex/values';
 import { internalQuery, mutation, query } from './_generated/server';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import {
+  customSectionValidator,
   documentStyleValidator,
   educationValidator,
   experienceValidator,
-  personalInfoValidator
+  personalInfoValidator,
+  skillsValidator
 } from './validators';
-
-const skillCategoryValidator = v.object({
-  name: v.string(),
-  values: v.array(v.object({ value: v.string() }))
-});
 
 const resumeValidator = v.object({
   _id: v.id('resumes'),
@@ -23,7 +20,8 @@ const resumeValidator = v.object({
   education: v.optional(v.array(educationValidator)),
   isDefault: v.optional(v.boolean()),
   isAiImproved: v.optional(v.boolean()),
-  skills: v.optional(v.array(skillCategoryValidator)),
+  skills: v.optional(v.array(skillsValidator)),
+  customSections: v.optional(v.array(customSectionValidator)),
   documentStyle: documentStyleValidator
 });
 
@@ -33,7 +31,8 @@ export const createResume = mutation({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
-    skills: v.optional(v.array(skillCategoryValidator)),
+    skills: v.optional(v.array(skillsValidator)),
+    customSections: v.optional(v.array(customSectionValidator)),
     documentStyle: documentStyleValidator,
     isAiImproved: v.optional(v.boolean())
   },
@@ -66,6 +65,7 @@ export const createResume = mutation({
       experience: args.experience,
       education: args.education,
       skills: args.skills,
+      customSections: args.customSections,
       documentStyle: args.documentStyle,
       isAiImproved: args.isAiImproved
     });
@@ -80,7 +80,8 @@ export const updateResume = mutation({
     personalInfo: v.optional(personalInfoValidator),
     experience: v.optional(v.array(experienceValidator)),
     education: v.optional(v.array(educationValidator)),
-    skills: v.optional(v.array(skillCategoryValidator)),
+    skills: v.optional(v.array(skillsValidator)),
+    customSections: v.optional(v.array(customSectionValidator)),
     documentStyle: documentStyleValidator
   },
   returns: v.null(),

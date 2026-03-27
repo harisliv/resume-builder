@@ -12,7 +12,8 @@ const sectionLabels: Record<keyof TResumeForm, string> = {
   personalInfo: 'Personal Information',
   experience: 'Experience',
   education: 'Education',
-  skills: 'Skills'
+  skills: 'Skills',
+  customSections: 'Custom Sections'
 };
 
 /** Returns the first invalid top-level form section. */

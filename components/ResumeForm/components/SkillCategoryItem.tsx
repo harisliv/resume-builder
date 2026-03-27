@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import type { TResumeForm } from '@/types/schema';
 import { Button } from '@/components/ui/button';
@@ -60,7 +61,7 @@ export default function SkillCategoryItem({
       <StyledAccordionContent>
         <div className="space-y-4">
           <div className="space-y-2">
-            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+            <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
               Category
             </p>
             <Input
@@ -72,7 +73,7 @@ export default function SkillCategoryItem({
           </div>
 
           <div className="space-y-2">
-            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+            <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
               Skills
             </p>
             {fields.map((field, skillIndex) => (
@@ -99,7 +100,7 @@ export default function SkillCategoryItem({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => append({ value: '' })}
+            onClick={() => append({ id: nanoid(), value: '' })}
           >
             <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
             Add Skill

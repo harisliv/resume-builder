@@ -1,10 +1,12 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 import {
+  customSectionValidator,
   documentStyleValidator,
   educationValidator,
   experienceValidator,
-  personalInfoValidator
+  personalInfoValidator,
+  skillsValidator
 } from './validators';
 
 export default defineSchema({
@@ -16,14 +18,8 @@ export default defineSchema({
     education: v.optional(v.array(educationValidator)),
     isDefault: v.optional(v.boolean()),
     isAiImproved: v.optional(v.boolean()),
-    skills: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          values: v.array(v.object({ value: v.string() }))
-        })
-      )
-    ),
+    skills: v.optional(v.array(skillsValidator)),
+    customSections: v.optional(v.array(customSectionValidator)),
     documentStyle: documentStyleValidator
   }).index('by_user', ['userId']),
 
@@ -37,13 +33,11 @@ export default defineSchema({
     .index('by_user_date', ['userId', 'dateKey'])
     .index('by_user_type_date', ['userId', 'type', 'dateKey']),
 
-  /** Stored system prompts and rules for AI generation. */
+  /** Stored system prompts for AI generation. */
   systemPrompts: defineTable({
-    name: v.string(),
-    content: v.string(),
-    type: v.optional(v.union(v.literal('prompt'), v.literal('rule'))),
-    isDefault: v.optional(v.boolean())
-  }).index('by_type_and_default', ['type', 'isDefault']),
+    type: v.string(),
+    content: v.string()
+  }).index('by_type', ['type']),
 
   /** Persistent AI improvement thread per resume. One active thread per resume. */
   aiThreads: defineTable({
@@ -60,19 +54,17 @@ export default defineSchema({
     /** Structured payload from assistant (questions, resume patch). */
     structuredPayload: v.optional(
       v.object({
-        questions: v.optional(v.array(v.union(v.string(), v.object({ question: v.string(), context: v.string() })))),
+        questions: v.optional(v.array(v.union(v.string(), v.object({
+          question: v.string(),
+          context: v.string(),
+          targetType: v.union(v.literal('highlight'), v.literal('description'), v.literal('summary')),
+          experienceId: v.optional(v.string()),
+          highlightId: v.optional(v.string())
+        })))),
         resumePatch: v.optional(v.string()),
+        toolCallEdits: v.optional(v.string()),
         isReadyToApply: v.optional(v.boolean())
       })
     )
-  }).index('by_thread', ['threadId']),
-
-  /** Model configurations for AI generation. */
-  modelConfigs: defineTable({
-    provider: v.union(v.literal('anthropic'), v.literal('google'), v.literal('openai')),
-    modelId: v.string(),
-    label: v.string(),
-    pricing: v.object({ input: v.number(), output: v.number() }),
-    isDefault: v.optional(v.boolean())
-  }).index('by_default', ['isDefault'])
+  }).index('by_thread', ['threadId'])
 });

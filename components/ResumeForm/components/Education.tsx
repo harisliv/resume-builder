@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { PlusSignIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import type { TResumeForm } from '@/types/schema';
-import { educationDefaultValues } from '@/types/schema';
+import { createEducationDefaults } from '@/types/schema';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import SectionTitle from './styles/section-title';
 import FieldRow from './styles/field-row';
@@ -59,7 +59,7 @@ export default function Education() {
     <div className="space-y-6">
       <div className="mb-4 flex items-center justify-between">
         <SectionTitle>Education</SectionTitle>
-        <Button type="button" onClick={() => append(educationDefaultValues)}>
+        <Button type="button" onClick={() => append(createEducationDefaults())}>
           <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
           Add Education
         </Button>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type * as z from 'zod';
@@ -13,8 +14,9 @@ import {
   type TResumeForm,
   type TResumeData
 } from '@/types/schema';
-import type { TAiSuggestions } from '@/types/aiSuggestions';
 import { PdfUploadDialog } from '@/components/PdfUpload/PdfUploadDialog';
+import { MatchJobModal } from '@/components/MatchJob/MatchJobModal';
+import { ImproveResumeModal } from '@/components/ImproveResume/ImproveResumeModal';
 import { useGetResumeById } from '@/hooks/useGetResumeById';
 import { useResumeSubmit } from '@/hooks/useResumeSubmit';
 import { useDeleteResume } from '@/hooks/useDeleteResume';
@@ -38,10 +40,8 @@ function HomeContent({
   selectedResumeId,
   handleSubmit,
   isPending,
-  handleApplySuggestions,
-  handleCreateNewVersion,
   isAiImproved,
-  handleImproveApplied,
+  handleNewVersionCreated,
   aiEnabled
 }: {
   mobileTab: 'form' | 'preview';
@@ -51,10 +51,8 @@ function HomeContent({
   selectedResumeId: Id<'resumes'> | undefined;
   handleSubmit: (data: z.infer<typeof resumeFormSchema>) => void;
   isPending: boolean;
-  handleApplySuggestions: (suggestions: TAiSuggestions) => void;
-  handleCreateNewVersion: (suggestions: TAiSuggestions) => void;
   isAiImproved: boolean;
-  handleImproveApplied: (newResumeId: Id<'resumes'>) => void;
+  handleNewVersionCreated: (newResumeId: Id<'resumes'>) => void;
   aiEnabled: boolean;
 }) {
   const showTabs = useShowTabs();
@@ -83,9 +81,7 @@ function HomeContent({
                     resumeId={selectedResumeId}
                     isAiImproved={isAiImproved}
                     aiEnabled={aiEnabled}
-                    onApplySuggestions={handleApplySuggestions}
-                    onCreateNewVersion={handleCreateNewVersion}
-                    onImproveApplied={handleImproveApplied}
+                    onImproveApplied={handleNewVersionCreated}
                   />
                 </FormProvider>
               </TabsContent>
@@ -110,9 +106,7 @@ function HomeContent({
                 resumeId={selectedResumeId}
                 isAiImproved={isAiImproved}
                 aiEnabled={aiEnabled}
-                onApplySuggestions={handleApplySuggestions}
-                onCreateNewVersion={handleCreateNewVersion}
-                onImproveApplied={handleImproveApplied}
+                onImproveApplied={handleNewVersionCreated}
               />
             </FormProvider>
             <ResumePreviewWrapper
@@ -128,11 +122,20 @@ function HomeContent({
 }
 
 export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
+  const searchParams = useSearchParams();
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
   const [mobileTab, setMobileTab] = useState<'form' | 'preview'>('form');
   const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
+  const [matchJobOpen, setMatchJobOpen] = useState(false);
+  const [improveOpen, setImproveOpen] = useState(false);
+
+  /** Pick up ?selected= param from match-job redirect. */
+  useEffect(() => {
+    const selected = searchParams.get('selected');
+    if (selected) setSelectedResumeId(selected as Id<'resumes'>);
+  }, [searchParams]);
 
   const {
     form: formValues,
@@ -226,71 +229,17 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
     });
   };
 
-  const mergeSuggestions = (suggestions: TAiSuggestions): TResumeForm => {
-    const currentForm = formForm.getValues();
-    return {
-      ...currentForm,
-      personalInfo: {
-        ...currentForm.personalInfo,
-        ...(suggestions.summary && { summary: suggestions.summary })
-      },
-      experience: currentForm.experience.map((exp, idx) => ({
-        ...exp,
-        ...(suggestions.experience?.[idx]?.description && {
-          description: suggestions.experience[idx].description
-        }),
-        ...(suggestions.experience?.[idx]?.highlights && {
-          highlights: suggestions.experience[idx].highlights.map((h) => ({
-            value: h
-          }))
-        })
-      })),
-      skills: suggestions.skills
-        ? suggestions.skills.map((cat) => ({
-            name: cat.name,
-            values: cat.values.map((v) => ({ value: v }))
-          }))
-        : currentForm.skills
-    };
-  };
-
-  const handleApplySuggestions = (suggestions: TAiSuggestions) => {
-    const infoData = infoForm.getValues();
-    const mergedForm = mergeSuggestions(suggestions);
-    submitResume(
-      { ...infoData, ...mergedForm },
-      {
-        onSuccess: (data) => {
-          setSelectedResumeId(data.id);
-        }
-      }
-    );
-  };
-
-  /** Select the newly created AI resume and refresh the dropdown. */
-  const handleImproveApplied = (newResumeId: Id<'resumes'>) => {
+  /** Select newly created resume (Match Job) and refresh. */
+  const handleNewVersionCreated = (newResumeId: Id<'resumes'>) => {
     setSelectedResumeId(newResumeId);
     void queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
     void queryClient.invalidateQueries({ queryKey: ['resume'] });
   };
 
-  const handleCreateNewVersion = (suggestions: TAiSuggestions) => {
-    const infoData = infoForm.getValues();
-    const mergedForm = mergeSuggestions(suggestions);
-    submitResume(
-      {
-        ...infoData,
-        ...mergedForm,
-        id: undefined,
-        title: suggestions.title ?? `${infoData.title} (AI Tailored)`,
-        isAiImproved: true
-      },
-      {
-        onSuccess: (data) => {
-          setSelectedResumeId(data.id);
-        }
-      }
-    );
+  /** Refresh data after AI edits applied in-place (Improve). */
+  const handleImproveApplied = () => {
+    void queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
+    void queryClient.invalidateQueries({ queryKey: ['resume'] });
   };
 
   return (
@@ -302,6 +251,10 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
           onDelete={handleDeleteResume}
           onImportPdf={() => setPdfDialogOpen(true)}
           isLoadingResume={isLoadingResume}
+          selectedResumeId={selectedResumeId}
+          isAiImproved={infoForm.watch('isAiImproved') ?? false}
+          onMatchJob={() => setMatchJobOpen(true)}
+          onImproveResume={() => setImproveOpen(true)}
         />
       </FormProvider>
       <PdfUploadDialog
@@ -309,6 +262,22 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
         onOpenChange={setPdfDialogOpen}
         onParsed={handlePdfParsed}
       />
+      {matchJobOpen && selectedResumeId && (
+        <MatchJobModal
+          open={matchJobOpen}
+          onOpenChange={setMatchJobOpen}
+          resumeId={selectedResumeId}
+          onDone={handleNewVersionCreated}
+        />
+      )}
+      {improveOpen && selectedResumeId && (
+        <ImproveResumeModal
+          open={improveOpen}
+          onOpenChange={setImproveOpen}
+          resumeId={selectedResumeId}
+          onDone={handleImproveApplied}
+        />
+      )}
       <SidebarInset>
         <HomeContent
           mobileTab={mobileTab}
@@ -318,10 +287,8 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
           selectedResumeId={selectedResumeId}
           handleSubmit={handleSubmit}
           isPending={isPending}
-          handleApplySuggestions={handleApplySuggestions}
-          handleCreateNewVersion={handleCreateNewVersion}
           isAiImproved={infoForm.watch('isAiImproved') ?? false}
-          handleImproveApplied={handleImproveApplied}
+          handleNewVersionCreated={handleNewVersionCreated}
           aiEnabled={aiEnabled}
         />
       </SidebarInset>
