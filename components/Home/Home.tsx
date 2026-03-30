@@ -39,10 +39,7 @@ function HomeContent({
   infoForm,
   selectedResumeId,
   handleSubmit,
-  isPending,
-  isAiImproved,
-  handleNewVersionCreated,
-  aiEnabled
+  isPending
 }: {
   mobileTab: 'form' | 'preview';
   setMobileTab: (v: 'form' | 'preview') => void;
@@ -51,9 +48,6 @@ function HomeContent({
   selectedResumeId: Id<'resumes'> | undefined;
   handleSubmit: (data: z.infer<typeof resumeFormSchema>) => void;
   isPending: boolean;
-  isAiImproved: boolean;
-  handleNewVersionCreated: (newResumeId: Id<'resumes'>) => void;
-  aiEnabled: boolean;
 }) {
   const showTabs = useShowTabs();
 
@@ -79,9 +73,6 @@ function HomeContent({
                     onSubmit={handleSubmit}
                     isPending={isPending}
                     resumeId={selectedResumeId}
-                    isAiImproved={isAiImproved}
-                    aiEnabled={aiEnabled}
-                    onImproveApplied={handleNewVersionCreated}
                   />
                 </FormProvider>
               </TabsContent>
@@ -104,9 +95,6 @@ function HomeContent({
                 onSubmit={handleSubmit}
                 isPending={isPending}
                 resumeId={selectedResumeId}
-                isAiImproved={isAiImproved}
-                aiEnabled={aiEnabled}
-                onImproveApplied={handleNewVersionCreated}
               />
             </FormProvider>
             <ResumePreviewWrapper
@@ -121,8 +109,7 @@ function HomeContent({
   );
 }
 
-export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
-  const searchParams = useSearchParams();
+export default function Home() {
   const [selectedResumeId, setSelectedResumeId] = useState<
     Id<'resumes'> | undefined
   >(undefined);
@@ -130,12 +117,6 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
   const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
   const [matchJobOpen, setMatchJobOpen] = useState(false);
   const [improveOpen, setImproveOpen] = useState(false);
-
-  /** Pick up ?selected= param from match-job redirect. */
-  useEffect(() => {
-    const selected = searchParams.get('selected');
-    if (selected) setSelectedResumeId(selected as Id<'resumes'>);
-  }, [searchParams]);
 
   const {
     form: formValues,
@@ -287,9 +268,6 @@ export default function Home({ aiEnabled = false }: { aiEnabled?: boolean }) {
           selectedResumeId={selectedResumeId}
           handleSubmit={handleSubmit}
           isPending={isPending}
-          isAiImproved={infoForm.watch('isAiImproved') ?? false}
-          handleNewVersionCreated={handleNewVersionCreated}
-          aiEnabled={aiEnabled}
         />
       </SidebarInset>
     </SidebarProvider>

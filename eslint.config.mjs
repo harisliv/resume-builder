@@ -45,6 +45,14 @@ const eslintConfig = defineConfig([
       ...typescriptRules,
       ...reactRules
     }
+  },
+  /** Convex seed + promptfoo prompts use `.cjs` on purpose; `require` is valid there. */
+  {
+    files: ['**/*.cjs'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off'
+    }
   }
 ]);
 

@@ -19,7 +19,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { JdPanel } from './JdPanel';
 import { DisplayTabs } from './DisplayTabs';
 import { EnhanceResultModal } from './EnhanceResultModal';
-import { KeywordReviewView } from '@/components/AiSuggestions/components/KeywordReviewView';
+import { KeywordReviewView } from './KeywordReviewView';
 import {
   Sparkles,
   X,

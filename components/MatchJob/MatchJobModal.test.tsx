@@ -90,7 +90,7 @@ vi.mock('@/components/ui/checkbox', () => ({
   )
 }));
 
-vi.mock('@/components/AiSuggestions/utils/diffHighlight', () => ({
+vi.mock('@/components/ui/diff-highlight', () => ({
   DiffHighlight: ({
     current,
     suggested
