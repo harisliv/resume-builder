@@ -16,6 +16,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import { JdPanel } from './JdPanel';
 import { DisplayTabs } from './DisplayTabs';
 import { EnhanceResultModal } from './EnhanceResultModal';
@@ -120,6 +121,7 @@ export function MatchJobModal({
   const [modalResult, setModalResult] = useState<TPlacementResult | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const confirm = useWarningDialog();
   const extractAction = useAction(api.aiKeywords.extractKeywords);
   const placeAction = useAction(api.aiKeywords.placeKeyword);
   const applyMutation = useMutation(api.aiImprove.applyKeywordEdits);
@@ -157,15 +159,23 @@ export function MatchJobModal({
     }
   }, [open, resetFlowState]);
 
-  /** Closes the modal and clears the current flow state. */
+  /** Attempt to close — show warning if work in progress. */
   const handleOpenChange = useCallback(
-    (nextOpen: boolean) => {
-      if (!nextOpen) {
-        resetFlowState();
+    async (nextOpen: boolean) => {
+      if (!nextOpen && (phase !== 'input' || jobDescription.trim())) {
+        const ok = await confirm({
+          title: 'Discard progress?',
+          description:
+            'You have unsaved changes. Closing will discard all your matching progress.',
+          confirmLabel: 'Discard',
+          variant: 'destructive'
+        });
+        if (!ok) return;
       }
+      if (!nextOpen) resetFlowState();
       onOpenChange(nextOpen);
     },
-    [onOpenChange, resetFlowState]
+    [onOpenChange, resetFlowState, phase, jobDescription, confirm]
   );
 
   /** Analyze JD and extract keywords. */
@@ -390,7 +400,7 @@ export function MatchJobModal({
             </div>
             <button
               onClick={() => handleOpenChange(false)}
-              className="text-muted-foreground hover:bg-accent hover:text-foreground rounded-full p-2 transition-colors"
+              className="text-muted-foreground hover:bg-accent hover:text-foreground rounded-full border border-border p-2 transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -439,14 +449,12 @@ export function MatchJobModal({
                   return next;
                 });
               }}
-              onApply={handleApplyReview}
-              isApplying={isApplying}
             />
           </div>
         ) : (
           <div className="flex min-h-0 flex-1 overflow-hidden">
             {/* Left column */}
-            <div className="border-border bg-muted/30 flex min-h-0 w-1/2 flex-col border-r">
+            <div className="border-border flex min-h-0 w-1/2 flex-col border-r">
               {isLoading ? (
                 <div className="flex flex-1 items-center justify-center">
                   <Spinner className="h-6 w-6" />
@@ -485,7 +493,7 @@ export function MatchJobModal({
               className={cn(
                 'flex items-center gap-2 rounded-full px-8 py-3 text-sm font-bold text-white shadow-lg transition-all',
                 jobDescription.trim()
-                  ? 'from-primary to-primary/80 shadow-primary/20 bg-gradient-to-br hover:scale-[1.02] active:scale-95'
+                  ? 'from-primary to-primary/80 shadow-primary/20 bg-gradient-to-br cursor-pointer hover:brightness-110'
                   : 'bg-muted text-muted-foreground cursor-not-allowed opacity-60 shadow-none'
               )}
             >
@@ -503,38 +511,56 @@ export function MatchJobModal({
 
           {phase === 'matching' && (
             <>
+              {hasEdits && (
+                <button
+                  onClick={handleGoToReview}
+                  className="mr-auto flex items-center gap-2 rounded-full border border-border bg-white px-6 py-3 text-sm font-bold text-muted-foreground transition-colors cursor-pointer hover:bg-accent hover:text-foreground dark:bg-card"
+                >
+                  <ClipboardCheck className="h-4 w-4" />
+                  Review Changes
+                </button>
+              )}
               <button
                 onClick={handleEnhance}
                 disabled={!canEnhance}
                 className={cn(
                   'flex items-center gap-2 rounded-full border px-6 py-3 text-sm font-bold transition-colors',
                   canEnhance
-                    ? 'border-border text-foreground hover:bg-accent dark:bg-card bg-white'
-                    : 'border-border bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60'
+                    ? 'from-primary to-primary/80 shadow-primary/20 bg-gradient-to-br text-white shadow-lg cursor-pointer hover:brightness-110'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed opacity-60 shadow-none'
                 )}
               >
                 <Wand2 className="h-4 w-4" />
                 {enhancing ? 'Enhancing...' : 'Enhance'}
               </button>
-              {hasEdits && (
-                <button
-                  onClick={handleGoToReview}
-                  className="from-primary to-primary/80 shadow-primary/20 flex items-center gap-2 rounded-full bg-gradient-to-br px-8 py-3 text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
-                >
-                  <ClipboardCheck className="h-4 w-4" />
-                  Review Changes
-                </button>
-              )}
             </>
           )}
 
           {phase === 'review' && (
-            <button
-              onClick={() => setPhase('matching')}
-              className="border-border text-foreground hover:bg-accent dark:bg-card flex items-center gap-2 rounded-full border bg-white px-6 py-3 text-sm font-bold transition-colors"
-            >
-              Back to Matching
-            </button>
+            <>
+              <button
+                onClick={() => setPhase('matching')}
+                className="mr-auto border-border text-muted-foreground hover:bg-accent hover:text-foreground dark:bg-card flex items-center gap-2 rounded-full border bg-white px-6 py-3 text-sm font-bold transition-colors cursor-pointer"
+              >
+                Back to Matching
+              </button>
+              <button
+                onClick={handleApplyReview}
+                disabled={
+                  (acceptedHighlights.size + acceptedSkills.size) === 0 || isApplying
+                }
+                className="from-primary to-primary/80 shadow-primary/20 flex items-center gap-2 rounded-full bg-gradient-to-br px-8 py-3 text-sm font-bold text-white shadow-lg transition-all cursor-pointer hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isApplying ? (
+                  <>
+                    <Spinner className="h-4 w-4" />
+                    Applying...
+                  </>
+                ) : (
+                  'Apply Changes'
+                )}
+              </button>
+            </>
           )}
         </div>
 

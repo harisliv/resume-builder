@@ -24,7 +24,7 @@ export function DisplayTabs({
   onToggleTarget,
   disabled
 }: TDisplayTabsProps) {
-  const [activeTab, setActiveTab] = useState<TTab>('Skills');
+  const [activeTab, setActiveTab] = useState<TTab>('Personal Info');
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -35,7 +35,7 @@ export function DisplayTabs({
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              'group relative mr-8 px-2 py-4 text-sm font-bold transition-colors',
+              'group relative mr-8 cursor-pointer px-2 py-4 text-sm font-bold transition-colors',
               activeTab === tab
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-foreground'
@@ -56,13 +56,11 @@ export function DisplayTabs({
             <label className="block text-sm font-semibold text-foreground">
               Summary
             </label>
-            <textarea
-              className="w-full rounded-xl border border-border bg-background text-[14px] text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary"
-              placeholder="Write a brief professional summary about yourself..."
-              rows={12}
-              value={resume.personalInfo?.summary ?? ''}
-              readOnly
-            />
+            <div className="w-full rounded-xl border border-border bg-muted/40 p-4 text-[14px] leading-relaxed text-muted-foreground">
+              {resume.personalInfo?.summary || (
+                <span className="text-muted-foreground/50">No summary provided</span>
+              )}
+            </div>
           </div>
         )}
 

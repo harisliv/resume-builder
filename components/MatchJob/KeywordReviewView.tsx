@@ -1,8 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Spinner } from '@/components/ui/spinner';
 import { DiffHighlight } from '@/components/ui/diff-highlight';
 import type { TAccumulatedEdits } from '@/types/aiKeywords';
 
@@ -14,8 +12,6 @@ type TKeywordReviewViewProps = {
   acceptedSkills: Set<string>;
   onToggleHighlight: (reviewId: string) => void;
   onToggleSkill: (reviewId: string) => void;
-  onApply: () => void;
-  isApplying: boolean;
 };
 
 /** Final review view showing all accumulated keyword edits before apply. */
@@ -24,9 +20,7 @@ export function KeywordReviewView({
   acceptedHighlights,
   acceptedSkills,
   onToggleHighlight,
-  onToggleSkill,
-  onApply,
-  isApplying
+  onToggleSkill
 }: TKeywordReviewViewProps) {
   const totalEdits = edits.highlightEdits.length + edits.skillAdditions.length;
   const acceptedCount = acceptedHighlights.size + acceptedSkills.size;
@@ -51,7 +45,7 @@ export function KeywordReviewView({
                   className="flex items-start gap-2 rounded-lg border p-3 cursor-pointer hover:bg-muted/50"
                 >
                   <Checkbox
-                    className="mt-0.5"
+                    className="mt-0.5 cursor-pointer"
                     checked={acceptedHighlights.has(edit.reviewId)}
                     onCheckedChange={() => onToggleHighlight(edit.reviewId)}
                   />
@@ -81,6 +75,7 @@ export function KeywordReviewView({
                   className="flex items-center gap-2 rounded px-2 py-1.5 cursor-pointer hover:bg-muted/50"
                 >
                   <Checkbox
+                    className="cursor-pointer"
                     checked={acceptedSkills.has(addition.reviewId)}
                     onCheckedChange={() => onToggleSkill(addition.reviewId)}
                   />
@@ -91,13 +86,6 @@ export function KeywordReviewView({
           </div>
         </div>
       )}
-
-      {/* Apply */}
-      <div className="flex justify-end pt-2">
-        <Button onClick={onApply} disabled={acceptedCount === 0 || isApplying}>
-          {isApplying ? <><Spinner className="mr-2 h-4 w-4" /> Applying...</> : 'Apply Changes'}
-        </Button>
-      </div>
     </div>
   );
 }

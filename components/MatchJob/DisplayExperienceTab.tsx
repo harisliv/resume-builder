@@ -1,5 +1,6 @@
 'use client';
 
+import { Checkbox } from '@/components/ui/checkbox';
 import type { TResumeForm } from '@/types/schema';
 import type { TPlacementTarget } from '@/types/aiKeywords';
 
@@ -22,13 +23,20 @@ export function DisplayExperienceTab({
       t => t.type === 'highlight' && t.experienceId === expId && t.highlightId === hlId
     );
 
+  /** Sort experience by startDate descending (most recent first). */
+  const sorted = [...experience].sort((a, b) => {
+    const da = a.startDate ? new Date(a.startDate).getTime() : 0;
+    const db = b.startDate ? new Date(b.startDate).getTime() : 0;
+    return db - da;
+  });
+
   return (
     <div className="mb-8">
       <h4 className="mb-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">
         Work Experience Enhancement
       </h4>
       <div className="space-y-6">
-        {experience.map(exp => (
+        {sorted.map(exp => (
           <div
             key={exp.id}
             className="group relative rounded-2xl border border-border p-5 transition-all hover:border-primary/20"
@@ -66,12 +74,11 @@ export function DisplayExperienceTab({
                     key={h.id}
                     className="group/item relative flex cursor-pointer items-start gap-3 rounded-xl border border-transparent p-3 transition-colors hover:border-primary/10 hover:bg-primary/5"
                   >
-                    <input
-                      type="checkbox"
-                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    <Checkbox
+                      className="mt-0.5 cursor-pointer"
                       checked={isChecked(exp.id, h.id)}
                       disabled={disabled}
-                      onChange={() =>
+                      onCheckedChange={() =>
                         onToggleTarget({
                           type: 'highlight',
                           experienceId: exp.id,

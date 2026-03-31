@@ -19,4 +19,3 @@
 **In order to validate the code, run:**
 
 - `pnpm typeCheck`
-- `pnpm build`
