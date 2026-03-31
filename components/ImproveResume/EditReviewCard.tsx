@@ -1,7 +1,7 @@
 'use client';
 
 import type { TImproveEdit } from '@/types/aiImprove';
-import { DiffHighlight } from '@/components/AiSuggestions/utils/diffHighlight';
+import { DiffHighlight } from '@/components/ui/diff-highlight';
 import { cn } from '@/lib/utils';
 
 type TEditReviewCardProps = {

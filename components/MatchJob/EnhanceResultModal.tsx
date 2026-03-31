@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DiffHighlight } from '@/components/AiSuggestions/utils/diffHighlight';
+import { DiffHighlight } from '@/components/ui/diff-highlight';
 import type { TPlacementResult } from '@/types/aiKeywords';
 
 type TEnhanceResultModalProps = {

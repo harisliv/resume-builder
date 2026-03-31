@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Spinner } from '@/components/ui/spinner';
-import { DiffHighlight } from '../utils/diffHighlight';
+import { DiffHighlight } from '@/components/ui/diff-highlight';
 import type { TAccumulatedEdits } from '@/types/aiKeywords';
 
 type TKeywordReviewViewProps = {
