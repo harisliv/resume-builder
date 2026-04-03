@@ -1,6 +1,7 @@
 'use client';
 
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { TResumeForm } from '@/types/schema';
 import type { TPlacementTarget } from '@/types/aiKeywords';
 
@@ -9,6 +10,7 @@ type TDisplayExperienceTabProps = {
   selectedTargets: TPlacementTarget[];
   onToggleTarget: (target: TPlacementTarget) => void;
   disabled: boolean;
+  enhancing: boolean;
 };
 
 /** Experience cards with checkboxes per highlight. */
@@ -16,12 +18,16 @@ export function DisplayExperienceTab({
   experience,
   selectedTargets,
   onToggleTarget,
-  disabled
+  disabled,
+  enhancing
 }: TDisplayExperienceTabProps) {
   const isChecked = (expId: string, hlId: string) =>
     selectedTargets.some(
       t => t.type === 'highlight' && t.experienceId === expId && t.highlightId === hlId
     );
+  /** Returns whether the highlight is the active enhance target. */
+  const isEnhancingHighlight = (expId: string, hlId: string) =>
+    enhancing && isChecked(expId, hlId);
 
   /** Sort experience by startDate descending (most recent first). */
   const sorted = [...experience].sort((a, b) => {
@@ -73,6 +79,7 @@ export function DisplayExperienceTab({
                   <label
                     key={h.id}
                     className="group/item relative flex cursor-pointer items-start gap-3 rounded-xl border border-transparent p-3 transition-colors hover:border-primary/10 hover:bg-primary/5"
+                    data-enhancing={isEnhancingHighlight(exp.id, h.id) || undefined}
                   >
                     <Checkbox
                       className="mt-0.5 cursor-pointer"
@@ -87,9 +94,16 @@ export function DisplayExperienceTab({
                         })
                       }
                     />
-                    <span className="text-[13px] leading-snug text-foreground">
-                      {h.value}
-                    </span>
+                    {isEnhancingHighlight(exp.id, h.id) ? (
+                      <div className="flex-1 space-y-2" aria-label={`${h.value} loading`}>
+                        <Skeleton className="h-3.5 w-full" />
+                        <Skeleton className="h-3.5 w-4/5" />
+                      </div>
+                    ) : (
+                      <span className="text-[13px] leading-snug text-foreground">
+                        {h.value}
+                      </span>
+                    )}
                   </label>
                 ))}
               </div>

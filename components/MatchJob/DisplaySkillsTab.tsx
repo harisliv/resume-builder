@@ -1,6 +1,7 @@
 'use client';
 
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { TResumeForm } from '@/types/schema';
 import type { TPlacementTarget } from '@/types/aiKeywords';
 
@@ -9,6 +10,7 @@ type TDisplaySkillsTabProps = {
   selectedTargets: TPlacementTarget[];
   onToggleTarget: (target: TPlacementTarget) => void;
   disabled: boolean;
+  enhancing: boolean;
 };
 
 /** Skills categories with checkboxes per category. */
@@ -16,10 +18,13 @@ export function DisplaySkillsTab({
   skills,
   selectedTargets,
   onToggleTarget,
-  disabled
+  disabled,
+  enhancing
 }: TDisplaySkillsTabProps) {
   const isChecked = (catId: string) =>
     selectedTargets.some(t => t.type === 'skill' && t.categoryId === catId);
+  /** Returns whether the skill category is the active enhance target. */
+  const isEnhancingCategory = (catId: string) => enhancing && isChecked(catId);
 
   return (
     <div className="mb-8">
@@ -31,6 +36,7 @@ export function DisplaySkillsTab({
           <div
             key={cat.id}
             className="overflow-hidden rounded-2xl border border-primary/20 transition-all"
+            data-enhancing={isEnhancingCategory(cat.id) || undefined}
           >
             {/* Header row */}
             <div className="flex items-center justify-between px-5 py-4 transition-colors hover:bg-muted/50">
@@ -50,16 +56,27 @@ export function DisplaySkillsTab({
             </div>
             {/* Skills */}
             <div className="border-t border-border/50 px-5 pt-2 pb-5">
-              <div className="flex flex-wrap gap-2">
-                {cat.values.map(v => (
-                  <span
-                    key={v.id}
-                    className="rounded-lg border border-transparent bg-accent/50 px-3 py-1.5 text-xs font-semibold text-muted-foreground"
-                  >
-                    {v.value}
-                  </span>
-                ))}
-              </div>
+              {isEnhancingCategory(cat.id) ? (
+                <div className="space-y-2" aria-label={`${cat.name} loading`}>
+                  <Skeleton className="h-4 w-32" />
+                  <div className="flex flex-wrap gap-2">
+                    <Skeleton className="h-7 w-20 rounded-lg" />
+                    <Skeleton className="h-7 w-24 rounded-lg" />
+                    <Skeleton className="h-7 w-16 rounded-lg" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {cat.values.map(v => (
+                    <span
+                      key={v.id}
+                      className="rounded-lg border border-transparent bg-accent/50 px-3 py-1.5 text-xs font-semibold text-muted-foreground"
+                    >
+                      {v.value}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}

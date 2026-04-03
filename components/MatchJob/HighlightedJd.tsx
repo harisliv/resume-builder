@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { cn } from '@/lib/utils';
 import type { TExtractedKeyword } from '@/types/aiKeywords';
-import { Check, Pointer } from 'lucide-react';
+import { Check, Crosshair, Pointer } from 'lucide-react';
 
 type THighlightedJdProps = {
   text: string;
@@ -14,6 +13,33 @@ type THighlightedJdProps = {
 };
 
 type TSegment = { text: string; keyword?: TExtractedKeyword };
+
+type TKeywordChipProps = {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+};
+
+/** Interactive JD keyword chip. */
+function KeywordChip({
+  selected,
+  onClick,
+  children
+}: TKeywordChipProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        selected
+          ? 'inline-flex cursor-pointer items-center gap-1 rounded-md bg-primary px-1.5 py-0.5 font-bold text-primary-foreground'
+          : 'inline-flex cursor-pointer items-center gap-1 rounded-md border border-orange-200 bg-orange-100 px-1.5 py-0.5 font-bold text-orange-700 shadow-sm transition-colors hover:bg-orange-200 dark:border-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+      }
+    >
+      {children}
+    </button>
+  );
+}
 
 /** Splits JD text into segments, marking keyword occurrences. */
 function buildSegments(text: string, keywords: TExtractedKeyword[]): TSegment[] {
@@ -63,9 +89,10 @@ export function HighlightedJd({
     <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-foreground">
       {segments.map((seg, i) => {
         if (!seg.keyword) return seg.text;
+        const keyword = seg.keyword;
 
-        const isProcessed = processedKeywords.has(seg.keyword.canonicalName);
-        const isSelected = selectedKeyword === seg.keyword.canonicalName;
+        const isProcessed = processedKeywords.has(keyword.canonicalName);
+        const isSelected = selectedKeyword === keyword.canonicalName;
 
         if (isProcessed) {
           return (
@@ -81,37 +108,26 @@ export function HighlightedJd({
 
         if (isSelected) {
           return (
-            <span
+            <KeywordChip
               key={i}
-              role="button"
-              tabIndex={0}
               onClick={() => onSelectKeyword(null)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' || e.key === ' ') onSelectKeyword(null);
-              }}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-md bg-primary px-1.5 py-0.5 font-bold text-primary-foreground"
+              selected
             >
               {seg.text}
-            </span>
+              <Crosshair className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </KeywordChip>
           );
         }
 
         return (
-          <span
+          <KeywordChip
             key={i}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelectKeyword(seg.keyword!.canonicalName)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                onSelectKeyword(seg.keyword!.canonicalName);
-              }
-            }}
-            className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-orange-200 bg-orange-100 px-1.5 py-0.5 font-bold text-orange-700 shadow-sm transition-colors hover:bg-orange-200 dark:border-orange-700 dark:bg-orange-900/30 dark:text-orange-300"
+            onClick={() => onSelectKeyword(keyword.canonicalName)}
+            selected={false}
           >
             {seg.text}
             <Pointer className="h-3.5 w-3.5" />
-          </span>
+          </KeywordChip>
         );
       })}
     </p>

@@ -6,7 +6,9 @@ add jsdoc comments to the code
 
 This project uses pnpm.
 
-After each question we should update the guides in this folder to reflect any new knowledge.
+We are working on WSL
+
+After each question ask me if we should update the guides in this folder to reflect any new knowledge.
 
 For pnpm commands and how to validate the code, see [docs/COMMANDS.md](docs/COMMANDS.md)
 For coding best practices, see [docs/CODE_BEST_PRACTICES.md](docs/CODE_BEST_PRACTICES.md)
