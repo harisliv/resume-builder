@@ -80,7 +80,6 @@ export const documentStyleValidator = v.object({
     v.literal('merriweather')
   ),
   style: v.union(
-    v.literal('modern'),
     v.literal('classic'),
     v.literal('bold'),
     v.literal('executive')

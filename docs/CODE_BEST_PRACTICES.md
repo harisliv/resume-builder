@@ -14,6 +14,7 @@
 - Type inference is preferred, but explicit types should be used for public APIs and complex structures
 - React component props should always be explicitly typed in the same file as the component, if the type is being used only there
 - Reusable types should be defined in the `types/` directory and imported directly from files
+  /
 
 ## Component Location & Separation of Concerns
 
@@ -68,6 +69,11 @@ Smart Component (Education.tsx) [logic + composition]
 - **When it grows**: Split by responsibility into smaller smart components (wrappers) that each handle one concern (e.g., a conditional branch, a section, a stateful interaction).
 - **Styling stays out**: Any non-trivial Tailwind blocks (3+ utilities) live in styled components.
 - **Rule of thumb**: Conditionals + styles move down; the main component becomes a clean tree of named parts.
+- **This includes shell/layout containers**: modal shells, `DialogContent` wrappers, panel containers, loading states, sticky headers, and footer bars also belong in `styles/` when they carry non-trivial class blocks, even if used once.
+- **Avoid duplicate review surfaces in one flow**: if a feature already has a durable final review step, do not add a second throwaway review modal for the same edits. Persist edits once, review once.
+- **Scope loading feedback tightly**: for targeted mutations, show loading on the affected row/card/section, not the whole screen or unrelated panel.
+- **Use confirmation tone to match outcome**: destructive actions use destructive dialogs, but safe version-creation or publish-style actions should use positive/success confirmation styling and copy.
+- **Prefer action-driven UI transitions over `useEffect` when possible**: if a tab/step/panel change is caused by a click or submit handler, set it in that handler instead of syncing it later from an effect.
 
 **Example**:
 
@@ -204,6 +210,8 @@ export function SidebarHeader({ children }) {
 - **Never use conditional component assignment** (e.g., `const Btn = isCollapsed ? CollapsedBtn : ExpandedBtn`). Use a single component with props.
 - **Never use aliased re-exports** (e.g., `export { Foo as Bar } from './foo'`). Import the real name directly.
 - **Never split a tightly-coupled chain into separate files** (e.g., SidebarHeader → SidebarHeaderRow → SidebarToggleButton). Merge them into one smart component that composes styled primitives.
+- **Never use `span[role="button"]` for primary interactions** when a real `<button>` or semantic pattern like tabs fits. Prefer native controls with correct `type`, `aria-*`, and keyboard behavior baked in.
+- **When a smart component is already too large, do not "extract" large single-use sections into the same file.** Move them into sibling feature files or styled primitives so the main file actually gets smaller and more readable.
 
 ## Path Aliases
 
@@ -211,6 +219,12 @@ Use `@/` prefix for imports (configured in `tsconfig.json` and `components.json`
 
 - `@/components` → `./components`
 - `@/hooks` → `./hooks`
+
+## React Effects
+
+- Effects that sync local UI state from props are allowed when they are narrowly scoped and gated by a mode flag.
+- Good use case: temporary workflows like AI enhancement where incoming selections should auto-focus the relevant tab/panel for the user.
+- Risk: if the dependency is recreated every render, the effect re-runs often. Keep the state update idempotent and avoid using this pattern for normal editable state.
 - `@/types` → `./types`
 - `@/lib` → `./lib`
 - `@/ui` → `./components/ui`

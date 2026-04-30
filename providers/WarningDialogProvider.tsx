@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { CheckCircle2 } from 'lucide-react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Alert02Icon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
@@ -29,7 +30,7 @@ type WarningDialogOptions = {
   /** @default "Confirm" */
   confirmLabel?: string;
   /** @default "default" */
-  variant?: 'default' | 'destructive';
+  variant?: 'default' | 'destructive' | 'success';
 };
 
 type ConfirmFn = (options: WarningDialogOptions) => Promise<boolean>;
@@ -109,10 +110,16 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
                 'size-10 shrink-0 rounded-xl shadow-md transition-transform duration-200',
                 options?.variant === 'destructive'
                   ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/25'
+                  : options?.variant === 'success'
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/25'
                   : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-amber-500/30'
               )}
             >
-              <HugeiconsIcon icon={Alert02Icon} size={18} strokeWidth={2.5} />
+              {options?.variant === 'success' ? (
+                <CheckCircle2 className="h-[18px] w-[18px]" strokeWidth={2.5} />
+              ) : (
+                <HugeiconsIcon icon={Alert02Icon} size={18} strokeWidth={2.5} />
+              )}
             </IconBadge>
             <AlertDialogTitle className="text-base font-semibold tracking-tight">
               {options?.title}
@@ -129,7 +136,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              variant={options?.variant ?? 'default'}
+              variant={options?.variant === 'destructive' ? 'destructive' : 'default'}
               onClick={() => settle(true)}
             >
               {options?.confirmLabel ?? 'Confirm'}

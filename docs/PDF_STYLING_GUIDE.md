@@ -136,55 +136,15 @@ Available palettes: `aesthetic`, `ocean`, `forest`, `sunset`, `midnight`, `rose`
 }
 ```
 
-### Aesthetic (modern) Preview/PDF Parity Notes
-
-```typescript
-{
-  // System behavior
-  defaultPalette: 'aesthetic',
-  stylePaletteRule: 'use selected palette from sidebar for all styles',
-  paletteMapping: {
-    primary: 'summary',
-    secondary: 'experience',
-    accent: 'education',
-    primaryLight: 'skills'
-  },
-
-  // Experience date row
-  calendarIconColor: colors.secondary, // #ec4899
-  dateTextColor: colors.accent, // #14b8a6
-  dateTextWeight: 700,
-  dateSeparator: '→', // arrow must be pink (#ec4899)
-
-  // Experience position marker
-  markerWidth: 1,
-  markerHeight: 10, // short accent
-  markerRadius: 0, // no rounded corners
-  markerColor: colors.primary,
-
-  // Education parity with Experience (date column on right)
-  educationDateLayout: 'right-aligned date block',
-  educationDateIconColor: colors.secondary,
-  educationDateTextColor: colors.accent,
-  educationLocationColor: colors.textMuted,
-
-  // Skills parity
-  skillPillBg: colors.primaryLight, // #818cf8
-  skillPillText: '#eef2ff',
-  skillLayout: 'grouped by category with wrapped pills'
-}
-```
-
 ## Style → Document Mapping
 
 | Style ID    | Document Component  | File                                            |
 | ----------- | ------------------- | ----------------------------------------------- |
-| `modern`    | `AestheticDocument` | `lib/ResumePDF/documents/AestheticDocument.tsx` |
 | `classic`   | `ClassicDocument`   | `lib/ResumePDF/documents/ClassicDocument.tsx`   |
 | `bold`      | `BoldDocument`      | `lib/ResumePDF/documents/BoldDocument.tsx`      |
 | `executive` | `ExecutiveDocument` | `lib/ResumePDF/documents/ExecutiveDocument.tsx` |
 
-HTML preview counterparts live in `components/ResumePreview/` (`AestheticStyle.tsx`, `ClassicStyle.tsx`, `BoldStyle.tsx`, `ExecutiveStyle.tsx`).
+HTML preview counterparts live in `components/ResumePreview/` (`ClassicStyle.tsx`, `BoldStyle.tsx`, `ExecutiveStyle.tsx`).
 
 Routing is handled in `lib/ResumePDF/ResumeDocument.tsx` — the switch maps `documentStyle.style` to the correct component.
 
@@ -245,9 +205,8 @@ export const BriefcaseIcon = ({
 ## File Locations
 
 - `lib/ResumePDF/icons/` - PDF SVG icons
-- `lib/ResumePDF/documents/` - PDF document components (Aesthetic, Classic, Bold, Executive)
+- `lib/ResumePDF/documents/` - PDF document components (Classic, Bold, Executive)
 - `lib/ResumePDF/ResumeDocument.tsx` - Style router / switch
 - `components/ResumePreview/` - HTML preview components per style
 - `types/documentStyle.ts` - Palettes, fonts, style IDs
 - `app/compare/` - Side-by-side preview vs PDF comparison (tabbed, all styles/palettes/fonts)
-- `app/icons-showcase/` - Icon showcase page

@@ -5,30 +5,29 @@ import { EditReviewCard } from './EditReviewCard';
 
 type TEditReviewListProps = {
   edits: TImproveEdit[];
-  acceptedSet: Set<number>;
+  selectedSet: Set<number>;
   onToggle: (index: number) => void;
 };
 
-/** Scrollable list of atomic edit cards with accept/reject state. */
+/** Scrollable list of atomic edit cards with checkbox selection state. */
 export function EditReviewList({
   edits,
-  acceptedSet,
+  selectedSet,
   onToggle
 }: TEditReviewListProps) {
-  const acceptedCount = acceptedSet.size;
+  const selectedCount = selectedSet.size;
 
   return (
     <div className="space-y-6">
       <div className="text-muted-foreground text-xs font-medium">
-        {acceptedCount} of {edits.length} changes accepted
+        {selectedCount} of {edits.length} changes selected
       </div>
       {edits.map((edit, i) => (
         <EditReviewCard
           key={i}
           edit={edit}
-          accepted={acceptedSet.has(i)}
-          onAccept={() => onToggle(i)}
-          onReject={() => onToggle(i)}
+          selected={selectedSet.has(i)}
+          onToggle={() => onToggle(i)}
         />
       ))}
     </div>

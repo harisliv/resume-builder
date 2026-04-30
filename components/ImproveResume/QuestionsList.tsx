@@ -1,5 +1,6 @@
 'use client';
 
+import { Quote } from 'lucide-react';
 import type { TImproveQuestion } from '@/types/aiImprove';
 
 type TQuestionsListProps = {
@@ -19,7 +20,7 @@ export function QuestionsList({
       {questions.map((q, i) => (
         <div key={i} className="space-y-3">
           <div className="flex items-start gap-4">
-            <span className="bg-primary/10 text-primary mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+            <span className="bg-primary/10 text-primary mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold">
               {i + 1}
             </span>
             <label
@@ -30,13 +31,27 @@ export function QuestionsList({
             </label>
           </div>
           <div className="ml-10">
+            {q.context ? (
+              <div className="bg-muted/40 border-border/40 relative mb-3 overflow-hidden rounded-r-2xl border py-4 pr-5 pl-7">
+                <div className="bg-primary absolute top-0 bottom-0 left-0 w-1.5" />
+                <div className="flex gap-3">
+                  <Quote
+                    aria-hidden="true"
+                    className="text-primary/45 mt-0.5 h-4 w-4 shrink-0"
+                  />
+                  <blockquote className="text-foreground/90 text-sm leading-relaxed font-medium italic">
+                    {q.context}
+                  </blockquote>
+                </div>
+              </div>
+            ) : null}
             <input
               id={`q-${i}`}
               type="text"
               value={answers[i] ?? ''}
               onChange={(e) => onAnswerChange(i, e.target.value)}
-              placeholder={q.context ? `Re: "${q.context}"` : 'Your answer...'}
-              className="border-border focus:border-primary bg-transparent w-full border-0 border-b-2 px-0 py-3 text-sm transition-colors focus:ring-0 focus:outline-none"
+              placeholder="Add the missing detail..."
+              className="border-border focus:border-primary w-full border-0 border-b-2 bg-transparent px-0 py-3 text-sm transition-colors focus:ring-0 focus:outline-none"
             />
           </div>
         </div>

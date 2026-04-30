@@ -188,6 +188,7 @@ export const applyKeywordEdits = mutation({
     })),
     skillAdditions: v.array(v.object({
       categoryId: v.string(),
+      categoryName: v.string(),
       value: v.string()
     }))
   },
@@ -221,13 +222,34 @@ export const applyKeywordEdits = mutation({
       };
     });
 
+    const existingCategoryIds = new Set((resume.skills ?? []).map((cat: { id: string }) => cat.id));
+    const newCategories = skillAdditions
+      .filter(addition => !existingCategoryIds.has(addition.categoryId))
+      .reduce<{ id: string; name: string; values: { id: string; value: string }[] }[]>(
+        (categories, addition) => {
+          const existing = categories.find((category) => category.id === addition.categoryId);
+          if (existing) {
+            existing.values.push({ id: nanoid(), value: addition.value });
+            return categories;
+          }
+
+          categories.push({
+            id: addition.categoryId,
+            name: addition.categoryName,
+            values: [{ id: nanoid(), value: addition.value }]
+          });
+          return categories;
+        },
+        []
+      );
+
     return await ctx.db.insert('resumes', {
       userId,
       title,
       personalInfo: resume.personalInfo,
       experience,
       education: resume.education,
-      skills,
+      skills: [...(skills ?? []), ...newCategories],
       customSections: resume.customSections,
       documentStyle: resume.documentStyle,
       isAiImproved: true

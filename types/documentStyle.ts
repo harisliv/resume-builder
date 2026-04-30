@@ -105,11 +105,6 @@ export const FONT_OPTIONS = {
 } as const;
 
 export const DOCUMENT_STYLES = {
-  modern: {
-    id: 'modern',
-    name: 'Modern',
-    description: 'Clean lines with gradient accents'
-  },
   classic: {
     id: 'classic',
     name: 'Classic',
@@ -132,13 +127,25 @@ export type TFontId = keyof typeof FONT_OPTIONS;
 export type TDocumentStyleId = keyof typeof DOCUMENT_STYLES;
 export type TColorPalette = (typeof COLOR_PALETTES)[TPaletteId];
 
+/** Ordered document style ids shown in selectors and compare tooling. */
+export const DOCUMENT_STYLE_IDS: TDocumentStyleId[] = [
+  'classic',
+  'bold',
+  'executive'
+];
+
 /** Default palette per resume style for style-aware rendering fallbacks. */
 export const DEFAULT_PALETTE_BY_STYLE: Record<TDocumentStyleId, TPaletteId> = {
-  modern: 'ocean',
   classic: 'ocean',
   bold: 'ocean',
   executive: 'ocean'
 };
+
+/** Runtime guard for unknown or legacy document style ids. */
+export const isDocumentStyleId = (
+  style: string | undefined
+): style is TDocumentStyleId =>
+  style === 'classic' || style === 'bold' || style === 'executive';
 
 /**
  * Resolves palette id from style + optional selected palette.
@@ -147,7 +154,7 @@ export const resolvePaletteForStyle = (
   style: TDocumentStyleId | undefined,
   palette: TPaletteId | undefined
 ): TPaletteId => {
-  const safeStyle = style ?? 'modern';
+  const safeStyle = style ?? 'classic';
   return palette ?? DEFAULT_PALETTE_BY_STYLE[safeStyle];
 };
 
@@ -169,13 +176,13 @@ export const documentStyleSchema = z.object({
     'playfair',
     'merriweather'
   ]),
-  style: z.enum(['modern', 'classic', 'bold', 'executive'])
+  style: z.enum(['classic', 'bold', 'executive'])
 });
 
 export const documentStyleDefaultValues: TDocumentStyle = {
   palette: 'aesthetic',
   font: 'inter',
-  style: 'modern'
+  style: 'classic'
 };
 
 export type TDocumentStyle = z.infer<typeof documentStyleSchema>;

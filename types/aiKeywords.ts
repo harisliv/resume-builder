@@ -18,7 +18,12 @@ export type TKeywordExtractionResult = {
 
 /** A single placement target the user picked for a keyword. */
 export type TPlacementTarget =
-  | { type: 'skill'; categoryId: string }
+  | {
+      type: 'skill';
+      categoryId: string;
+      categoryName: string;
+      isNewCategory?: boolean;
+    }
   | { type: 'highlight'; experienceId: string; highlightId: string; currentText: string };
 
 /** Result of placing a single keyword — the updated lines. */
@@ -26,7 +31,7 @@ export type TPlacementResult = {
   /** Updated highlights with new text. */
   updatedHighlights: { experienceId: string; highlightId: string; newText: string; oldText: string }[];
   /** Skills added. */
-  addedSkills: { categoryId: string; value: string }[];
+  addedSkills: { categoryId: string; categoryName: string; value: string }[];
   cost?: number;
 };
 
@@ -43,6 +48,7 @@ export type TAccumulatedHighlightEdit = {
 export type TAccumulatedSkillAddition = {
   reviewId: string;
   categoryId: string;
+  categoryName: string;
   value: string;
 };
 

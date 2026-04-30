@@ -158,7 +158,7 @@ export const resumeInfoDefaultValues = {
   documentStyle: {
     palette: 'aesthetic' as const,
     font: 'inter' as const,
-    style: 'modern' as const
+    style: 'classic' as const
   },
   isAiImproved: false
 };

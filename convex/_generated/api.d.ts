@@ -11,6 +11,7 @@
 import type * as aiAttempts from "../aiAttempts.js";
 import type * as aiImprove from "../aiImprove.js";
 import type * as aiImproveActions from "../aiImproveActions.js";
+import type * as aiImproveSector from "../aiImproveSector.js";
 import type * as aiKeywords from "../aiKeywords.js";
 import type * as aiMocks from "../aiMocks.js";
 import type * as auth from "../auth.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
   aiImprove: typeof aiImprove;
   aiImproveActions: typeof aiImproveActions;
+  aiImproveSector: typeof aiImproveSector;
   aiKeywords: typeof aiKeywords;
   aiMocks: typeof aiMocks;
   auth: typeof auth;

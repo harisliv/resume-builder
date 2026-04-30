@@ -4,12 +4,12 @@ import type { TResumeForm, TResumeInfo } from '@/types/schema';
 import {
   COLOR_PALETTES,
   FONT_OPTIONS,
+  isDocumentStyleId,
   resolvePaletteForStyle
 } from '@/types/documentStyle';
 import { ClassicStyle } from './ClassicStyle';
 import { BoldStyle } from './BoldStyle';
 import { ExecutiveStyle } from './ExecutiveStyle';
-import { AestheticStyle } from './AestheticStyle';
 import { getPreviewData } from './utils';
 
 interface IResumePreviewProps {
@@ -21,10 +21,8 @@ interface IResumePreviewProps {
 function getPreviewComponent({ formData, infoData }: IResumePreviewProps) {
   const previewData = getPreviewData(formData);
   const { documentStyle } = infoData;
-  const rawStyle = documentStyle?.style ?? 'modern';
-  const style = ['modern', 'classic', 'bold', 'executive'].includes(rawStyle)
-    ? rawStyle
-    : 'modern';
+  const rawStyle = documentStyle?.style;
+  const style = isDocumentStyleId(rawStyle) ? rawStyle : 'classic';
   const paletteId = resolvePaletteForStyle(style, documentStyle?.palette);
   const palette = COLOR_PALETTES[paletteId];
   const font = FONT_OPTIONS[documentStyle?.font ?? 'inter'];
@@ -55,18 +53,8 @@ function getPreviewComponent({ formData, infoData }: IResumePreviewProps) {
     );
   }
 
-  if (style === 'modern') {
-    return (
-      <AestheticStyle
-        data={previewData}
-        palette={palette}
-        fontFamily={fontFamily}
-      />
-    );
-  }
-
   return (
-    <AestheticStyle data={previewData} palette={palette} fontFamily={fontFamily} />
+    <ClassicStyle data={previewData} palette={palette} fontFamily={fontFamily} />
   );
 }
 

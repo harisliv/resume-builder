@@ -1,236 +1,169 @@
-# 📝 Resume Builder
+# Resume Builder
 
-A modern, AI-ready resume builder application that helps you create professional resumes with real-time preview and PDF export capabilities.
+A full-stack resume builder focused on the complete job-application loop: import an existing resume, improve it with AI, match it against a job description, and export a polished PDF.
 
-![Resume Builder](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
 ![Convex](https://img.shields.io/badge/Convex-Backend-FF6B6B?style=for-the-badge)
 ![Tailwind](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwind-css)
+![AI SDK](https://img.shields.io/badge/AI-SDK-111827?style=for-the-badge)
 
-## ✨ Features
+## Current Status
 
-- 🎨 **Live Preview** - See your resume update in real-time as you type
-- 📄 **PDF Export** - Generate professional PDF resumes with one click
-- 🔐 **Secure Authentication** - Enterprise-grade auth powered by WorkOS AuthKit
-- ☁️ **Cloud Storage** - Save and manage multiple resumes with Convex backend
-- 🎯 **AI-Ready** - Architecture prepared for AI-powered job application suggestions
-- 📱 **Responsive Design** - Works seamlessly on desktop and mobile devices
-- 🎨 **Modern UI** - Beautiful interface built with shadcn/ui components
+MVP in active development. Core resume editing, authentication, cloud persistence, AI-assisted workflows, and PDF export are implemented.
 
-## 🚀 Tech Stack
+The app currently highlights four flagship flows:
 
-| Category          | Technology                     |
-| ----------------- | ------------------------------ |
-| **Framework**     | Next.js 16 (App Router)        |
-| **Language**      | TypeScript 5                   |
-| **Styling**       | Tailwind CSS 4                 |
-| **Backend**       | Convex                         |
-| **Auth**          | WorkOS AuthKit                 |
-| **PDF**           | @react-pdf/renderer            |
-| **UI Components** | shadcn/ui                      |
-| **Icons**         | Lucide React + HugeIcons       |
-| **Forms**         | React Hook Form + Zod          |
-| **Testing**       | Vitest + React Testing Library |
+| Flow | Status | What it does |
+| --- | --- | --- |
+| **AI PDF Parse** | Built | Upload a PDF resume, extract content, normalize it into structured resume fields, and create a new editable resume. |
+| **AI Resume Improve** | Built | Review a resume, ask targeted follow-up questions, generate focused edits, and apply accepted changes back into the resume. |
+| **AI JD Match** | Built | Paste a job description, extract missing keywords, place selected keywords into relevant resume sections, and create a tailored resume version. |
+| **Resume PDF Export** | Built | Preview the resume and export a clean, styled PDF using `@react-pdf/renderer`. |
 
-## 📋 Prerequisites
+## Why It Stands Out
 
-Before you begin, ensure you have the following installed:
+- **End-to-end application workflow**: import, edit, improve, tailor, preview, export.
+- **AI is productized, not decorative**: each AI flow has review steps, user control, and structured output.
+- **Resume versioning for job targeting**: JD matching creates a new tailored resume instead of overwriting the base version.
+- **Real backend architecture**: Convex powers persistence, AI attempt tracking, prompts, and server-side actions.
+- **Production-minded UI**: responsive Next.js app with WorkOS AuthKit, typed forms, validation, and focused feature modules.
 
-- [Node.js](https://nodejs.org/) 18+
-- [pnpm](https://pnpm.io/) 8+
-- A [Convex](https://convex.dev/) account
-- A [WorkOS](https://workos.com/) account
+## Product Walkthrough
 
-## 🛠️ Installation
+### 1. Build or Import a Resume
 
-### 1. Clone the Repository
+Users can create a resume manually or upload an existing PDF. The PDF parser extracts resume text, sends it through the AI parser prompt, normalizes the result, and turns it into editable resume data.
 
-```bash
-git clone <repository-url>
-cd resume-builder
+### 2. Improve the Resume With AI
+
+The improve flow starts from an existing resume and creates an AI-guided review thread. It asks targeted questions, generates concrete edits, and lets users accept changes before applying them.
+
+### 3. Match a Job Description
+
+The JD match flow analyzes a job description, extracts missing or important keywords, lets users choose placement targets, previews the proposed changes, and creates a tailored resume version for that job.
+
+### 4. Export a Polished PDF
+
+The live preview and PDF export flow turn structured resume data into a clean downloadable document with styling handled by the app's PDF renderer.
+
+## Feature Snapshot
+
+- Live resume editor with structured personal info, experience, education, skills, and custom sections.
+- Real-time preview beside the editor.
+- Multi-resume management with default resume selection.
+- AI PDF import limits and AI attempt tracking.
+- AI-improved resume state to guide the workflow.
+- JD match review UI with keyword highlighting and placement review.
+- PDF preview/export dialog.
+- WorkOS AuthKit authentication.
+- Convex database, queries, mutations, actions, and seeded AI prompts.
+- Vitest and React Testing Library coverage for focused feature behavior.
+
+## Tech Stack
+
+| Category | Technology |
+| --- | --- |
+| **Framework** | Next.js 16 App Router |
+| **Language** | TypeScript 5 |
+| **UI** | React 19, shadcn/ui, Base UI, Radix UI |
+| **Styling** | Tailwind CSS 4 |
+| **Backend** | Convex |
+| **Auth** | WorkOS AuthKit |
+| **AI** | AI SDK with OpenAI, Anthropic, and Google providers |
+| **PDF Parsing** | `pdfjs-dist` |
+| **PDF Export** | `@react-pdf/renderer` |
+| **Forms** | React Hook Form + Zod |
+| **Testing** | Vitest + React Testing Library |
+| **Package Manager** | pnpm |
+
+## Project Structure
+
+```txt
+resume-builder/
+├── app/                 # Next.js routes and server actions
+├── components/          # Feature modules and shared UI
+│   ├── ImproveResume/   # AI resume improvement flow
+│   ├── MatchJob/        # AI JD matching flow
+│   ├── PdfUpload/       # PDF import flow
+│   ├── PdfViewer/       # PDF preview/export flow
+│   ├── ResumeForm/      # Resume editor
+│   └── ResumePreview/   # Live resume preview
+├── convex/              # Convex schema, functions, AI actions, prompts
+├── hooks/               # App hooks
+├── lib/                 # Shared utilities
+├── types/               # TypeScript domain types
+└── docs/                # Project guides
 ```
 
-### 2. Install Dependencies
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm 8+
+- Convex account
+- WorkOS account
+- AI provider API keys for configured model providers
+
+### Install
 
 ```bash
 pnpm install
 ```
 
-### 3. Set Up Convex
+### Environment
 
-Convex provides the backend database and real-time synchronization.
-
-**Step 1:** Log in to Convex
-
-```bash
-npx convex dev
-```
-
-This will:
-
-- Open a browser to authenticate with Convex
-- Create a new Convex project (or connect to existing)
-- Start the local Convex dev server
-
-**Step 2:** Note your deployment URL
-
-After running the command above, you'll see output like:
-
-```
-✔ Convex deployment ready!
-   URL: https://your-deployment.convex.cloud
-```
-
-Copy this URL for your environment variables.
-
-### 4. Set Up WorkOS AuthKit
-
-AuthKit provides secure authentication for your application.
-
-**Step 1:** Create a WorkOS account at [workos.com](https://workos.com/)
-
-**Step 2:** Get your API credentials from the WorkOS Dashboard:
-
-- Go to **API Keys** → Copy your **Client ID** and **API Key**
-- Go to **Redirects** → Add `http://localhost:3000/callback` as a redirect URI
-
-**Step 3:** Generate a cookie password (32+ characters):
-
-```bash
-openssl rand -base64 32
-```
-
-**Step 4:** (Optional) Create a default organization in WorkOS dashboard and copy the Org ID
-
-### 5. Configure Environment Variables
-
-Create a `.env.local` file in the project root:
+Create `.env.local`:
 
 ```env
-# WorkOS AuthKit Configuration
-WORKOS_CLIENT_ID=your_client_id_here
-WORKOS_API_KEY=your_api_key_here
+WORKOS_CLIENT_ID=your_client_id
+WORKOS_API_KEY=your_api_key
 NEXT_PUBLIC_WORKOS_REDIRECT_URI=http://localhost:3000/callback
-WORKOS_COOKIE_PASSWORD=your_generated_password_here
-WORKOS_DEFAULT_ORG_ID=your_org_id_here
+WORKOS_COOKIE_PASSWORD=your_32_character_cookie_password
+WORKOS_DEFAULT_ORG_ID=your_org_id
 
-# Convex Configuration
 CONVEX_DEPLOYMENT=dev:your-deployment-name
 NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+
+OPENAI_API_KEY=your_openai_key
+ANTHROPIC_API_KEY=your_anthropic_key
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_key
 ```
 
-> ⚠️ **Important:** Never commit `.env.local` to version control. It's already in `.gitignore`.
-
-### 6. Run the Development Server
-
-Start both the Next.js and Convex dev servers:
+### Run Locally
 
 ```bash
-# Terminal 1: Start Convex
 pnpm convex
-
-# Terminal 2: Start Next.js
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
-## 📝 Available Scripts
+## Commands
 
-| Command        | Description                           |
-| -------------- | ------------------------------------- |
-| `pnpm dev`     | Start Next.js development server      |
-| `pnpm convex`  | Start Convex development server       |
-| `pnpm build`   | Build production application          |
-| `pnpm start`   | Start production server               |
-| `pnpm lint`    | Run ESLint                            |
-| `pnpm format`  | Format code with Prettier             |
-| `pnpm test`    | Run Vitest tests                      |
-| `pnpm compile` | Run TypeScript compiler in watch mode |
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start Next.js dev server |
+| `pnpm convex` | Start Convex dev server |
+| `pnpm typeCheck` | Validate TypeScript |
+| `pnpm test` | Run Vitest tests |
+| `pnpm check` | Run format and lint checks |
+| `pnpm build` | Build production app |
 
-## 🏗️ Project Structure
+See [docs/COMMANDS.md](docs/COMMANDS.md) for the project command guide.
 
-```
-resume-builder/
-├── app/              # Next.js app router pages
-├── components/       # React components (UI + features)
-│   └── ui/          # shadcn/ui components
-├── convex/          # Convex backend functions and schema
-├── hooks/           # Custom React hooks
-├── lib/             # Utility functions
-├── types/           # TypeScript type definitions
-├── config/          # Configuration files
-├── tests/           # Test files
-└── public/          # Static assets
-```
+## Deployment Notes
 
-## 🔐 Authentication Flow
-
-This app uses WorkOS AuthKit for authentication:
-
-1. User clicks "Sign In" → Redirected to AuthKit hosted UI
-2. User authenticates → Redirected to `/callback`
-3. App validates session → Creates user session
-4. Protected routes check for valid session
-
-## 📦 Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
-4. Deploy!
-
-> ⚠️ **Important:** After deploying to Vercel, you must also deploy Convex separately. Vercel and Convex are independent — changes to Convex functions or environment variables won't take effect until you run `npx convex deploy`.
-
-### Convex Production
+Deploy the Next.js app to Vercel and deploy Convex separately:
 
 ```bash
 npx convex deploy
 ```
 
-## 🤝 Contributing
+Convex functions, schema, environment variables, and seeded prompts need their own deploy cycle.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+## License
 
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE) - free to use, modify, and distribute.
-
-### What this means:
-
-- ✅ Commercial use allowed
-- ✅ Modification allowed
-- ✅ Distribution allowed
-- ✅ Private use allowed
-- ✅ Sublicensing allowed
-
-The only requirement is to include the original copyright notice and license text in any copies.
-
-## 🆘 Troubleshooting
-
-### Convex connection issues
-
-- Ensure `npx convex dev` is running
-- Check that `NEXT_PUBLIC_CONVEX_URL` matches your deployment
-
-### AuthKit login issues
-
-- Verify redirect URI matches exactly in WorkOS dashboard
-- Check that all WorkOS env vars are set correctly
-- Ensure `WORKOS_COOKIE_PASSWORD` is at least 32 characters
-
-### PDF export not working
-
-- Check browser console for errors
-- Ensure `@react-pdf/renderer` is properly installed
-
----
-
-Built with ❤️ using Next.js, Convex, and WorkOS AuthKit
+MIT

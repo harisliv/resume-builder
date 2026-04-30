@@ -11,6 +11,15 @@
 
 React Hook Form manages form state, Zod validates data, Convex mutations persist to database, and TanStack Query handles caching/refetching. Convex provides real-time database and serverless functions.
 
+## Feature Folder Shape
+
+- Large frontend features should prefer colocated folders like:
+  `Feature/Feature.tsx` for orchestration
+  `Feature/ui/` for presentational feature-specific subcomponents
+  `Feature/styles/` for styled wrappers with non-trivial Tailwind
+  `Feature/*.utils.ts` for pure helpers
+  `Feature/*.test.tsx` for focused tests
+
 ## Authentication & Authorization
 
 WorkOS AuthKit handles authentication via middleware (`proxy.ts`).

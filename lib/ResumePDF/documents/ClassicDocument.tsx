@@ -140,13 +140,13 @@ export const ClassicDocument = ({
       fontWeight: 700,
       color: colors.education
     },
-    /** Experience company aligns with Aesthetic neutral heading tone */
+    /** Experience company uses neutral heading tone. */
     experienceCompany: {
       fontSize: 11,
       fontWeight: 700,
       color: '#1e293b'
     },
-    /** Company marker row mirrors Aesthetic left border accent */
+    /** Company marker row adds the Classic section accent. */
     experienceCompanyRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -161,7 +161,7 @@ export const ClassicDocument = ({
       fontSize: 10,
       color: '#475569'
     },
-    /** Experience role aligns with Aesthetic secondary accent */
+    /** Experience role uses the secondary palette accent. */
     experiencePosition: {
       fontSize: 10,
       fontWeight: 600,
@@ -178,7 +178,7 @@ export const ClassicDocument = ({
       color: colors.education,
       fontWeight: 700
     },
-    /** Date icon + text row mirrors Aesthetic metadata treatment */
+    /** Date icon + text row keeps metadata compact. */
     experienceDateRow: {
       flexDirection: 'row',
       alignItems: 'center',

@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import type { TExtractedKeyword } from '@/types/aiKeywords';
 import { HighlightedJd } from './HighlightedJd';
 
@@ -13,7 +14,34 @@ type TJdPanelProps = {
   processedKeywords: Set<string>;
 };
 
-/** Left panel: JD textarea (input) or highlighted keywords (matching). */
+/** Skeleton mimicking the highlighted-JD layout shown during AI analysis. */
+function AnalyzingSkeleton() {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 border-b border-border bg-muted/50 px-8 py-4">
+        <Skeleton className="h-4 w-32" />
+      </div>
+      <div className="min-h-0 flex-1 space-y-3 overflow-hidden px-8 py-6">
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-11/12" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-4/5" />
+        <div className="h-2" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-10/12" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-3/4" />
+        <div className="h-2" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-11/12" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-5/6" />
+      </div>
+    </div>
+  );
+}
+
+/** Left panel: JD textarea (input), skeleton (analyzing), or highlighted keywords (matching). */
 export function JdPanel({
   phase,
   jobDescription,
@@ -25,7 +53,11 @@ export function JdPanel({
 }: TJdPanelProps) {
   const wordCount = jobDescription.trim() ? jobDescription.trim().split(/\s+/).length : 0;
 
-  if (phase === 'input' || phase === 'analyzing') {
+  if (phase === 'analyzing') {
+    return <AnalyzingSkeleton />;
+  }
+
+  if (phase === 'input') {
     return (
       <div className="flex flex-1 flex-col p-8">
         <div className="mb-4 flex flex-col gap-2">
@@ -42,7 +74,6 @@ export function JdPanel({
             placeholder="Paste your job description here..."
             value={jobDescription}
             onChange={e => onJobDescriptionChange(e.target.value)}
-            disabled={phase === 'analyzing'}
           />
           <div className="absolute right-4 bottom-4 text-[10px] font-medium uppercase tracking-tighter text-muted-foreground/50">
             {wordCount} Words

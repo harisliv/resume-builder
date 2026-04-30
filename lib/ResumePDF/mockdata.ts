@@ -68,7 +68,7 @@ export const mockResumeData: TResumeData = {
   documentStyle: {
     palette: 'ocean',
     font: 'inter',
-    style: 'modern'
+    style: 'classic'
   }
 };
 
@@ -250,7 +250,7 @@ export const extendedMockResumeData: TResumeData = {
   documentStyle: {
     palette: 'ocean',
     font: 'inter',
-    style: 'modern'
+    style: 'classic'
   }
 };
 
@@ -473,6 +473,6 @@ export const groupedLongMockData: TResumeData = {
   documentStyle: {
     palette: 'ocean',
     font: 'inter',
-    style: 'modern'
+    style: 'classic'
   }
 };

@@ -7,6 +7,10 @@
 - **`pnpm test`** — Run tests with Vitest (excludes evals)
 - **`pnpm test:watch`** — Watch mode for tests
 - **`vitest run path/to/test.test.ts`** — Run single test file
+- **`npx skills find <query>`** — Search installable agent skills
+- **`npx skills add <owner/repo@skill>`** — Install a skill
+- **`npx skills check`** — Check installed skill updates
+- **`npx skills update`** — Update installed skills
 
 **Do not run during the tasks unless otherwise told to:**
 
@@ -19,4 +23,3 @@
 **In order to validate the code, run:**
 
 - `pnpm typeCheck`
-- `pnpm build`
