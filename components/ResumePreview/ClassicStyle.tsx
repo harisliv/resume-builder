@@ -17,7 +17,7 @@ import { getSkillEntries } from '@/lib/skills';
 /** Pipe separator between contact items */
 const ContactSep = () => <span className="text-[8px] text-slate-300"> | </span>;
 
-/** Experience tones aligned with Aesthetic/Modern hierarchy. */
+/** Experience tones for Classic metadata hierarchy. */
 const CLASSIC_EXPERIENCE_TONES = {
   company: '#1e293b',
   location: '#64748b'

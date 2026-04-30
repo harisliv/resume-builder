@@ -1,14 +1,14 @@
 'use client';
 
 import type { TImproveEdit } from '@/types/aiImprove';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DiffHighlight } from '@/components/ui/diff-highlight';
 import { cn } from '@/lib/utils';
 
 type TEditReviewCardProps = {
   edit: TImproveEdit;
-  accepted: boolean;
-  onAccept: () => void;
-  onReject: () => void;
+  selected: boolean;
+  onToggle: () => void;
 };
 
 /** Returns a human-readable label for an edit type. */
@@ -28,12 +28,11 @@ function getEditTexts(edit: TImproveEdit): { oldText: string; newText: string } 
   return { oldText: edit.oldValue, newText: edit.newValue };
 }
 
-/** Single atomic edit card with before/after diff and accept/reject buttons. */
+/** Single atomic edit card with before/after diff and include checkbox. */
 export function EditReviewCard({
   edit,
-  accepted,
-  onAccept,
-  onReject
+  selected,
+  onToggle
 }: TEditReviewCardProps) {
   const label = getEditLabel(edit);
   const { oldText, newText } = getEditTexts(edit);
@@ -41,13 +40,26 @@ export function EditReviewCard({
   return (
     <div
       className={cn(
-        'bg-muted/40 rounded-2xl p-6 transition-all duration-300',
-        accepted ? 'opacity-100' : 'opacity-50'
+        'rounded-2xl border p-6 transition-all duration-300',
+        selected
+          ? 'border-primary/30 bg-primary/5'
+          : 'border-border/40 bg-muted/40'
       )}
     >
-      <span className="text-muted-foreground mb-3 block text-[10px] font-bold tracking-wider uppercase">
-        {label}
-      </span>
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <span className="text-muted-foreground block text-[10px] font-bold tracking-wider uppercase">
+          {label}
+        </span>
+        <label className="text-muted-foreground hover:text-foreground flex cursor-pointer items-center gap-2 text-xs font-semibold transition-colors">
+          <Checkbox
+            aria-label={`Include ${label.toLowerCase()} edit`}
+            checked={selected}
+            className="cursor-pointer"
+            onCheckedChange={() => onToggle()}
+          />
+          Include
+        </label>
+      </div>
 
       {/* Original */}
       {oldText && (
@@ -76,25 +88,6 @@ export function EditReviewCard({
           <p className="text-foreground text-sm font-medium leading-relaxed">
             {newText}
           </p>
-        )}
-      </div>
-
-      {/* Accept / Reject buttons */}
-      <div className="mt-5 flex justify-end gap-3">
-        {accepted ? (
-          <button
-            onClick={onReject}
-            className="text-muted-foreground hover:bg-muted rounded-xl px-5 py-2 text-sm font-bold transition-colors"
-          >
-            Reject
-          </button>
-        ) : (
-          <button
-            onClick={onAccept}
-            className="from-primary to-primary/80 flex items-center gap-2 rounded-xl bg-gradient-to-br px-6 py-2 text-sm font-bold text-white shadow-md transition-opacity hover:opacity-90"
-          >
-            Accept
-          </button>
         )}
       </div>
     </div>

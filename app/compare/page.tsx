@@ -16,8 +16,10 @@ import {
 } from '@/types/schema';
 import {
   COLOR_PALETTES,
+  DOCUMENT_STYLE_IDS,
   DOCUMENT_STYLES,
   FONT_OPTIONS,
+  isDocumentStyleId,
   type TDocumentStyleId,
   type TFontId,
   type TPaletteId
@@ -67,7 +69,7 @@ function splitResumeData(data: TResumeData) {
   };
 }
 
-const STYLE_IDS = Object.keys(DOCUMENT_STYLES) as TDocumentStyleId[];
+const STYLE_IDS = DOCUMENT_STYLE_IDS;
 
 type TDataVariant = 'homepage' | 'extended' | 'groupedLong';
 
@@ -106,11 +108,17 @@ function parseDataVariant(param: string | null): TDataVariant {
   return 'extended';
 }
 
+/** Validates style param from URL; legacy/invalid styles fall back to classic. */
+function parseStyle(param: string | null): TDocumentStyleId {
+  const style = param ?? undefined;
+  return isDocumentStyleId(style) ? style : 'classic';
+}
+
 /** Compare page content — uses useSearchParams, must be inside Suspense. */
 function ComparePageContent() {
   const searchParams = useSearchParams();
   const [activeStyle, setActiveStyle] = useState<TDocumentStyleId>(
-    () => (searchParams.get('style') as TDocumentStyleId) || 'modern'
+    () => parseStyle(searchParams.get('style'))
   );
   const [activePalette, setActivePalette] = useState<TPaletteId>(
     () => (searchParams.get('palette') as TPaletteId) || 'ocean'

@@ -12,6 +12,13 @@ import {
   buildMockImproveQuestions,
   isMockAiEnabled
 } from './aiMocks';
+import {
+  formatSectorGuidance,
+  getQuestionTargetText,
+  inferSectorProfile,
+  selectImproveQuestions,
+  type TResumeDataForImprove
+} from './aiImproveSector';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { formatResumePrompt } from './formatResumePrompt';
 
@@ -50,17 +57,7 @@ function computeCost(usage: { inputTokens?: number; outputTokens?: number }) {
   );
 }
 
-type ResumeData = {
-  personalInfo?: { summary?: string };
-  experience?: {
-    id: string;
-    company?: string;
-    position?: string;
-    description?: string;
-    highlights?: { id: string; value: string }[];
-  }[];
-  skills?: { id: string; name: string; values: { id: string; value: string }[] }[];
-};
+type ResumeData = TResumeDataForImprove;
 
 /** Generates targeted questions about weak resume bullets (Turn 1). Consumes 1 AI attempt. */
 export const generateQuestions = action({
@@ -128,7 +125,11 @@ export const generateQuestions = action({
     if (!dbPrompt) throw new Error('System prompt "improve-questions" not found. Run seed.');
 
     const { client, modelId } = getAnthropicClient();
-    const systemPrompt = `${dbPrompt.content}\n\nCurrent resume:\n${resumeText}`;
+    const sectorProfile = inferSectorProfile(resume);
+    const sectorGuidance = sectorProfile
+      ? `\n\n${formatSectorGuidance(sectorProfile)}`
+      : '';
+    const systemPrompt = `${dbPrompt.content}${sectorGuidance}\n\nCurrent resume:\n${resumeText}`;
 
     const result = await generateText({
       model: client(modelId),
@@ -140,20 +141,28 @@ export const generateQuestions = action({
     if (!result.output) throw new Error('AI returned no output');
     const cost = computeCost(result.usage);
 
-    console.log("🚀 ~ generateQuestions: ~ result.output.questions:", result.output.questions)
-    console.log("🚀 ~ handler: ~ cost:", cost)
-
     if (shouldConsumeAttempt) {
       await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
     }
 
-    const questions = result.output.questions;
+    if (role === 'admin') {
+      console.log("🚀 ~ result.output.questions:", result.output.questions);
+    }
+    const questions = selectImproveQuestions(
+      result.output.questions,
+      resume,
+      resumeText,
+      sectorProfile
+    );
     await ctx.runMutation(internal.aiImprove.saveAssistantMessage, {
       threadId,
       content: 'Questions generated.',
       structuredPayload: { questions, isReadyToApply: false }
     });
 
+    if (role === 'admin') {
+      console.log("🚀 ~ cost:", cost);
+    }
     return { questions, cost };
   }
 });
@@ -163,18 +172,7 @@ const rewriteSchema = z.object({ value: z.string() });
 
 /** Looks up the current text for a question's target from the resume. */
 function lookupCurrentValue(q: TAnsweredQuestion, resume: ResumeData): string | null {
-  switch (q.targetType) {
-    case 'highlight': {
-      const exp = resume.experience?.find((e) => e.id === q.experienceId);
-      return exp?.highlights?.find((h) => h.id === q.highlightId)?.value ?? null;
-    }
-    case 'description': {
-      const exp = resume.experience?.find((e) => e.id === q.experienceId);
-      return exp?.description ?? null;
-    }
-    case 'summary':
-      return resume.personalInfo?.summary ?? null;
-  }
+  return getQuestionTargetText(q, resume);
 }
 
 /** Builds a TImproveEdit from a question and AI-rewritten value. */
@@ -210,8 +208,11 @@ export const generateEdits = action({
     edits: TImproveEdit[];
     cost?: number;
   }> => {
-    console.log("🚀 ~ handler: ~ answeredQuestions:", answeredQuestions)
     const userId = await getAuthenticatedUser(ctx);
+    const role = await getUserRole(ctx);
+    if (role === 'admin') {
+      console.log("🚀 ~ handler: ~ answeredQuestions:", answeredQuestions);
+    }
 
     const context = await ctx.runQuery(internal.aiImprove.getThreadContext, {
       threadId,
@@ -276,12 +277,14 @@ export const generateEdits = action({
           output: Output.object({ schema: rewriteSchema })
         });
         const callCost = computeCost(result.usage);
-        console.log(`[generateEdits] call ${i + 1}/${actionable.length}`, JSON.stringify({
-          targetType: q.targetType,
-          input: currentValue,
-          output: result.output?.value,
-          cost: `$${callCost.toFixed(6)}`
-        }));
+        if (role === 'admin') {
+          console.log(`[generateEdits] call ${i + 1}/${actionable.length}`, JSON.stringify({
+            targetType: q.targetType,
+            input: currentValue,
+            output: result.output?.value,
+            cost: `$${callCost.toFixed(6)}`
+          }));
+        }
         return { q: q as TAnsweredQuestion, currentValue, result };
       })
     );
@@ -299,10 +302,12 @@ export const generateEdits = action({
     }
 
     const cost = computeCost({ inputTokens: totalInput, outputTokens: totalOutput });
-    console.log('[generateEdits] OUTPUT', JSON.stringify({
-      cost: `$${cost.toFixed(6)}`,
-      edits
-    }, null, 2));
+    if (role === 'admin') {
+      console.log('[generateEdits] OUTPUT', JSON.stringify({
+        cost: `$${cost.toFixed(6)}`,
+        edits
+      }, null, 2));
+    }
 
     await ctx.runMutation(internal.aiImprove.saveAssistantMessage, {
       threadId,

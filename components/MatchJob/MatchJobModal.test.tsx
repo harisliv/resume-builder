@@ -433,6 +433,7 @@ describe('MatchJobModal', () => {
         addedSkills: [
           {
             categoryId: 'skill-cat-1',
+            categoryName: 'Frontend',
             value: 'Testing'
           }
         ]
@@ -478,7 +479,75 @@ describe('MatchJobModal', () => {
         skillAdditions: [
           {
             categoryId: 'skill-cat-1',
+            categoryName: 'Frontend',
             value: 'Testing'
+          }
+        ]
+      });
+    });
+  });
+
+  it('lets the user add a new skill category target for a keyword', async () => {
+    mocks.extractAction.mockResolvedValue(makeExtractResult());
+    mocks.placeAction.mockResolvedValue({
+      updatedHighlights: [],
+      addedSkills: [
+        {
+          categoryId: 'new-skill-category:testing',
+          categoryName: 'Testing',
+          value: 'CSS'
+        }
+      ]
+    });
+    mocks.applyMutation.mockResolvedValue('resume_tailored');
+
+    render(
+      <MatchJobModal
+        open
+        onOpenChange={vi.fn()}
+        resumeId={RESUME_ID}
+        onDone={vi.fn()}
+      />
+    );
+
+    const user = await analyzeJobDescription();
+
+    await user.click(screen.getByRole('button', { name: 'CSS' }));
+    await user.click(screen.getByRole('tab', { name: 'Skills' }));
+    await user.type(
+      screen.getByRole('textbox', { name: 'New skill category name' }),
+      'Testing'
+    );
+    await user.click(screen.getByRole('button', { name: 'Use Category' }));
+    await user.click(screen.getByRole('button', { name: 'Enhance' }));
+
+    expect(mocks.placeAction).toHaveBeenCalledWith({
+      resumeId: RESUME_ID,
+      keyword: 'CSS',
+      targets: [
+        {
+          type: 'skill',
+          categoryId: 'new-skill-category:testing',
+          categoryName: 'Testing'
+        }
+      ]
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Review Changes' }));
+    expect(screen.getByText('+ CSS in Testing')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Apply Changes' }));
+
+    await waitFor(() => {
+      expect(mocks.applyMutation).toHaveBeenCalledWith({
+        resumeId: RESUME_ID,
+        title: 'Frontend Developer',
+        highlightEdits: [],
+        skillAdditions: [
+          {
+            categoryId: 'new-skill-category:testing',
+            categoryName: 'Testing',
+            value: 'CSS'
           }
         ]
       });
@@ -493,6 +562,7 @@ describe('MatchJobModal', () => {
         addedSkills: [
           {
             categoryId: 'skill-cat-1',
+            categoryName: 'Frontend',
             value: 'Testing'
           }
         ]
@@ -502,6 +572,7 @@ describe('MatchJobModal', () => {
         addedSkills: [
           {
             categoryId: 'skill-cat-1',
+            categoryName: 'Frontend',
             value: 'Testing'
           }
         ]
@@ -539,6 +610,7 @@ describe('MatchJobModal', () => {
         skillAdditions: [
           {
             categoryId: 'skill-cat-1',
+            categoryName: 'Frontend',
             value: 'Testing'
           }
         ]
@@ -606,6 +678,7 @@ describe('MatchJobModal', () => {
       addedSkills: [
         {
           categoryId: 'skill-cat-1',
+          categoryName: 'Frontend',
           value: 'Testing'
         }
       ]

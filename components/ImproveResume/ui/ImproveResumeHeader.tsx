@@ -23,14 +23,14 @@ export function ImproveResumeHeader({
   return (
     <ImproveHeaderRow>
       <div>
-        <div className="mb-1 flex items-center gap-2">
+        {/* <div className="mb-1 flex items-center gap-2">
           <ImproveHeaderBadge>
             <Sparkles className="h-4 w-4 text-white" />
           </ImproveHeaderBadge>
           <span className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
             {isReview ? 'Step 2: Review & Apply' : 'Optimization Phase 01'}
           </span>
-        </div>
+        </div> */}
         <h2 className="text-foreground text-2xl font-extrabold tracking-tight">
           {isReview
             ? 'Atomic Edits'

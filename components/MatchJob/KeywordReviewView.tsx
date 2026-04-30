@@ -37,6 +37,7 @@ export function KeywordReviewView({
       }))}
       skills={edits.skillAdditions.map((addition) => ({
         id: addition.reviewId,
+        categoryName: addition.categoryName,
         value: addition.value,
         selected: acceptedSkills.has(addition.reviewId)
       }))}

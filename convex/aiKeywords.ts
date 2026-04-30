@@ -2,13 +2,13 @@
 
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText, Output } from 'ai';
-import { z } from 'zod';
 import { v } from 'convex/values';
-import { action } from './_generated/server';
+import { z } from 'zod';
 import { internal } from './_generated/api';
+import { action } from './_generated/server';
+import { buildMockKeywordExtraction, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { buildUserPrompt } from './formatResumePrompt';
-import { buildMockKeywordExtraction, isMockAiEnabled } from './aiMocks';
 
 /** Zod schema for keyword extraction AI output. */
 const keywordSchema = z.object({
@@ -19,6 +19,90 @@ const keywordSchema = z.object({
     context: z.string()
   }))
 });
+
+type TKeywordOutput = z.infer<typeof keywordSchema>['keywords'][number];
+
+/** Normalizes spacing and trims punctuation around extracted keyword text. */
+function cleanKeywordText(value: string) {
+  return value
+    .replace(/\s+/g, ' ')
+    .replace(/^[\s,;:()[\]{}"'.!-]+/, '')
+    .replace(/[\s,;:()[\]{}"'.!-]+$/, '')
+    .trim();
+}
+
+/** Removes parenthetical qualifier tails from a keyword when the leading term stands alone. */
+function stripParentheticalTail(value: string) {
+  return value.replace(/\s*\((?:[^)(]+|\([^)(]*\))*\)\s*$/u, '').trim();
+}
+
+/** True when the model returned a bundled keyword list instead of one concept. */
+function isBundledKeyword(value: string) {
+  const normalized = value.toLowerCase();
+  return /[,;]/.test(value)
+    || /\b(or similar|and\/or)\b/.test(normalized)
+    || /\b(?:or|vs\.?)\b/.test(normalized);
+}
+
+/** Splits obvious bundled keyword lists into single-concept entries. */
+function splitKeywordParts(value: string) {
+  return value
+    .split(/,|;|\bor\b/gi)
+    .map((part) => cleanKeywordText(part))
+    .filter((part) => part.length >= 2 && !/^(?:similar|etc\.?)$/i.test(part));
+}
+
+/** Escapes user/model text before building a targeted context regex. */
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Pulls concrete examples from "keyword (Tool or similar)" context spans. */
+function getParentheticalContextCandidates(keyword: string, context: string) {
+  const match = context.match(new RegExp(`${escapeRegExp(keyword)}\\s*\\(([^)]*)\\)`, 'i'));
+  if (!match) return [];
+  return splitKeywordParts(match[1]);
+}
+
+/** Cleans and dedupes model keyword output before it reaches the UI. */
+function sanitizeKeywords(keywords: TKeywordOutput[]) {
+  const sanitized: TKeywordOutput[] = [];
+  const seen = new Set<string>();
+
+  for (const keyword of keywords) {
+    const baseKeyword = cleanKeywordText(stripParentheticalTail(keyword.keyword));
+    const baseCanonicalName = cleanKeywordText(stripParentheticalTail(keyword.canonicalName));
+    const context = keyword.context.trim();
+    const parts = isBundledKeyword(baseKeyword)
+      ? splitKeywordParts(baseKeyword)
+      : [baseKeyword];
+    const contextParts = getParentheticalContextCandidates(baseKeyword, context);
+    const keywordParts = [
+      ...parts.map((part) => ({ value: part, fromContext: false })),
+      ...contextParts.map((part) => ({ value: part, fromContext: true }))
+    ];
+
+    for (const part of keywordParts) {
+      const normalizedPart = cleanKeywordText(part.value);
+      if (!normalizedPart) continue;
+
+      const nextKeyword = {
+        keyword: normalizedPart,
+        canonicalName: parts.length === 1 && !part.fromContext
+          ? (baseCanonicalName || normalizedPart)
+          : normalizedPart,
+        context
+      };
+
+      const dedupeKey = nextKeyword.canonicalName.toLowerCase();
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+      sanitized.push(nextKeyword);
+    }
+  }
+
+  return sanitized.slice(0, 12);
+}
 
 /** Extracts missing keywords from JD as a flat list. */
 export const extractKeywords = action({
@@ -52,7 +136,7 @@ export const extractKeywords = action({
 
     const resume = await ctx.runQuery(internal.resumes.getResumeInternal, {
       resumeId: args.resumeId, userId
-    }) as { personalInfo?: { summary?: string }; experience?: { id: string; company?: string; position?: string; description?: string; highlights?: { id: string; value: string }[] }[]; skills?: { id: string; name: string; values: { id: string; value: string }[] }[] } | null;
+    });
     if (!resume) throw new Error('Resume not found');
 
     if (mockAiEnabled) {
@@ -104,7 +188,9 @@ export const extractKeywords = action({
       (result.usage.outputTokens ?? 0) * pricing.output
     ) / 1_000_000;
 
-    console.log(`[extractKeywords] cost: $${cost.toFixed(6)}`);
+    if (role === 'admin') {
+      console.log(`[extractKeywords] cost: $${cost.toFixed(6)}`);
+    }
 
     if (shouldConsumeAttempt) {
       await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
@@ -112,7 +198,7 @@ export const extractKeywords = action({
 
     return {
       title: result.output.title,
-      keywords: result.output.keywords,
+      keywords: sanitizeKeywords(result.output.keywords),
       cost
     };
   }
@@ -126,7 +212,8 @@ export const placeKeyword = action({
     targets: v.array(v.union(
       v.object({
         type: v.literal('skill'),
-        categoryId: v.string()
+        categoryId: v.string(),
+        categoryName: v.string()
       }),
       v.object({
         type: v.literal('highlight'),
@@ -145,23 +232,33 @@ export const placeKeyword = action({
     })),
     addedSkills: v.array(v.object({
       categoryId: v.string(),
+      categoryName: v.string(),
       value: v.string()
     })),
     cost: v.optional(v.number())
   }),
   handler: async (ctx, args): Promise<{
     updatedHighlights: { experienceId: string; highlightId: string; newText: string; oldText: string }[];
-    addedSkills: { categoryId: string; value: string }[];
+    addedSkills: { categoryId: string; categoryName: string; value: string }[];
     cost?: number;
   }> => {
     await getAuthenticatedUser(ctx);
+    const role = await getUserRole(ctx);
 
-    const addedSkills: { categoryId: string; value: string }[] = [];
+    const addedSkills: {
+      categoryId: string;
+      categoryName: string;
+      value: string;
+    }[] = [];
     const highlightTargets: { experienceId: string; highlightId: string; currentText: string }[] = [];
 
     for (const target of args.targets) {
       if (target.type === 'skill') {
-        addedSkills.push({ categoryId: target.categoryId, value: args.keyword });
+        addedSkills.push({
+          categoryId: target.categoryId,
+          categoryName: target.categoryName,
+          value: args.keyword
+        });
       } else {
         highlightTargets.push(target);
       }
@@ -220,7 +317,9 @@ Return a JSON array with one entry per highlight:
       (usage.outputTokens ?? 0) * pricing.output
     ) / 1_000_000;
 
-    console.log(`[placeKeyword] keyword="${args.keyword}" cost: $${cost.toFixed(6)}`);
+    if (role === 'admin') {
+      console.log(`[placeKeyword] keyword="${args.keyword}" cost: $${cost.toFixed(6)}`);
+    }
 
     let updatedHighlights: { experienceId: string; highlightId: string; newText: string; oldText: string }[] = [];
     const jsonMatch = text.match(/\[[\s\S]*\]/);

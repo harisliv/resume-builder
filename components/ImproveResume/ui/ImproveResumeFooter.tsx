@@ -13,7 +13,7 @@ import {
 type TImproveResumeFooterProps = {
   phase: TPhase;
   hasAnswers: boolean;
-  acceptedCount: number;
+  selectedCount: number;
   isApplying: boolean;
   onClose: () => void;
   onAnalyzeAnswers: () => void;
@@ -24,7 +24,7 @@ type TImproveResumeFooterProps = {
 export function ImproveResumeFooter({
   phase,
   hasAnswers,
-  acceptedCount,
+  selectedCount,
   isApplying,
   onClose,
   onAnalyzeAnswers,
@@ -50,7 +50,7 @@ export function ImproveResumeFooter({
         ))}
 
       {phase === 'review' &&
-        (acceptedCount > 0 && !isApplying ? (
+        (selectedCount > 0 && !isApplying ? (
           <ImprovePrimaryAction onClick={onApply}>
             Apply to Current
           </ImprovePrimaryAction>

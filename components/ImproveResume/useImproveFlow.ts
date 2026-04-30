@@ -44,7 +44,7 @@ export function useImproveFlow({
   const [questions, setQuestions] = useState<TImproveQuestion[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [edits, setEdits] = useState<TImproveEdit[]>([]);
-  const [acceptedSet, setAcceptedSet] = useState<Set<number>>(new Set());
+  const [selectedSet, setSelectedSet] = useState<Set<number>>(new Set());
   const [isApplying, setIsApplying] = useState(false);
 
   const createThread = useMutation(api.aiImprove.createThread);
@@ -60,7 +60,7 @@ export function useImproveFlow({
     setQuestions([]);
     setAnswers([]);
     setEdits([]);
-    setAcceptedSet(new Set());
+    setSelectedSet(new Set());
     setIsApplying(false);
   }, []);
 
@@ -136,7 +136,7 @@ export function useImproveFlow({
       const result = await generateEdits({ threadId, answeredQuestions });
       const resultEdits = result.edits as TImproveEdit[];
       setEdits(resultEdits);
-      setAcceptedSet(new Set(resultEdits.map((_, i) => i)));
+      setSelectedSet(new Set());
       setPhase('review');
     } catch (e) {
       toast.error(
@@ -146,21 +146,21 @@ export function useImproveFlow({
     }
   }, [threadId, questions, answers, sendUserMessage, generateEdits]);
 
-  /** Toggle accept/reject for an edit. */
+  /** Toggles whether an edit should be included when applying changes. */
   const handleToggle = useCallback((index: number) => {
-    setAcceptedSet((prev) => {
+    setSelectedSet((prev) => {
       const next = new Set(prev);
       next.has(index) ? next.delete(index) : next.add(index);
       return next;
     });
   }, []);
 
-  /** Apply accepted edits via warning dialog confirmation. */
+  /** Applies selected edits via warning dialog confirmation. */
   const handleApply = useCallback(async () => {
-    if (!threadId || acceptedSet.size === 0) return;
+    if (!threadId || selectedSet.size === 0) return;
     const ok = await confirm({
       title: 'Apply changes?',
-      description: `This will modify your current resume with ${acceptedSet.size} accepted ${acceptedSet.size === 1 ? 'edit' : 'edits'}. This action cannot be undone.`,
+      description: `This will modify your current resume with ${selectedSet.size} selected ${selectedSet.size === 1 ? 'edit' : 'edits'}. This action cannot be undone.`,
       confirmLabel: 'Apply',
       variant: 'default'
     });
@@ -168,10 +168,10 @@ export function useImproveFlow({
 
     setIsApplying(true);
     try {
-      const acceptedEdits = edits.filter((_, i) => acceptedSet.has(i));
+      const selectedEdits = edits.filter((_, i) => selectedSet.has(i));
       await applyEdits({
         threadId,
-        edits: JSON.stringify(acceptedEdits)
+        edits: JSON.stringify(selectedEdits)
       });
       toast.success('AI improvements applied to your resume');
       void queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
@@ -183,7 +183,16 @@ export function useImproveFlow({
     } finally {
       setIsApplying(false);
     }
-  }, [threadId, acceptedSet, confirm, edits, applyEdits, queryClient, onDone, onOpenChange]);
+  }, [
+    threadId,
+    selectedSet,
+    confirm,
+    edits,
+    applyEdits,
+    queryClient,
+    onDone,
+    onOpenChange
+  ]);
 
   /** Updates a single answer by index. */
   const updateAnswer = useCallback((index: number, value: string) => {
@@ -201,7 +210,7 @@ export function useImproveFlow({
     questions,
     answers,
     edits,
-    acceptedSet,
+    selectedSet,
     isApplying,
     hasAnswers,
     handleOpenChange,

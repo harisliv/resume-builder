@@ -17,6 +17,7 @@ type TReviewHighlightItem = {
 
 type TReviewSkillItem = {
   id: string;
+  categoryName: string;
   value: string;
   selected: boolean;
 };
@@ -90,7 +91,9 @@ export function ReviewChangeList({
                   checked={skill.selected}
                   onCheckedChange={() => onToggleSkill(skill.id)}
                 />
-                <span className="text-sm">+ {skill.value}</span>
+                <span className="text-sm">
+                  + {skill.value} in {skill.categoryName}
+                </span>
               </ReviewSkillRow>
             ))}
           </div>

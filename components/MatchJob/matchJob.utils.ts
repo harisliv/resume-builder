@@ -31,6 +31,11 @@ export function getSkillKey(categoryId: string, value: string) {
   return `${categoryId}:${value}`;
 }
 
+/** Builds a deterministic id for a new skill category target. */
+export function getNewSkillCategoryId(categoryName: string) {
+  return `new-skill-category:${categoryName.trim().toLowerCase()}`;
+}
+
 /** Picks the most relevant tab for the current selected targets. */
 export function getTargetTab(selectedTargets: TPlacementTarget[]): TMatchJobTab {
   if (selectedTargets.some((target) => target.type === 'highlight')) {
@@ -48,7 +53,11 @@ export function getTargetTab(selectedTargets: TPlacementTarget[]): TMatchJobTab 
 export function getPlacementTargets(targets: TPlacementTarget[]) {
   return targets.map((target) => {
     if (target.type === 'skill') {
-      return { type: 'skill' as const, categoryId: target.categoryId };
+      return {
+        type: 'skill' as const,
+        categoryId: target.categoryId,
+        categoryName: target.categoryName
+      };
     }
 
     return {
@@ -77,6 +86,18 @@ export function applyPlacementResultToResume(
     skillsByCategory.set(addition.categoryId, existing);
   });
 
+  const existingCategoryIds = new Set(resume.skills.map((category) => category.id));
+  const newCategories = Array.from(skillsByCategory.entries())
+    .filter(([categoryId]) => !existingCategoryIds.has(categoryId))
+    .map(([categoryId, additions]) => ({
+      id: categoryId,
+      name: additions[0]?.categoryName ?? 'New Category',
+      values: additions.map((addition) => ({
+        id: crypto.randomUUID(),
+        value: addition.value
+      }))
+    }));
+
   return {
     ...resume,
     experience: resume.experience.map((experience) => ({
@@ -95,7 +116,7 @@ export function applyPlacementResultToResume(
           value: addition.value
         }))
       ]
-    }))
+    })).concat(newCategories)
   };
 }
 
@@ -132,6 +153,7 @@ export function getAcceptedSkillAdditions(
 
   return Array.from(uniqueSkills.values()).map((addition) => ({
     categoryId: addition.categoryId,
+    categoryName: addition.categoryName,
     value: addition.value
   }));
 }

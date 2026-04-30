@@ -70,7 +70,7 @@ export function ImproveResumeModal({
           {flow.phase === 'review' && (
             <EditReviewList
               edits={flow.edits}
-              acceptedSet={flow.acceptedSet}
+              selectedSet={flow.selectedSet}
               onToggle={flow.handleToggle}
             />
           )}
@@ -79,7 +79,7 @@ export function ImproveResumeModal({
         <ImproveResumeFooter
           phase={flow.phase}
           hasAnswers={flow.hasAnswers}
-          acceptedCount={flow.acceptedSet.size}
+          selectedCount={flow.selectedSet.size}
           isApplying={flow.isApplying}
           onClose={flow.handleClose}
           onAnalyzeAnswers={flow.handleAnalyzeAnswers}
