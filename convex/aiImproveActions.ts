@@ -21,6 +21,7 @@ import {
 } from './aiImproveSector';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { formatResumePrompt } from './formatResumePrompt';
+import { AI_IMPROVE_APPLY_PROMPT, AI_IMPROVE_QUESTIONS_PROMPT } from './promptContent';
 
 /** Zod schema for structured question output. */
 const questionsSchema = z.object({
@@ -118,18 +119,12 @@ export const generateQuestions = action({
       skills: resume.skills
     });
 
-    const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByTypeInternal,
-      { type: 'improve-questions' }
-    );
-    if (!dbPrompt) throw new Error('System prompt "improve-questions" not found. Run seed.');
-
     const { client, modelId } = getAnthropicClient();
     const sectorProfile = inferSectorProfile(resume);
     const sectorGuidance = sectorProfile
       ? `\n\n${formatSectorGuidance(sectorProfile)}`
       : '';
-    const systemPrompt = `${dbPrompt.content}${sectorGuidance}\n\nCurrent resume:\n${resumeText}`;
+    const systemPrompt = `${AI_IMPROVE_QUESTIONS_PROMPT}${sectorGuidance}\n\nCurrent resume:\n${resumeText}`;
 
     const result = await generateText({
       model: client(modelId),
@@ -244,14 +239,8 @@ export const generateEdits = action({
       skills: resume.skills
     });
 
-    const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByTypeInternal,
-      { type: 'improve-apply' }
-    );
-    if (!dbPrompt) throw new Error('System prompt "improve-apply" not found. Run seed.');
-
     /** Resume appended to system prompt — cached on calls 2–N by Anthropic. */
-    const systemPrompt = `${dbPrompt.content}\n\nFull resume:\n${resumeText}`;
+    const systemPrompt = `${AI_IMPROVE_APPLY_PROMPT}\n\nFull resume:\n${resumeText}`;
     const { client, modelId } = getAnthropicClient();
 
     /** Filter out questions whose targets no longer exist in the resume. */

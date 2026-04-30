@@ -9,6 +9,7 @@ import { action } from './_generated/server';
 import { buildMockKeywordExtraction, isMockAiEnabled } from './aiMocks';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { buildUserPrompt } from './formatResumePrompt';
+import { JD_KEYWORD_EXTRACT_PROMPT, JD_KEYWORD_PLACE_PROMPT } from './promptContent';
 
 /** Zod schema for keyword extraction AI output. */
 const keywordSchema = z.object({
@@ -158,12 +159,6 @@ export const extractKeywords = action({
       args.jobDescription
     );
 
-    const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByTypeInternal,
-      { type: 'jd-keyword-extract' }
-    );
-    if (!dbPrompt) throw new Error('System prompt "jd-keyword-extract" not found. Run v2 seed.');
-
     const modelId = process.env.AI_MODEL_ID;
     if (!modelId) throw new Error('AI_MODEL_ID env var not set');
     const key = process.env.ANTHROPIC_API_KEY;
@@ -172,7 +167,7 @@ export const extractKeywords = action({
     const anthropic = createAnthropic({ apiKey: key });
     const result = await generateText({
       model: anthropic(modelId),
-      system: dbPrompt.content,
+      system: JD_KEYWORD_EXTRACT_PROMPT,
       prompt,
       output: Output.object({ schema: keywordSchema })
     });
@@ -278,12 +273,6 @@ export const placeKeyword = action({
       return { updatedHighlights, addedSkills, cost: 0 };
     }
 
-    const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByTypeInternal,
-      { type: 'jd-keyword-place' }
-    );
-    if (!dbPrompt) throw new Error('System prompt "jd-keyword-place" not found');
-
     const modelId = process.env.AI_MODEL_ID;
     const key = process.env.ANTHROPIC_API_KEY;
     if (!modelId || !key) throw new Error('AI env vars not set');
@@ -304,7 +293,7 @@ Return a JSON array with one entry per highlight:
 
     const { text, usage } = await generateText({
       model: anthropic(modelId),
-      system: dbPrompt.content,
+      system: JD_KEYWORD_PLACE_PROMPT,
       prompt: userPrompt
     });
 

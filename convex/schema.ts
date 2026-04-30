@@ -33,12 +33,6 @@ export default defineSchema({
     .index('by_user_date', ['userId', 'dateKey'])
     .index('by_user_type_date', ['userId', 'type', 'dateKey']),
 
-  /** Stored system prompts for AI generation. */
-  systemPrompts: defineTable({
-    type: v.string(),
-    content: v.string()
-  }).index('by_type', ['type']),
-
   /** Persistent AI improvement thread per resume. One active thread per resume. */
   aiThreads: defineTable({
     resumeId: v.id('resumes'),

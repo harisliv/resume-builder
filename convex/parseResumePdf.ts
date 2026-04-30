@@ -7,6 +7,7 @@ import { type TParsedResume, parsedResumeSchema } from '../types/pdfParse';
 import { action } from './_generated/server';
 import { internal } from './_generated/api';
 import { getAuthenticatedUser, getUserRole } from './auth';
+import { PDF_RESUME_PARSER_PROMPT } from './promptContent';
 
 /**
  * Parses raw PDF text into structured resume data using AI.
@@ -73,16 +74,9 @@ export const parseResumePdf = action({
 
     const model = createAnthropic({ apiKey: key })(modelId);
 
-    /** Fetch parse prompt from DB. */
-    const dbPrompt: { content: string } | null = await ctx.runQuery(
-      internal.systemPrompts.getByTypeInternal,
-      { type: 'pdf-parser' }
-    );
-    if (!dbPrompt) throw new Error('System prompt "pdf-parser" not found. Run seed.');
-
     const { output }: { output: TParsedResume } = await generateText({
       model,
-      system: dbPrompt.content,
+      system: PDF_RESUME_PARSER_PROMPT,
       prompt: `Parse the following resume text into structured JSON:\n\n${args.rawText}`,
       output: Output.object({ schema: parsedResumeSchema })
     });
