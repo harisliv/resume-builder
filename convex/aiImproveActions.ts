@@ -1,6 +1,5 @@
 'use node';
 
-import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
 import { z } from 'zod';
@@ -12,6 +11,8 @@ import {
   buildMockImproveQuestions,
   isMockAiEnabled
 } from './aiMocks';
+import { computeAiCost, getAiLanguageModel, isAiProvider } from './aiModel';
+import { sanitizeImproveRewrite } from './aiImproveSanitize';
 import {
   formatSectorGuidance,
   getQuestionTargetText,
@@ -35,28 +36,6 @@ const questionsSchema = z.object({
     })
   )
 });
-
-/** Helper: create Anthropic client from env. */
-function getAnthropicClient() {
-  const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error('ANTHROPIC_API_KEY not set');
-  const modelId = process.env.AI_MODEL_ID;
-  if (!modelId) throw new Error('AI_MODEL_ID not set');
-  return { client: createAnthropic({ apiKey: key }), modelId };
-}
-
-/** Helper: compute cost from token usage. */
-function computeCost(usage: { inputTokens?: number; outputTokens?: number }) {
-  const pricing = {
-    input: Number(process.env.AI_MODEL_PRICING_INPUT ?? 0),
-    output: Number(process.env.AI_MODEL_PRICING_OUTPUT ?? 0)
-  };
-  return (
-    ((usage.inputTokens ?? 0) * pricing.input +
-      (usage.outputTokens ?? 0) * pricing.output) /
-    1_000_000
-  );
-}
 
 type ResumeData = TResumeDataForImprove;
 
@@ -119,7 +98,7 @@ export const generateQuestions = action({
       skills: resume.skills
     });
 
-    const { client, modelId } = getAnthropicClient();
+    const model = getAiLanguageModel();
     const sectorProfile = inferSectorProfile(resume);
     const sectorGuidance = sectorProfile
       ? `\n\n${formatSectorGuidance(sectorProfile)}`
@@ -127,14 +106,14 @@ export const generateQuestions = action({
     const systemPrompt = `${AI_IMPROVE_QUESTIONS_PROMPT}${sectorGuidance}\n\nCurrent resume:\n${resumeText}`;
 
     const result = await generateText({
-      model: client(modelId),
+      model,
       system: systemPrompt,
       prompt: 'Begin',
       output: Output.object({ schema: questionsSchema })
     });
 
     if (!result.output) throw new Error('AI returned no output');
-    const cost = computeCost(result.usage);
+    const cost = computeAiCost(result.usage);
 
     if (shouldConsumeAttempt) {
       await ctx.runMutation(internal.aiAttempts.consumeAttempt, { userId, type: 'ai' });
@@ -241,31 +220,36 @@ export const generateEdits = action({
 
     /** Resume appended to system prompt — cached on calls 2–N by Anthropic. */
     const systemPrompt = `${AI_IMPROVE_APPLY_PROMPT}\n\nFull resume:\n${resumeText}`;
-    const { client, modelId } = getAnthropicClient();
+    const model = getAiLanguageModel();
 
     /** Filter out questions whose targets no longer exist in the resume. */
     const actionable = answeredQuestions.filter((q) =>
       lookupCurrentValue(q, resume) !== null
     );
 
-    /** One structured-output call per answer. System message marked for Anthropic prompt caching. */
+    /** One structured-output call per answer. Anthropic calls keep provider prompt caching. */
     const results = await Promise.all(
       actionable.map(async (q, i) => {
         const currentValue = lookupCurrentValue(q as TAnsweredQuestion, resume)!;
         const userPrompt = `Text: "${currentValue}"\n\nFeedback: "${q.answer}"`;
         const result = await generateText({
-          model: client(modelId),
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt,
-              providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } }
-            },
-            { role: 'user', content: userPrompt }
-          ],
+          model,
+          messages: isAiProvider('anthropic')
+            ? [
+                {
+                  role: 'system',
+                  content: systemPrompt,
+                  providerOptions: { anthropic: { cacheControl: { type: 'ephemeral' } } }
+                },
+                { role: 'user', content: userPrompt }
+              ]
+            : [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+              ],
           output: Output.object({ schema: rewriteSchema })
         });
-        const callCost = computeCost(result.usage);
+        const callCost = computeAiCost(result.usage);
         if (role === 'admin') {
           console.log(`[generateEdits] call ${i + 1}/${actionable.length}`, JSON.stringify({
             targetType: q.targetType,
@@ -285,12 +269,13 @@ export const generateEdits = action({
     for (const { q, currentValue, result } of results) {
       totalInput += result.usage.inputTokens ?? 0;
       totalOutput += result.usage.outputTokens ?? 0;
-      if (result.output?.value) {
-        edits.push(buildEdit(q, currentValue, result.output.value));
+      const newValue = sanitizeImproveRewrite(result.output?.value);
+      if (newValue) {
+        edits.push(buildEdit(q, currentValue, newValue));
       }
     }
 
-    const cost = computeCost({ inputTokens: totalInput, outputTokens: totalOutput });
+    const cost = computeAiCost({ inputTokens: totalInput, outputTokens: totalOutput });
     if (role === 'admin') {
       console.log('[generateEdits] OUTPUT', JSON.stringify({
         cost: `$${cost.toFixed(6)}`,

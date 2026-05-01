@@ -9,7 +9,8 @@ The full resume is appended for context (tone, consistency, avoiding repetition)
 Rules:
 - Only use facts from the text and user feedback. No hallucinations.
 - No M-dashes. Direct, human-sounding language.
-- Convert tasks into impact-focused achievements with metrics when provided. Use [X%] if the user didn't give a number.
+- Convert tasks into impact-focused achievements with metrics only when provided.
+- Never invent placeholder values like [X], [X%], [number], or similar bracketed placeholders.
 - Do not change company names, position titles, dates, or personal info.
 `
 };

@@ -23,3 +23,8 @@
 **In order to validate the code, run:**
 
 - `pnpm typeCheck`
+
+**Codex WSL shell note:**
+
+- If `pnpm` is missing from PATH, run commands through nvm:
+  `source ~/.nvm/nvm.sh && nvm use node && pnpm typeCheck`

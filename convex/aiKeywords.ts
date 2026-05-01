@@ -1,12 +1,12 @@
 'use node';
 
-import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
 import { z } from 'zod';
 import { internal } from './_generated/api';
 import { action } from './_generated/server';
 import { buildMockKeywordExtraction, isMockAiEnabled } from './aiMocks';
+import { computeAiCost, getAiLanguageModel } from './aiModel';
 import { getAuthenticatedUser, getUserRole } from './auth';
 import { buildUserPrompt } from './formatResumePrompt';
 import { JD_KEYWORD_EXTRACT_PROMPT, JD_KEYWORD_PLACE_PROMPT } from './promptContent';
@@ -159,14 +159,8 @@ export const extractKeywords = action({
       args.jobDescription
     );
 
-    const modelId = process.env.AI_MODEL_ID;
-    if (!modelId) throw new Error('AI_MODEL_ID env var not set');
-    const key = process.env.ANTHROPIC_API_KEY;
-    if (!key) throw new Error('ANTHROPIC_API_KEY not set');
-
-    const anthropic = createAnthropic({ apiKey: key });
     const result = await generateText({
-      model: anthropic(modelId),
+      model: getAiLanguageModel(),
       system: JD_KEYWORD_EXTRACT_PROMPT,
       prompt,
       output: Output.object({ schema: keywordSchema })
@@ -174,14 +168,7 @@ export const extractKeywords = action({
 
     if (!result.output) throw new Error('AI returned no output');
 
-    const pricing = {
-      input: Number(process.env.AI_MODEL_PRICING_INPUT ?? 0),
-      output: Number(process.env.AI_MODEL_PRICING_OUTPUT ?? 0)
-    };
-    const cost = (
-      (result.usage.inputTokens ?? 0) * pricing.input +
-      (result.usage.outputTokens ?? 0) * pricing.output
-    ) / 1_000_000;
+    const cost = computeAiCost(result.usage);
 
     if (role === 'admin') {
       console.log(`[extractKeywords] cost: $${cost.toFixed(6)}`);
@@ -273,12 +260,6 @@ export const placeKeyword = action({
       return { updatedHighlights, addedSkills, cost: 0 };
     }
 
-    const modelId = process.env.AI_MODEL_ID;
-    const key = process.env.ANTHROPIC_API_KEY;
-    if (!modelId || !key) throw new Error('AI env vars not set');
-
-    const anthropic = createAnthropic({ apiKey: key });
-
     const highlightLines = highlightTargets.map((t, i) =>
       `[${i}] (id:${t.highlightId}) "${t.currentText}"`
     ).join('\n');
@@ -292,19 +273,12 @@ Return a JSON array with one entry per highlight:
 [{ "index": 0, "newText": "rewritten text" }, ...]`;
 
     const { text, usage } = await generateText({
-      model: anthropic(modelId),
+      model: getAiLanguageModel(),
       system: JD_KEYWORD_PLACE_PROMPT,
       prompt: userPrompt
     });
 
-    const pricing = {
-      input: Number(process.env.AI_MODEL_PRICING_INPUT ?? 0),
-      output: Number(process.env.AI_MODEL_PRICING_OUTPUT ?? 0)
-    };
-    const cost = (
-      (usage.inputTokens ?? 0) * pricing.input +
-      (usage.outputTokens ?? 0) * pricing.output
-    ) / 1_000_000;
+    const cost = computeAiCost(usage);
 
     if (role === 'admin') {
       console.log(`[placeKeyword] keyword="${args.keyword}" cost: $${cost.toFixed(6)}`);

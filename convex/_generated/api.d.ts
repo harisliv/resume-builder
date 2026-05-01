@@ -11,9 +11,11 @@
 import type * as aiAttempts from "../aiAttempts.js";
 import type * as aiImprove from "../aiImprove.js";
 import type * as aiImproveActions from "../aiImproveActions.js";
+import type * as aiImproveSanitize from "../aiImproveSanitize.js";
 import type * as aiImproveSector from "../aiImproveSector.js";
 import type * as aiKeywords from "../aiKeywords.js";
 import type * as aiMocks from "../aiMocks.js";
+import type * as aiModel from "../aiModel.js";
 import type * as auth from "../auth.js";
 import type * as formatResumePrompt from "../formatResumePrompt.js";
 import type * as parseResumePdf from "../parseResumePdf.js";
@@ -42,9 +44,11 @@ declare const fullApi: ApiFromModules<{
   aiAttempts: typeof aiAttempts;
   aiImprove: typeof aiImprove;
   aiImproveActions: typeof aiImproveActions;
+  aiImproveSanitize: typeof aiImproveSanitize;
   aiImproveSector: typeof aiImproveSector;
   aiKeywords: typeof aiKeywords;
   aiMocks: typeof aiMocks;
+  aiModel: typeof aiModel;
   auth: typeof auth;
   formatResumePrompt: typeof formatResumePrompt;
   parseResumePdf: typeof parseResumePdf;

@@ -15,12 +15,12 @@ MVP in active development. Core resume editing, authentication, cloud persistenc
 
 The app currently highlights four flagship flows:
 
-| Flow | Status | What it does |
-| --- | --- | --- |
-| **AI PDF Parse** | Built | Upload a PDF resume, extract content, normalize it into structured resume fields, and create a new editable resume. |
-| **AI Resume Improve** | Built | Review a resume, ask targeted follow-up questions, generate focused edits, and apply accepted changes back into the resume. |
-| **AI JD Match** | Built | Paste a job description, extract missing keywords, place selected keywords into relevant resume sections, and create a tailored resume version. |
-| **Resume PDF Export** | Built | Preview the resume and export a clean, styled PDF using `@react-pdf/renderer`. |
+| Flow                  | Status | What it does                                                                                                                                    |
+| --------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AI PDF Parse**      | Built  | Upload a PDF resume, extract content, normalize it into structured resume fields, and create a new editable resume.                             |
+| **AI Resume Improve** | Built  | Review a resume, ask targeted follow-up questions, generate focused edits, and apply accepted changes back into the resume.                     |
+| **AI JD Match**       | Built  | Paste a job description, extract missing keywords, place selected keywords into relevant resume sections, and create a tailored resume version. |
+| **Resume PDF Export** | Built  | Preview the resume and export a clean, styled PDF using `@react-pdf/renderer`.                                                                  |
 
 ## Why It Stands Out
 
@@ -63,20 +63,20 @@ The live preview and PDF export flow turn structured resume data into a clean do
 
 ## Tech Stack
 
-| Category | Technology |
-| --- | --- |
-| **Framework** | Next.js 16 App Router |
-| **Language** | TypeScript 5 |
-| **UI** | React 19, shadcn/ui, Base UI, Radix UI |
-| **Styling** | Tailwind CSS 4 |
-| **Backend** | Convex |
-| **Auth** | WorkOS AuthKit |
-| **AI** | AI SDK with OpenAI, Anthropic, and Google providers |
-| **PDF Parsing** | `pdfjs-dist` |
-| **PDF Export** | `@react-pdf/renderer` |
-| **Forms** | React Hook Form + Zod |
-| **Testing** | Vitest + React Testing Library |
-| **Package Manager** | pnpm |
+| Category            | Technology                                          |
+| ------------------- | --------------------------------------------------- |
+| **Framework**       | Next.js 16 App Router                               |
+| **Language**        | TypeScript 5                                        |
+| **UI**              | React 19, shadcn/ui, Base UI, Radix UI              |
+| **Styling**         | Tailwind CSS 4                                      |
+| **Backend**         | Convex                                              |
+| **Auth**            | WorkOS AuthKit                                      |
+| **AI**              | AI SDK with OpenAI, Anthropic, and Google providers |
+| **PDF Parsing**     | `pdfjs-dist`                                        |
+| **PDF Export**      | `@react-pdf/renderer`                               |
+| **Forms**           | React Hook Form + Zod                               |
+| **Testing**         | Vitest + React Testing Library                      |
+| **Package Manager** | pnpm                                                |
 
 ## Project Structure
 
@@ -130,6 +130,12 @@ NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 OPENAI_API_KEY=your_openai_key
 ANTHROPIC_API_KEY=your_anthropic_key
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_key
+AI_MODEL_PROVIDER=openai
+AI_MODEL=gpt-5.1-codex
+# Or use a full AI SDK model ID:
+# AI_MODEL=openai/gpt-5.1-codex
+AI_MODEL_PRICING_INPUT=0
+AI_MODEL_PRICING_OUTPUT=0
 ```
 
 ### Run Locally
@@ -143,14 +149,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Commands
 
-| Command | Purpose |
-| --- | --- |
-| `pnpm dev` | Start Next.js dev server |
-| `pnpm convex` | Start Convex dev server |
-| `pnpm typeCheck` | Validate TypeScript |
-| `pnpm test` | Run Vitest tests |
-| `pnpm check` | Run format and lint checks |
-| `pnpm build` | Build production app |
+| Command          | Purpose                    |
+| ---------------- | -------------------------- |
+| `pnpm dev`       | Start Next.js dev server   |
+| `pnpm convex`    | Start Convex dev server    |
+| `pnpm typeCheck` | Validate TypeScript        |
+| `pnpm test`      | Run Vitest tests           |
+| `pnpm check`     | Run format and lint checks |
+| `pnpm build`     | Build production app       |
 
 See [docs/COMMANDS.md](docs/COMMANDS.md) for the project command guide.
 

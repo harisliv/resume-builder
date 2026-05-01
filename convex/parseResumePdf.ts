@@ -1,12 +1,12 @@
 'use node';
 
-import { createAnthropic } from '@ai-sdk/anthropic';
 import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
 import { type TParsedResume, parsedResumeSchema } from '../types/pdfParse';
 import { action } from './_generated/server';
 import { internal } from './_generated/api';
 import { getAuthenticatedUser, getUserRole } from './auth';
+import { getAiLanguageModel } from './aiModel';
 import { PDF_RESUME_PARSER_PROMPT } from './promptContent';
 
 /**
@@ -67,15 +67,8 @@ export const parseResumePdf = action({
       await ctx.runMutation(internal.aiAttempts.checkAttempt, { userId, type: 'pdf' });
     }
 
-    const key = process.env.ANTHROPIC_API_KEY;
-    if (!key) throw new Error('ANTHROPIC_API_KEY not set');
-    const modelId = process.env.AI_MODEL_ID;
-    if (!modelId) throw new Error('AI_MODEL_ID env var not set');
-
-    const model = createAnthropic({ apiKey: key })(modelId);
-
     const { output }: { output: TParsedResume } = await generateText({
-      model,
+      model: getAiLanguageModel(),
       system: PDF_RESUME_PARSER_PROMPT,
       prompt: `Parse the following resume text into structured JSON:\n\n${args.rawText}`,
       output: Output.object({ schema: parsedResumeSchema })
