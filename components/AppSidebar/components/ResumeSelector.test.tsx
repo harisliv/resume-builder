@@ -44,12 +44,21 @@ vi.mock('./ResumeOptionActions', () => ({
 vi.mock('./NavSelector', () => ({
   NavSelector: ({
     open,
+    disabled,
+    disabledTooltip,
     dropdownHeader
   }: {
     open?: boolean;
+    disabled?: boolean;
+    disabledTooltip?: string;
     dropdownHeader?: ReactNode;
   }) => (
-    <div data-open={String(open)} data-testid="nav-selector">
+    <div
+      data-disabled={String(disabled)}
+      data-disabled-tooltip={disabledTooltip ?? ''}
+      data-open={String(open)}
+      data-testid="nav-selector"
+    >
       {open ? dropdownHeader : null}
     </div>
   )
@@ -114,5 +123,31 @@ describe('ResumeSelector', () => {
     expect(
       screen.queryByPlaceholderText('Resume title...')
     ).not.toBeInTheDocument();
+  });
+
+  it('keeps resume selector enabled for members', () => {
+    mocks.usePrivileges.mockReturnValue({
+      isMember: true,
+      resumeLimit: 1
+    });
+
+    render(
+      <ResumeSelector
+        onResumeSelect={vi.fn()}
+        onCreateNew={vi.fn()}
+        onDelete={vi.fn()}
+        isCreating={false}
+        onCreatingChange={vi.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('nav-selector')).toHaveAttribute(
+      'data-disabled',
+      'false'
+    );
+    expect(screen.getByTestId('nav-selector')).toHaveAttribute(
+      'data-disabled-tooltip',
+      ''
+    );
   });
 });

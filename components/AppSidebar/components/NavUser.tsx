@@ -14,6 +14,8 @@ import { useAuth } from '@workos-inc/authkit-nextjs/components';
 import { handleSignOutAction } from '@/app/actions/signOut';
 import { upgradeToBasic, downgradeToMember } from '@/app/actions/upgradeRole';
 import usePrivileges from '@/hooks/usePrivileges';
+import { UPGRADE_SUCCESS_DIALOG } from '@/lib/upgradeSuccessDialog';
+import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import {
   MenuButton,
   TrailingIcon,
@@ -73,6 +75,7 @@ export function NavUser() {
   const { isMobile, isCollapsed } = useSidebar();
   const { user, loading, refreshAuth } = useAuth();
   const { isMember } = usePrivileges();
+  const confirm = useWarningDialog();
   const [upgrading, setUpgrading] = useState(false);
   const [downgrading, setDowngrading] = useState(false);
   const showTestingFeatures =
@@ -81,8 +84,7 @@ export function NavUser() {
   if (!user && !loading) return <SignedOutView />;
 
   /** Upgrades member → basic via server action, then refreshes client auth. */
-  const handleUpgrade = async (e: Event) => {
-    e.preventDefault();
+  const handleUpgrade = async () => {
     setUpgrading(true);
     try {
       const result = await upgradeToBasic();
@@ -91,6 +93,7 @@ export function NavUser() {
         return;
       }
       await refreshAuth();
+      await confirm(UPGRADE_SUCCESS_DIALOG);
     } finally {
       setUpgrading(false);
     }

@@ -8,7 +8,7 @@ const RESUME_LIMITS: Record<string, number> = {
   admin: Infinity
 };
 
-/** Returns auth state and a tooltip helper for gated buttons. */
+/** Returns auth and role state used by gated UI. */
 export default function usePrivileges() {
   const { user, role } = useAuth();
 
@@ -29,5 +29,13 @@ export default function usePrivileges() {
     [isLoggedIn, isMember]
   );
 
-  return { isLoggedIn, isMember, isBasic, isAdmin, resumeLimit, getDisabledTooltip };
+  return {
+    isLoggedIn,
+    role,
+    isMember,
+    isBasic,
+    isAdmin,
+    resumeLimit,
+    getDisabledTooltip
+  };
 }

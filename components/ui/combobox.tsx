@@ -77,7 +77,7 @@ function ComboboxInput({
         render={
           <Input
             disabled={disabled}
-            className="h-7 rounded-md border-border/60 bg-input/20 pr-8 text-xs/relaxed focus-visible:border-border focus-visible:ring-0 focus-visible:shadow-none"
+            className="pr-8"
           />
         }
         {...props}

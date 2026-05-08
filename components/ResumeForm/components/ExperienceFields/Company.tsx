@@ -84,7 +84,7 @@ export default function Company({ index }: { index: number }) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
+            size="default"
             className={cn(
               'w-full justify-start border font-normal',
               !currentCompany && 'text-muted-foreground'
