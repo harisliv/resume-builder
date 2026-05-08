@@ -24,18 +24,22 @@ import { Alert02Icon } from '@hugeicons/core-free-icons';
 import { cn } from '@/lib/utils';
 import { IconBadge } from '@/styles/icon-badge.styles';
 
-type WarningDialogOptions = {
+type TWarningDialogOptions = {
   title: string;
   description: string;
   /** @default "Confirm" */
   confirmLabel?: string;
+  /** @default "Cancel" */
+  cancelLabel?: string;
+  /** Hides cancel for informational dialogs with a single acknowledgement. */
+  hideCancel?: boolean;
   /** @default "default" */
   variant?: 'default' | 'destructive' | 'success';
 };
 
-type ConfirmFn = (options: WarningDialogOptions) => Promise<boolean>;
+type TConfirmFn = (options: TWarningDialogOptions) => Promise<boolean>;
 
-const WarningDialogContext = createContext<ConfirmFn | null>(null);
+const WarningDialogContext = createContext<TConfirmFn | null>(null);
 
 /**
  * Promise-based global warning dialog.
@@ -66,7 +70,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   /** Dialog content — kept non-null while animating closed to prevent empty flash. */
-  const [options, setOptions] = useState<WarningDialogOptions | null>(null);
+  const [options, setOptions] = useState<TWarningDialogOptions | null>(null);
 
   /** Holds the Promise's `resolve` function between `confirm()` and user action. */
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
@@ -75,7 +79,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
    * Opens the dialog and returns a Promise that resolves to `true` (confirmed)
    * or `false` (cancelled). Stable reference — never changes across renders.
    */
-  const confirm = useCallback<ConfirmFn>(
+  const confirm = useCallback<TConfirmFn>(
     (opts) =>
       new Promise<boolean>((resolve) => {
         resolveRef.current = resolve;
@@ -95,13 +99,10 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
   return (
     <WarningDialogContext.Provider value={confirm}>
       {children}
-      <AlertDialog
-        open={open}
-        onOpenChange={(o) => !o && settle(false)}
-      >
+      <AlertDialog open={open} onOpenChange={(o) => !o && settle(false)}>
         <AlertDialogContent
           size="default"
-          className="max-w-md overflow-hidden p-0 shadow-[0_4px_24px_oklch(0_0_0_/_0.08),0_12px_48px_oklch(0_0_0_/_0.06)]"
+          className="max-w-md overflow-hidden p-0 shadow-[0_4px_24px_oklch(0_0_0/0.08),0_12px_48px_oklch(0_0_0/0.06)]"
         >
           <AlertDialogHeader className="bg-muted/85 flex flex-row place-items-center! gap-3 rounded-t-xl px-6 py-4">
             <IconBadge
@@ -109,10 +110,10 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
               className={cn(
                 'size-10 shrink-0 rounded-xl shadow-md transition-transform duration-200',
                 options?.variant === 'destructive'
-                  ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/25'
+                  ? 'bg-linear-to-br from-rose-500 to-rose-600 text-white shadow-rose-500/25'
                   : options?.variant === 'success'
-                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/25'
-                  : 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-amber-500/30'
+                    ? 'bg-linear-to-br from-emerald-500 to-emerald-600 text-white shadow-emerald-500/25'
+                    : 'bg-linear-to-br from-amber-500 to-amber-600 text-white shadow-amber-500/30'
               )}
             >
               {options?.variant === 'success' ? (
@@ -129,14 +130,18 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
             {options?.description}
           </AlertDialogDescription>
           <AlertDialogFooter className="flex flex-row justify-end gap-3 px-6 pb-6">
-            <AlertDialogCancel
-              onClick={() => settle(false)}
-              className="bg-muted/90 hover:bg-muted"
-            >
-              Cancel
-            </AlertDialogCancel>
+            {!options?.hideCancel && (
+              <AlertDialogCancel
+                onClick={() => settle(false)}
+                className="bg-muted/90 hover:bg-muted"
+              >
+                {options?.cancelLabel ?? 'Cancel'}
+              </AlertDialogCancel>
+            )}
             <AlertDialogAction
-              variant={options?.variant === 'destructive' ? 'destructive' : 'default'}
+              variant={
+                options?.variant === 'destructive' ? 'destructive' : 'default'
+              }
               onClick={() => settle(true)}
             >
               {options?.confirmLabel ?? 'Confirm'}
@@ -149,7 +154,7 @@ export function WarningDialogProvider({ children }: { children: ReactNode }) {
 }
 
 /** Returns a stable `confirm()` function that opens the global warning dialog. */
-export function useWarningDialog(): ConfirmFn {
+export function useWarningDialog(): TConfirmFn {
   const ctx = useContext(WarningDialogContext);
   if (!ctx)
     throw new Error(

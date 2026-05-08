@@ -39,11 +39,18 @@ export function ResumeSelector({
 
   const { data: resumeTitles, isLoading: isLoadingTitles } =
     useGetUserResumeTitles() as {
-      data: { id: string; title: string; isDefault?: boolean; isAiImproved?: boolean }[] | undefined;
+      data:
+        | {
+            id: string;
+            title: string;
+            isDefault?: boolean;
+            isAiImproved?: boolean;
+          }[]
+        | undefined;
       isLoading: boolean;
     };
 
-  const { isMember, resumeLimit } = usePrivileges();
+  const { resumeLimit } = usePrivileges();
   const { mutate: renameResume } = useRenameResume();
   const { mutate: setDefaultResume } = useSetDefaultResume();
   const confirm = useWarningDialog();
@@ -145,7 +152,7 @@ export function ResumeSelector({
   );
 
   /** Inline input shown at the top of the dropdown when creating. */
-  const dropdownHeader = isCreating ? (
+  const dropdownHeader = (
     <div className="flex items-center gap-2 p-2">
       <Input
         value={newTitle}
@@ -174,7 +181,7 @@ export function ResumeSelector({
         <X className="size-4" />
       </Button>
     </div>
-  ) : undefined;
+  );
 
   return (
     <NavSelector
@@ -185,10 +192,7 @@ export function ResumeSelector({
       options={options}
       loading={isLoadingTitles}
       labelSuffix={countSuffix}
-      disabled={isLoadingTitles || isMember}
-      disabledTooltip={
-        isMember ? 'Upgrade your plan to manage multiple resumes.' : undefined
-      }
+      disabled={isLoadingTitles}
       open={isDropdownOpen}
       onOpenChange={handleOpenChange}
       dropdownHeader={dropdownHeader}

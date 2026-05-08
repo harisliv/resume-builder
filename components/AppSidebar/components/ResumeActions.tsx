@@ -3,15 +3,10 @@
 import { Crosshair, Plus, Sparkles, Upload } from 'lucide-react';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent
-} from '@/components/ui/tooltip';
 import { useSidebar } from '@/ui/sidebar';
 import { SidebarMenu, SidebarMenuItem } from '@/ui/sidebar';
-import usePrivileges from '@/hooks/usePrivileges';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
+import { useBlockedActionGate } from '@/hooks/useBlockedActionGate';
 import { cn } from '@/lib/utils';
 
 /** Action buttons for creating/importing resumes and AI actions. */
@@ -30,34 +25,21 @@ export function ResumeActions({
   selectedResumeId?: string;
   isAiImproved?: boolean;
 }) {
-  const { getDisabledTooltip, resumeLimit, isAdmin } = usePrivileges();
   const { data: resumeTitles } = useGetUserResumeTitles();
   const pdfAttempts = useQuery(api.aiAttempts.getRemainingAttempts, {
     type: 'pdf'
   });
-  const atLimit = (resumeTitles?.length ?? 0) >= resumeLimit;
-  const disabledTooltip = atLimit
-    ? 'Resume limit reached. Upgrade to create more.'
-    : (getDisabledTooltip(true) ?? undefined);
-  const pdfLimitReached = !isAdmin && pdfAttempts?.remaining === 0;
-  const pdfTooltip = pdfLimitReached
-    ? 'PDF import limit reached (3/month). Try again next month.'
-    : disabledTooltip;
+  const aiAttempts = useQuery(api.aiAttempts.getRemainingAttempts, {
+    type: 'ai'
+  });
   const { isCollapsed } = useSidebar();
-
-  const improveDisabled = !selectedResumeId || isAiImproved;
-  const improveTooltip = !selectedResumeId
-    ? 'Select a resume first.'
-    : isAiImproved
-      ? 'Already AI-improved. Use Match Job instead.'
-      : undefined;
-
-  const matchDisabled = !selectedResumeId || !isAiImproved;
-  const matchTooltip = !selectedResumeId
-    ? 'Select a resume first.'
-    : !isAiImproved
-      ? 'Improve your resume first.'
-      : undefined;
+  const { runOrExplain } = useBlockedActionGate({
+    resumeCount: resumeTitles?.length,
+    hasSelectedResume: !!selectedResumeId,
+    isAiImproved,
+    pdfAttempts,
+    aiAttempts
+  });
 
   return (
     <SidebarMenu className="mt-3 gap-0">
@@ -66,9 +48,7 @@ export function ResumeActions({
           <ActionButton
             label="Create new"
             icon={<Plus className="size-4" />}
-            onClick={onCreateNew}
-            disabled={!!disabledTooltip}
-            disabledTooltip={disabledTooltip}
+            onClick={() => void runOrExplain('createResume', onCreateNew)}
             collapsed={isCollapsed}
             variant="indigo"
           />
@@ -79,9 +59,7 @@ export function ResumeActions({
           <ActionButton
             label="Import PDF"
             icon={<Upload className="size-4" />}
-            onClick={onImportPdf}
-            disabled={!!pdfTooltip}
-            disabledTooltip={pdfTooltip}
+            onClick={() => void runOrExplain('importPdf', onImportPdf)}
             collapsed={isCollapsed}
             variant="teal"
           />
@@ -92,9 +70,7 @@ export function ResumeActions({
           <ActionButton
             label="Improve Resume"
             icon={<Sparkles className="size-4" />}
-            onClick={onImproveResume}
-            disabled={improveDisabled}
-            disabledTooltip={improveTooltip}
+            onClick={() => void runOrExplain('improveResume', onImproveResume)}
             collapsed={isCollapsed}
             variant="amber"
           />
@@ -105,9 +81,7 @@ export function ResumeActions({
           <ActionButton
             label="Match Job"
             icon={<Crosshair className="size-4" />}
-            onClick={onMatchJob}
-            disabled={matchDisabled}
-            disabledTooltip={matchTooltip}
+            onClick={() => void runOrExplain('matchJob', onMatchJob)}
             collapsed={isCollapsed}
             variant="violet"
           />
@@ -164,28 +138,22 @@ function ActionButton({
   label,
   icon,
   onClick,
-  disabled,
-  disabledTooltip,
   collapsed,
   variant
 }: {
   label: string;
   icon: React.ReactNode;
   onClick: () => void;
-  disabled: boolean;
-  disabledTooltip: string | undefined;
   collapsed: boolean;
   variant: 'indigo' | 'teal' | 'amber' | 'violet';
 }) {
-  const button = (
+  return (
     <button
       type="button"
-      disabled={disabled}
       onClick={onClick}
       className={cn(
         'flex w-full cursor-pointer items-center rounded-lg border px-3 py-2 text-xs font-bold transition-all duration-200',
         collapsed ? COLLAPSED_BUTTON_CLASS : EXPANDED_VARIANT_CLASSES[variant],
-        disabled && 'cursor-not-allowed opacity-50',
         collapsed && 'px-0 py-2'
       )}
     >
@@ -197,17 +165,4 @@ function ActionButton({
       </span>
     </button>
   );
-
-  if (disabled && disabledTooltip) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="w-full">{button}</span>
-        </TooltipTrigger>
-        <TooltipContent side="right">{disabledTooltip}</TooltipContent>
-      </Tooltip>
-    );
-  }
-
-  return button;
 }

@@ -65,7 +65,7 @@ export function MonthYearPicker({
           id={id}
           type="button"
           variant="outline"
-          size="sm"
+          size="default"
           disabled={disabled}
           className={cn(
             'w-full justify-start border font-normal',
