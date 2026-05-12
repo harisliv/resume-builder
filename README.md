@@ -90,12 +90,28 @@ resume-builder/
 │   ├── PdfViewer/       # PDF preview/export flow
 │   ├── ResumeForm/      # Resume editor
 │   └── ResumePreview/   # Live resume preview
-├── convex/              # Convex schema, functions, AI actions, prompts
+├── convex/              # Convex schema, functions, AI actions, prompt wiring
+│   ├── prompts/        # AI system prompts (editable `.cjs` modules)
+│   └── promptContent.ts # Imports prompts and exports constants for actions
 ├── hooks/               # App hooks
 ├── lib/                 # Shared utilities
 ├── types/               # TypeScript domain types
 └── docs/                # Project guides
 ```
+
+## AI prompts
+
+Prompt text lives in **`convex/prompts/`** as CommonJS modules (one file per flow). **`convex/promptContent.ts`** imports those files and exports the strings used by Convex actions (PDF parse, resume improve questions/apply, JD keyword extract/place).
+
+| File | Role |
+| ---- | ---- |
+| `convex/prompts/pdf_resume_parser.cjs` | Normalize uploaded PDF text into structured resume fields |
+| `convex/prompts/ai_improve_questions.cjs` | Generate targeted follow-up questions for the improve flow |
+| `convex/prompts/ai_improve_apply.cjs` | Rewrite a snippet from user feedback |
+| `convex/prompts/jd_keyword_extract.cjs` | Compare JD vs resume for missing keywords |
+| `convex/prompts/jd_keyword_place.cjs` | Place a chosen keyword into resume content |
+
+At deploy time, matching rows can be **seeded** into Convex from the same sources; edit the `.cjs` files here as the source of truth for prompt copy.
 
 ## Getting Started
 
@@ -103,9 +119,11 @@ resume-builder/
 
 - Node.js 18+
 - pnpm 8+
-- Convex account
-- WorkOS account
-- AI provider API keys for configured model providers
+- **Your own** Convex deployment (sign in at [convex.dev](https://convex.dev))
+- **Your own** WorkOS project for AuthKit
+- **Your own** AI provider API keys (OpenAI, Anthropic, and/or Google — whichever matches `AI_MODEL` / `AI_MODEL_PROVIDER`)
+
+The repo does not ship shared production secrets. For **local development**, create `.env.local` and Convex dashboard env vars with **keys you control**.
 
 ### Install
 
@@ -114,6 +132,11 @@ pnpm install
 ```
 
 ### Environment
+
+Bring your own keys: nothing in this repository substitutes for real credentials.
+
+1. **Next.js (`.env.local`)** — WorkOS, public Convex URL, and AI keys the dev server needs.
+2. **Convex dashboard** — set the same AI and any other server-side secrets your functions read (see project docs if variables are split between Next and Convex).
 
 Create `.env.local`:
 
