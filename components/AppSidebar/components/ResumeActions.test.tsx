@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   confirm: vi.fn(),
+  redirectToLogin: vi.fn(),
   refreshAuth: vi.fn(),
   upgradeToBasic: vi.fn(),
   usePrivileges: vi.fn(),
@@ -29,6 +30,10 @@ vi.mock('@/convex/_generated/api', () => ({
 
 vi.mock('@/app/actions/upgradeRole', () => ({
   upgradeToBasic: mocks.upgradeToBasic
+}));
+
+vi.mock('@/lib/redirects', () => ({
+  redirectToLogin: mocks.redirectToLogin
 }));
 
 vi.mock('@/providers/WarningDialogProvider', () => ({
@@ -91,7 +96,8 @@ describe('ResumeActions', () => {
     );
   });
 
-  it('shows a login modal instead of creating when logged out', async () => {
+  it('redirects to login from the logged-out modal instead of creating', async () => {
+    mocks.confirm.mockResolvedValue(true);
     mocks.usePrivileges.mockReturnValue({
       isLoggedIn: false,
       role: undefined,
@@ -109,10 +115,13 @@ describe('ResumeActions', () => {
         expect.objectContaining({
           title: 'Log in to continue',
           description: 'Please log in to use the platform.',
-          confirmLabel: 'Got it',
-          hideCancel: true
+          confirmLabel: 'Sign in',
+          hideCancel: false
         })
       )
+    );
+    await waitFor(() =>
+      expect(mocks.redirectToLogin).toHaveBeenCalledTimes(1)
     );
     expect(handlers.onCreateNew).not.toHaveBeenCalled();
   });

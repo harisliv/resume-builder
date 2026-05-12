@@ -6,10 +6,15 @@ import type { IStyleProps } from './types';
 import { formatPosition } from './formatPosition';
 import { groupExperience } from './groupExperience';
 import { getSkillEntries } from '@/lib/skills';
+import {
+  formatCustomSectionDateRange,
+  getVisibleCustomSections
+} from '@/lib/customSections';
 
 export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, customSections } = data;
   const skillEntries = getSkillEntries(skills);
+  const visibleCustomSections = getVisibleCustomSections(customSections);
 
   return (
     <div
@@ -230,6 +235,80 @@ export function BoldStyle({ data, palette, fontFamily }: IStyleProps) {
             </div>
           </div>
         )}
+
+        {visibleCustomSections.map((section) => (
+          <div key={section.id}>
+            <h2
+              className="mb-3 flex items-center gap-2 text-base font-black tracking-wide uppercase"
+              style={{ color: palette.experience }}
+            >
+              <div
+                className="h-1 w-8 rounded-full"
+                style={{ backgroundColor: palette.experience }}
+              />
+              {section.sectionTitle}
+            </h2>
+            <div className="space-y-2">
+              {section.items.map((item) => {
+                const dateRange = formatCustomSectionDateRange(item);
+                return (
+                  <div
+                    key={item.id}
+                    className="rounded-lg border-l-4 p-3"
+                    style={{
+                      borderColor: palette.experience,
+                      backgroundColor: `${palette.experience}08`
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="text-[11px] font-bold text-slate-900">
+                          {item.title}
+                        </h3>
+                        {item.subtitle && (
+                          <p
+                            className="text-[10px] font-bold"
+                            style={{ color: palette.experience }}
+                          >
+                            {item.subtitle}
+                          </p>
+                        )}
+                      </div>
+                      {(dateRange || item.location) && (
+                        <div className="shrink-0 text-right">
+                          {dateRange && (
+                            <p className="font-mono text-[8px] font-bold text-slate-400">
+                              {dateRange}
+                            </p>
+                          )}
+                          {item.location && (
+                            <p className="text-[8px] font-medium text-slate-500">
+                              {item.location}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="mt-1 text-[9px] leading-relaxed text-slate-600">
+                        {item.description}
+                      </p>
+                    )}
+                    {item.url && (
+                      <a
+                        href={item.url}
+                        className="mt-1 block text-[8px] font-bold"
+                        style={{ color: palette.experience }}
+                      >
+                        View link
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

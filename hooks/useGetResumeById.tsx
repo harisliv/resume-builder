@@ -44,7 +44,8 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
       personalInfo,
       experience,
       education,
-      skills
+      skills,
+      customSections
     } = resumeData;
     return {
       info: {
@@ -58,7 +59,8 @@ export function useGetResumeById(resumeId?: Id<'resumes'>) {
         personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
         experience: experience ?? resumeFormDefaultValues.experience,
         education: education ?? resumeFormDefaultValues.education,
-        skills: skills ?? resumeFormDefaultValues.skills
+        skills: skills ?? resumeFormDefaultValues.skills,
+        customSections: customSections ?? resumeFormDefaultValues.customSections
       }
     };
   }, [resumeData]);

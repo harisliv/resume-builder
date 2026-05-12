@@ -57,6 +57,22 @@ export const parseResumePdf = action({
         name: v.string(),
         values: v.array(v.string())
       })
+    ),
+    customSections: v.array(
+      v.object({
+        sectionTitle: v.string(),
+        items: v.array(
+          v.object({
+            title: v.string(),
+            subtitle: v.string(),
+            location: v.string(),
+            startDate: v.string(),
+            endDate: v.string(),
+            url: v.string(),
+            description: v.string()
+          })
+        )
+      })
     )
   }),
   handler: async (ctx, args): Promise<TParsedResume> => {

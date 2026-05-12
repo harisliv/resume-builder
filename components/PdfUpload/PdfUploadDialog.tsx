@@ -87,7 +87,8 @@ export function PdfUploadDialog({ open, onOpenChange, onParsed }: Props) {
           personalInfo: normalized.personalInfo,
           experience: normalized.experience,
           education: normalized.education,
-          skills: normalized.skills
+          skills: normalized.skills,
+          customSections: normalized.customSections
         };
 
         onParsed(normalized.title, formData);

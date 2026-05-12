@@ -30,6 +30,7 @@ export type TBlockedActionInfo = {
   confirmLabel: string;
   variant?: 'default' | 'destructive' | 'success';
   canUpgrade: boolean;
+  requiresLogin?: boolean;
 };
 
 const ACTION_LABELS: Record<TBlockedAction, string> = {
@@ -66,13 +67,24 @@ function upgrade(title: string, description: string): TBlockedActionInfo {
   };
 }
 
+/** Creates a login blocker with a primary sign-in action. */
+function signIn(title: string, description: string): TBlockedActionInfo {
+  return {
+    title,
+    description,
+    confirmLabel: 'Sign in',
+    canUpgrade: false,
+    requiresLogin: true
+  };
+}
+
 /** Resolves the highest-priority reason an action should be blocked. */
 export function getBlockedActionInfo(
   action: TBlockedAction,
   input: TBlockedActionInput
 ): TBlockedActionInfo | null {
   if (!input.isLoggedIn) {
-    return acknowledge('Log in to continue', 'Please log in to use the platform.');
+    return signIn('Log in to continue', 'Please log in to use the platform.');
   }
 
   if (

@@ -13,6 +13,10 @@ import type { IStyleProps } from './types';
 import { formatPosition } from './formatPosition';
 import { groupExperience } from './groupExperience';
 import { getSkillEntries } from '@/lib/skills';
+import {
+  formatCustomSectionDateRange,
+  getVisibleCustomSections
+} from '@/lib/customSections';
 
 /** Pipe separator between contact items */
 const ContactSep = () => <span className="text-[8px] text-slate-300"> | </span>;
@@ -24,8 +28,9 @@ const CLASSIC_EXPERIENCE_TONES = {
 } as const;
 
 export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, customSections } = data;
   const skillEntries = getSkillEntries(skills);
+  const visibleCustomSections = getVisibleCustomSections(customSections);
 
   return (
     <div
@@ -375,6 +380,99 @@ export function ClassicStyle({ data, palette, fontFamily }: IStyleProps) {
             </div>
           </div>
         )}
+
+        {visibleCustomSections.map((section) => (
+          <div key={section.id}>
+            <div
+              className="mb-1 flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase"
+              style={{ color: palette.summary }}
+            >
+              <div
+                className="rounded-sm"
+                style={{
+                  width: 4,
+                  height: 14,
+                  backgroundColor: palette.summary
+                }}
+              />
+              {section.sectionTitle}
+            </div>
+            <div className="mb-3 flex flex-col gap-[2px]">
+              <div
+                className="h-px"
+                style={{ backgroundColor: palette.summary }}
+              />
+              <div className="h-px bg-slate-200" />
+            </div>
+            <div className="space-y-3">
+              {section.items.map((item) => {
+                const dateRange = formatCustomSectionDateRange(item);
+                return (
+                  <div key={item.id}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2.5 w-[2.5px] shrink-0"
+                            style={{ backgroundColor: palette.summary }}
+                          />
+                          <h3
+                            className="text-[11px] font-bold"
+                            style={{ color: CLASSIC_EXPERIENCE_TONES.company }}
+                          >
+                            {item.title}
+                          </h3>
+                        </div>
+                        {item.subtitle && (
+                          <p
+                            className="text-[10px] font-semibold"
+                            style={{ color: palette.experience }}
+                          >
+                            {item.subtitle}
+                          </p>
+                        )}
+                      </div>
+                      {(dateRange || item.location) && (
+                        <div className="shrink-0 text-right">
+                          {dateRange && (
+                            <p
+                              className="text-[8px] font-bold"
+                              style={{ color: palette.education }}
+                            >
+                              {dateRange}
+                            </p>
+                          )}
+                          {item.location && (
+                            <p
+                              className="text-[8px] font-semibold"
+                              style={{ color: CLASSIC_EXPERIENCE_TONES.location }}
+                            >
+                              {item.location}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="mt-1 text-[9px] leading-relaxed text-slate-600">
+                        {item.description}
+                      </p>
+                    )}
+                    {item.url && (
+                      <a
+                        href={item.url}
+                        className="mt-0.5 block text-[8px] font-semibold"
+                        style={{ color: palette.summary }}
+                      >
+                        View link
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

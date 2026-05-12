@@ -57,6 +57,22 @@ function makeParsedResume(overrides?: Partial<TParsedResume>): TParsedResume {
         values: ['TypeScript']
       }
     ],
+    customSections: [
+      {
+        sectionTitle: 'Awards',
+        items: [
+          {
+            title: ' Best Engineer ',
+            subtitle: 'NTT DATA',
+            location: ' ',
+            startDate: '2024',
+            endDate: '',
+            url: 'https://example.com/award',
+            description: 'Recognized for delivery.'
+          }
+        ]
+      }
+    ],
     ...overrides
   };
 }
@@ -99,6 +115,22 @@ describe('normalizeParsedResume', () => {
     expect(normalized.skills[0].values[0].id).toBeDefined();
     expect(normalized.experience[0].highlights).toMatchObject([{ value: 'Built forms' }]);
     expect(normalized.experience[0].highlights[0].id).toBeDefined();
+    expect(normalized.customSections[0]).toMatchObject({
+      sectionTitle: 'Awards',
+      items: [
+        {
+          title: 'Best Engineer',
+          subtitle: 'NTT DATA',
+          location: 'Madrid, Spain',
+          startDate: 'Jan 2024',
+          endDate: '',
+          url: 'https://example.com/award',
+          description: 'Recognized for delivery.'
+        }
+      ]
+    });
+    expect(normalized.customSections[0].id).toBeDefined();
+    expect(normalized.customSections[0].items[0].id).toBeDefined();
   });
 
   it('blanks invalid phone numbers', () => {

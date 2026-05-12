@@ -38,6 +38,7 @@ export const MyDocument = ({ data }: { data: TResumeData }) => (
    - For grouped cards (e.g. Experience company header + role list), wrap card header + first row/item in `<View wrap={false}>...</View>` so intra-card headers never orphan across page breaks
 5. **Preview/PDF Parity**: HTML preview and downloaded PDF are separate code paths (`components/ResumePreview/*` vs `lib/ResumePDF/documents/*`). Any visual change must be mirrored in both, or compare pages will drift.
 6. **Skills Shape**: Resume `skills` is categorized (`Record<string, string[]>`). Render category labels and category skill pills/text in both preview and PDF.
+7. **Custom Sections Shape**: Resume `customSections` renders after Education. Each custom section uses its own section title and Experience-like item layout: title/subtitle on the left, dates/location on the right, description and optional URL below.
 
 ## SVG Support
 
@@ -80,6 +81,18 @@ Available palettes: `aesthetic`, `ocean`, `forest`, `sunset`, `midnight`, `rose`
 `getColors(paletteId)` in `lib/ResumePDF/ResumeStyles.ts` resolves a palette ID into the full color object used by documents (primary, secondary, accent, text colors, borders, etc.).
 
 ## Layout Patterns
+
+### Custom Sections
+
+Custom sections support awards, recommendations, certifications, publications,
+volunteering, and other generic resume content. Keep rendering close to the
+Experience visual language for scanability:
+
+- Section header follows the active document style.
+- Item title is primary; subtitle uses the style accent.
+- Metadata uses `startDate/endDate` plus `location`.
+- `url` renders as subtle text in the form `URL: https://...` so exported PDFs can be imported again from extracted text.
+- Empty metadata collapses so text-only sections still look intentional.
 
 ### Card
 

@@ -6,6 +6,11 @@ import { FONT_FAMILY } from '../fonts';
 import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { getSkillEntries } from '@/lib/skills';
+import {
+  formatCustomSectionDateRange,
+  formatCustomSectionUrlText,
+  getVisibleCustomSections
+} from '@/lib/customSections';
 
 interface IBoldDocumentProps {
   data: TResumeData;
@@ -18,8 +23,9 @@ export const BoldDocument = ({
   colors,
   fontFamily
 }: IBoldDocumentProps) => {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, customSections } = data;
   const skillEntries = getSkillEntries(skills);
+  const visibleCustomSections = getVisibleCustomSections(customSections);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -471,6 +477,76 @@ export const BoldDocument = ({
             </>
           );
         })()}
+
+        {visibleCustomSections.map((section) => (
+          <React.Fragment key={section.id}>
+            <View style={boldStyles.sectionHeader} minPresenceAhead={90}>
+              <View
+                style={[
+                  boldStyles.sectionBar,
+                  { backgroundColor: colors.experience }
+                ]}
+              />
+              <Text
+                style={[boldStyles.sectionTitle, { color: colors.experience }]}
+              >
+                {section.sectionTitle}
+              </Text>
+            </View>
+            {section.items.map((item) => {
+              const dateRange = formatCustomSectionDateRange(item);
+              const urlText = formatCustomSectionUrlText(item.url);
+              return (
+                <View
+                  key={item.id}
+                  style={[boldStyles.card, { borderLeftColor: colors.experience }]}
+                  wrap={false}
+                >
+                  <View style={boldStyles.cardRow}>
+                    <View>
+                      <Text style={boldStyles.itemTitle}>{item.title}</Text>
+                      {item.subtitle ? (
+                        <Text
+                          style={[
+                            boldStyles.itemSubtitle,
+                            { color: colors.experience }
+                          ]}
+                        >
+                          {item.subtitle}
+                        </Text>
+                      ) : null}
+                    </View>
+                    {(dateRange || item.location) && (
+                      <View style={{ alignItems: 'flex-end' }}>
+                        {dateRange ? (
+                          <Text style={boldStyles.itemDate}>{dateRange}</Text>
+                        ) : null}
+                        {item.location ? (
+                          <Text style={boldStyles.itemLocation}>
+                            {item.location}
+                          </Text>
+                        ) : null}
+                      </View>
+                    )}
+                  </View>
+                  {item.description ? (
+                    <Text style={boldStyles.itemDescription}>
+                      {item.description}
+                    </Text>
+                  ) : null}
+                  {urlText ? (
+                    <Link
+                      src={item.url}
+                      style={[boldStyles.itemDate, { color: colors.experience }]}
+                    >
+                      {urlText}
+                    </Link>
+                  ) : null}
+                </View>
+              );
+            })}
+          </React.Fragment>
+        ))}
       </View>
     </Page>
   );

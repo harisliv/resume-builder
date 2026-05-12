@@ -14,6 +14,11 @@ import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { CalendarIcon } from '../icons/CalendarIcon';
 import { getSkillEntries } from '@/lib/skills';
+import {
+  formatCustomSectionDateRange,
+  formatCustomSectionUrlText,
+  getVisibleCustomSections
+} from '@/lib/customSections';
 
 interface IClassicDocumentProps {
   data: TResumeData;
@@ -26,8 +31,9 @@ export const ClassicDocument = ({
   colors,
   fontFamily
 }: IClassicDocumentProps) => {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, customSections } = data;
   const skillEntries = getSkillEntries(skills);
+  const visibleCustomSections = getVisibleCustomSections(customSections);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -613,6 +619,66 @@ export const ClassicDocument = ({
             </View>
           );
         })()}
+
+      {visibleCustomSections.map((section) => (
+        <View key={section.id} style={classicStyles.section}>
+          <View style={classicStyles.sectionTitleRow} minPresenceAhead={90}>
+            <View style={classicStyles.sectionBar} />
+            <Text style={classicStyles.sectionTitle}>{section.sectionTitle}</Text>
+          </View>
+          <View style={classicStyles.dividerWrap}>
+            <View style={classicStyles.dividerColored} />
+            <View style={classicStyles.dividerSlate} />
+          </View>
+          {section.items.map((item) => {
+            const dateRange = formatCustomSectionDateRange(item);
+            const urlText = formatCustomSectionUrlText(item.url);
+            return (
+              <View key={item.id} style={{ marginBottom: 10 }} wrap={false}>
+                <View style={classicStyles.itemRow}>
+                  <View style={classicStyles.itemLeft}>
+                    <View style={classicStyles.experienceCompanyRow}>
+                      <View style={classicStyles.experienceCompanyMarker} />
+                      <Text style={classicStyles.experienceCompany}>
+                        {item.title}
+                      </Text>
+                    </View>
+                    {item.subtitle ? (
+                      <Text style={classicStyles.experiencePosition}>
+                        {item.subtitle}
+                      </Text>
+                    ) : null}
+                  </View>
+                  {(dateRange || item.location) && (
+                    <View style={classicStyles.itemRight}>
+                      {dateRange ? (
+                        <Text style={classicStyles.experienceDate}>
+                          {dateRange}
+                        </Text>
+                      ) : null}
+                      {item.location ? (
+                        <Text style={classicStyles.experienceLocation}>
+                          {item.location}
+                        </Text>
+                      ) : null}
+                    </View>
+                  )}
+                </View>
+                {item.description ? (
+                  <Text style={classicStyles.itemDescription}>
+                    {item.description}
+                  </Text>
+                ) : null}
+                {urlText ? (
+                  <Link src={item.url} style={classicStyles.itemDate}>
+                    {urlText}
+                  </Link>
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
+      ))}
 
       <View style={classicStyles.footer} fixed>
         <Text

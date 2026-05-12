@@ -16,6 +16,7 @@ async function submitResume(
     experience,
     education,
     skills,
+    customSections,
     documentStyle,
     isAiImproved
   } = data;
@@ -28,6 +29,7 @@ async function submitResume(
       experience,
       education,
       skills,
+      customSections,
       documentStyle
     });
     return { success: true, id };
@@ -38,6 +40,7 @@ async function submitResume(
       experience,
       education,
       skills,
+      customSections,
       documentStyle,
       isAiImproved
     });
@@ -58,6 +61,7 @@ export function useResumeSubmit() {
     },
     onSuccess: (_result, data) => {
       toast.success(data.id ? 'Resume saved' : 'Resume created');
+      queryClient.invalidateQueries({ queryKey: ['resume'] });
       queryClient.invalidateQueries({ queryKey: ['resumes'] });
       queryClient.invalidateQueries({ queryKey: ['resumeTitles'] });
     },

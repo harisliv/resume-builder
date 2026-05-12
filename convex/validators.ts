@@ -48,9 +48,13 @@ export const customSectionItemValidator = v.object({
   id: v.string(),
   title: v.string(),
   subtitle: v.optional(v.string()),
+  /** Deprecated fields kept while existing custom section data migrates. */
   from: v.optional(v.string()),
   to: v.optional(v.string()),
+  startDate: v.optional(v.string()),
+  endDate: v.optional(v.string()),
   location: v.optional(v.string()),
+  url: v.optional(v.string()),
   description: v.optional(v.string())
 });
 

@@ -47,6 +47,22 @@ export const parsedResumeSchema = z.object({
       name: z.string(),
       values: z.array(z.string())
     })
+  ),
+  customSections: z.array(
+    z.object({
+      sectionTitle: z.string(),
+      items: z.array(
+        z.object({
+          title: z.string(),
+          subtitle: z.string(),
+          location: z.string(),
+          startDate: z.string(),
+          endDate: z.string(),
+          url: z.string(),
+          description: z.string()
+        })
+      )
+    })
   )
 });
 
@@ -156,6 +172,20 @@ export function normalizeParsedResume(raw: TParsedResume) {
       id: nanoid(),
       name: cleanText(cat.name),
       values: cat.values.map((v) => ({ id: nanoid(), value: v }))
+    })),
+    customSections: raw.customSections.map((section) => ({
+      id: nanoid(),
+      sectionTitle: cleanText(section.sectionTitle),
+      items: section.items.map((item) => ({
+        id: nanoid(),
+        title: cleanText(item.title),
+        subtitle: cleanText(item.subtitle),
+        location: normalizeLocation(item.location, personalLocation),
+        startDate: normalizeMonthYear(item.startDate),
+        endDate: normalizeMonthYear(item.endDate),
+        url: cleanText(item.url),
+        description: cleanText(item.description)
+      }))
     }))
   };
 }
