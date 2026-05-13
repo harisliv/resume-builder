@@ -120,9 +120,7 @@ describe('ResumeActions', () => {
         })
       )
     );
-    await waitFor(() =>
-      expect(mocks.redirectToLogin).toHaveBeenCalledTimes(1)
-    );
+    await waitFor(() => expect(mocks.redirectToLogin).toHaveBeenCalledTimes(1));
     expect(handlers.onCreateNew).not.toHaveBeenCalled();
   });
 
