@@ -8,8 +8,6 @@ export function hasCustomSectionItemContent(item: TCustomSectionItem) {
       item.location?.trim() ||
       item.startDate?.trim() ||
       item.endDate?.trim() ||
-      item.from?.trim() ||
-      item.to?.trim() ||
       item.url?.trim() ||
       item.description?.trim()
   );
@@ -28,10 +26,10 @@ export function getVisibleCustomSections(
     .filter((section) => section.sectionTitle && section.items.length > 0);
 }
 
-/** Formats custom section date metadata, supporting deprecated from/to fields. */
+/** Formats custom section date metadata from pickers (`startDate` / `endDate`). */
 export function formatCustomSectionDateRange(item: TCustomSectionItem) {
-  const start = item.startDate?.trim() || item.from?.trim();
-  const end = item.endDate?.trim() || item.to?.trim();
+  const start = item.startDate?.trim();
+  const end = item.endDate?.trim();
   if (start && end) return `${start} → ${end}`;
   return start || end || '';
 }

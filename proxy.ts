@@ -1,3 +1,4 @@
+import { withWorkosDefaultOrganizationId } from '@/lib/workosDefaultOrganization';
 import { authkit } from '@workos-inc/authkit-nextjs';
 import { type NextRequest, NextResponse } from 'next/server';
 
@@ -25,7 +26,9 @@ export default async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users on protected routes
   if (!isUnauthenticated && !session.user && authorizationUrl) {
-    const response = NextResponse.redirect(authorizationUrl);
+    const response = NextResponse.redirect(
+      withWorkosDefaultOrganizationId(authorizationUrl)
+    );
     for (const [key, value] of authkitHeaders) {
       if (key.toLowerCase() === 'set-cookie') {
         response.headers.append(key, value);

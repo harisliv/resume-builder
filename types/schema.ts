@@ -90,9 +90,6 @@ export const customSectionItemSchema = z.object({
   id: z.string(),
   title: z.string().max(100, 'Max 100 chars'),
   subtitle: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
-  /** Deprecated PDF/import-era date fields. New writes use startDate/endDate. */
-  from: z.string().optional().or(z.literal('')),
-  to: z.string().optional().or(z.literal('')),
   startDate: z.string().optional().or(z.literal('')),
   endDate: z.string().optional().or(z.literal('')),
   location: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
