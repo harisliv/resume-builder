@@ -90,9 +90,10 @@ export const customSectionItemSchema = z.object({
   id: z.string(),
   title: z.string().max(100, 'Max 100 chars'),
   subtitle: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
-  from: z.string().optional().or(z.literal('')),
-  to: z.string().optional().or(z.literal('')),
+  startDate: z.string().optional().or(z.literal('')),
+  endDate: z.string().optional().or(z.literal('')),
   location: z.string().max(100, 'Max 100 chars').optional().or(z.literal('')),
+  url: z.url().max(500, 'Max 500 chars').optional().or(z.literal('')),
   description: z.string().max(2000, 'Max 2000 chars').optional().or(z.literal(''))
 });
 
@@ -177,18 +178,19 @@ export const createCustomSectionItemDefaults = () => ({
   id: nanoid(),
   title: '',
   subtitle: '',
-  from: '',
-  to: '',
+  startDate: '',
+  endDate: '',
   location: '',
+  url: '',
   description: ''
 });
 
 export const customSectionItemDefaultValues = createCustomSectionItemDefaults();
 
 /** Creates fresh custom section defaults with a unique ID. */
-export const createCustomSectionDefaults = () => ({
+export const createCustomSectionDefaults = (sectionTitle = '') => ({
   id: nanoid(),
-  sectionTitle: '',
+  sectionTitle,
   items: [createCustomSectionItemDefaults()]
 });
 

@@ -1,9 +1,8 @@
+import { getWorkosDefaultOrganizationId } from '@/lib/workosDefaultOrganization';
 import { handleAuth, refreshSession } from '@workos-inc/authkit-nextjs';
 import { WorkOS } from '@workos-inc/node';
 
 const workos = new WorkOS(process.env.WORKOS_API_KEY!);
-
-const DEFAULT_ORG_ID = process.env.WORKOS_DEFAULT_ORG_ID!;
 
 export const GET = handleAuth({
   onSuccess: async ({ user, organizationId }) => {
@@ -11,22 +10,20 @@ export const GET = handleAuth({
       return;
     }
 
-    const { data: memberships } =
-      await workos.userManagement.listOrganizationMemberships({
-        userId: user.id
-      });
+    const defaultOrgId = getWorkosDefaultOrganizationId();
 
-    if (memberships.length > 0) {
-      await refreshSession({ organizationId: memberships[0].organizationId });
-      return;
+    if (!defaultOrgId) {
+      throw new Error(
+        'WORKOS_DEFAULT_ORG_ID must be set when onboarding users without organization memberships'
+      );
     }
 
     await workos.userManagement.createOrganizationMembership({
       userId: user.id,
-      organizationId: DEFAULT_ORG_ID,
+      organizationId: defaultOrgId,
       roleSlug: 'member'
     });
 
-    await refreshSession({ organizationId: DEFAULT_ORG_ID });
+    await refreshSession({ organizationId: defaultOrgId });
   }
 });

@@ -11,6 +11,20 @@
 
 React Hook Form manages form state, Zod validates data, Convex mutations persist to database, and TanStack Query handles caching/refetching. Convex provides real-time database and serverless functions.
 
+## Resume Custom Sections
+
+Custom resume sections are generic, user-created resume sections. The add
+button lives outside the form tabs in the Resume Form header because each custom
+section becomes its own dynamic tab (e.g., Awards, Recommendations).
+
+Field shape:
+
+- Section: `id`, `sectionTitle`, `items`
+- Item: `id`, `title`, `subtitle`, `location`, `startDate`, `endDate`, `url`, `description`
+
+Legacy item fields `from` and `to` may exist in stored data during migration.
+Read paths should tolerate them, but new writes use `startDate` and `endDate`.
+
 ## Feature Folder Shape
 
 - Large frontend features should prefer colocated folders like:

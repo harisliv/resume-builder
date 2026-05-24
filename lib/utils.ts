@@ -34,6 +34,7 @@ export const convertConvexIdToId = (
     experience,
     education,
     skills,
+    customSections,
     documentStyle,
     isAiImproved
   } = data;
@@ -46,6 +47,7 @@ export const convertConvexIdToId = (
     personalInfo: personalInfo ?? resumeFormDefaultValues.personalInfo,
     experience: experience ?? resumeFormDefaultValues.experience,
     education: education ?? resumeFormDefaultValues.education,
-    skills: skills ?? resumeFormDefaultValues.skills
+    skills: skills ?? resumeFormDefaultValues.skills,
+    customSections: customSections ?? resumeFormDefaultValues.customSections
   };
 };

@@ -7,6 +7,7 @@ import {
   type TBlockedAction,
   type TBlockedActionInput
 } from '@/lib/blockedActionGate';
+import { redirectToLogin } from '@/lib/redirects';
 import { UPGRADE_SUCCESS_DIALOG } from '@/lib/upgradeSuccessDialog';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
 import { useAuth } from '@workos-inc/authkit-nextjs/components';
@@ -45,10 +46,17 @@ export function useBlockedActionGate(input: TBlockedActionGateInput) {
         description: blocker.description,
         confirmLabel: blocker.confirmLabel,
         variant: blocker.variant,
-        hideCancel: !blocker.canUpgrade
+        hideCancel: !blocker.canUpgrade && !blocker.requiresLogin
       });
 
-      if (!confirmed || !blocker.canUpgrade) return;
+      if (!confirmed) return;
+
+      if (blocker.requiresLogin) {
+        redirectToLogin();
+        return;
+      }
+
+      if (!blocker.canUpgrade) return;
 
       setIsUpgrading(true);
       try {

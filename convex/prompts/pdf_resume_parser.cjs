@@ -21,7 +21,11 @@ Rules:
 - If a dated role or project block names a platform, initiative, program, or project, extract its full title into projectName.
 - Use projectName for the project title only, and keep description as the short explanatory summary.
 - If an experience location is missing, copy the best available location from personalInfo.location.
-- If a resume section cannot be mapped to personalInfo, experience, or education (e.g., "Certifications", "Awards", "Publications", "Projects", "Languages", "Volunteering", "Interests"), convert its entries into a skills category using the section name and list the items as skill values.
+- If a resume section cannot be mapped to personalInfo, experience, education, or skills (e.g., "Certifications", "Awards", "Publications", "Projects", "Volunteering", "Recommendations", "Interests"), preserve it in customSections.
+- For customSections, output sectionTitle plus items with title, subtitle, location, startDate, endDate, url, and description. Use empty strings for missing fields.
+- For custom section dates, output "MMM yyyy" like "Jan 2023" when possible. If only a year exists, use "Jan YYYY".
+- In custom sections, lines beginning with "URL:" must populate the item's url field without the "URL:" prefix.
+- In custom sections, do not convert awards, certifications, publications, volunteering, recommendations, or interests into skills.
 
 Example input:
 John Doe
@@ -35,6 +39,14 @@ January 2025 - July 2025: IOBSI
 - Engineered smart contracts
 November 2023 - November 2024: UNFCCC ETF
 - Implemented web socket functionality
+
+Awards
+Best Engineer Award
+NTT DATA
+Jan 2024
+Athens, Greece
+Recognized for delivery.
+URL: https://example.com/award
 
 Example output:
 {
@@ -81,6 +93,22 @@ Example output:
     {
       "graduationDate": "2019",
       "current": false
+    }
+  ],
+  "customSections": [
+    {
+      "sectionTitle": "Awards",
+      "items": [
+        {
+          "title": "Best Engineer Award",
+          "subtitle": "NTT DATA",
+          "location": "Athens, Greece",
+          "startDate": "Jan 2024",
+          "endDate": "",
+          "url": "https://example.com/award",
+          "description": "Recognized for delivery."
+        }
+      ]
     }
   ]
 }

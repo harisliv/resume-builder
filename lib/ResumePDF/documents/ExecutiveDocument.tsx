@@ -6,6 +6,11 @@ import { FONT_FAMILY } from '../fonts';
 import { formatPosition } from '@/components/ResumePreview/formatPosition';
 import { groupExperience } from '@/components/ResumePreview/groupExperience';
 import { getSkillEntries } from '@/lib/skills';
+import {
+  formatCustomSectionDateRange,
+  formatCustomSectionUrlText,
+  getVisibleCustomSections
+} from '@/lib/customSections';
 
 interface IExecutiveDocumentProps {
   data: TResumeData;
@@ -18,8 +23,9 @@ export const ExecutiveDocument = ({
   colors,
   fontFamily
 }: IExecutiveDocumentProps) => {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, customSections } = data;
   const skillEntries = getSkillEntries(skills);
+  const visibleCustomSections = getVisibleCustomSections(customSections);
 
   /** Minimum points of content required ahead to prevent orphaned headers */
   const MIN_PRESENCE = { experience: 110, education: 90, skills: 45 } as const;
@@ -454,6 +460,72 @@ export const ExecutiveDocument = ({
             </View>
           );
         })()}
+
+        {visibleCustomSections.map((section) => (
+          <View key={section.id} style={styles.section}>
+            <Text
+              style={[styles.sectionTitle, { color: colors.experience }]}
+              minPresenceAhead={90}
+            >
+              {section.sectionTitle}
+            </Text>
+            {section.items.map((item) => {
+              const dateRange = formatCustomSectionDateRange(item);
+              const urlText = formatCustomSectionUrlText(item.url);
+              return (
+                <View
+                  key={item.id}
+                  style={[
+                    styles.entryContainer,
+                    { borderLeftColor: colors.experience }
+                  ]}
+                  wrap={false}
+                >
+                  <View style={styles.entryRow}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.entryTitle}>{item.title}</Text>
+                      {item.subtitle ? (
+                        <Text
+                          style={[
+                            styles.entrySubtitle,
+                            { color: colors.experience }
+                          ]}
+                        >
+                          {item.subtitle}
+                        </Text>
+                      ) : null}
+                    </View>
+                    {(dateRange || item.location) && (
+                      <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+                        {dateRange ? (
+                          <Text style={styles.entryDate}>{dateRange}</Text>
+                        ) : null}
+                        {item.location ? (
+                          <Text style={styles.entryLocation}>
+                            {item.location}
+                          </Text>
+                        ) : null}
+                      </View>
+                    )}
+                  </View>
+                  {item.description ? (
+                    <Text style={styles.entryDescription}>
+                      {item.description}
+                    </Text>
+                  ) : null}
+                  {urlText ? (
+                    <Link
+                      src={item.url}
+                      style={[styles.entryDate, { color: colors.skills }]}
+                    >
+                      {urlText}
+                    </Link>
+                  ) : null}
+                </View>
+              );
+            })}
+          </View>
+        ))}
       </View>
     </Page>
   );

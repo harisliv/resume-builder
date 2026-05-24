@@ -74,6 +74,7 @@ Smart Component (Education.tsx) [logic + composition]
 - **Scope loading feedback tightly**: for targeted mutations, show loading on the affected row/card/section, not the whole screen or unrelated panel.
 - **Use confirmation tone to match outcome**: destructive actions use destructive dialogs, but safe version-creation or publish-style actions should use positive/success confirmation styling and copy.
 - **Prefer action-driven UI transitions over `useEffect` when possible**: if a tab/step/panel change is caused by a click or submit handler, set it in that handler instead of syncing it later from an effect.
+- **Protect shadows inside scroll areas**: `overflow-*` clips child shadows. Put spacing on an inner content wrapper (`overflow-y-auto` parent, `px-* pb-*` child), especially when bottom actions or elevated cards sit near the viewport edge.
 
 **Example**:
 

@@ -5,11 +5,12 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useBlockedActionGate } from '@/hooks/useBlockedActionGate';
 import { useGetUserResumeTitles } from '@/hooks/useGetUserResumeTitles';
+import usePrivileges from '@/hooks/usePrivileges';
 import { useRenameResume } from '@/hooks/useRenameResume';
 import { useSetDefaultResume } from '@/hooks/useSetDefaultResume';
 import { useWarningDialog } from '@/providers/WarningDialogProvider';
-import usePrivileges from '@/hooks/usePrivileges';
 import type { Id } from '@/convex/_generated/dataModel';
 import type { TResumeInfo } from '@/types/schema';
 import { NavSelector } from './NavSelector';
@@ -38,19 +39,14 @@ export function ResumeSelector({
   const currentTitle = useWatch({ control, name: 'title' });
 
   const { data: resumeTitles, isLoading: isLoadingTitles } =
-    useGetUserResumeTitles() as {
-      data:
-        | {
-            id: string;
-            title: string;
-            isDefault?: boolean;
-            isAiImproved?: boolean;
-          }[]
-        | undefined;
-      isLoading: boolean;
-    };
+    useGetUserResumeTitles();
 
   const { resumeLimit } = usePrivileges();
+  const { runOrExplain } = useBlockedActionGate({
+    resumeCount: resumeTitles?.length,
+    hasSelectedResume: !!currentId,
+    isAiImproved: false
+  });
   const { mutate: renameResume } = useRenameResume();
   const { mutate: setDefaultResume } = useSetDefaultResume();
   const confirm = useWarningDialog();
@@ -71,15 +67,20 @@ export function ResumeSelector({
     [onCreatingChange]
   );
 
+  /**
+   * Confirms new resume title; applies the same create gate as the sidebar
+   * "Create new" action (login / limits / upgrade).
+   */
   const handleConfirmCreate = useCallback(() => {
     const trimmed = newTitle.trim();
-    if (trimmed) {
+    if (!trimmed) return;
+    void runOrExplain('createResume', () => {
       onCreateNew(trimmed);
       onCreatingChange(false);
       setDropdownOpen(false);
       setNewTitle('');
-    }
-  }, [newTitle, onCreateNew, onCreatingChange]);
+    });
+  }, [newTitle, onCreateNew, onCreatingChange, runOrExplain]);
 
   const handleCancelCreate = useCallback(() => {
     onCreatingChange(false);

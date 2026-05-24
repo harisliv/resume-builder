@@ -1,4 +1,5 @@
 import type { TResumeForm } from '@/types/schema';
+import { getVisibleCustomSections } from '@/lib/customSections';
 import { hasCategorizedSkills } from '@/lib/skills';
 import {
   mockPersonalInfo,
@@ -45,8 +46,10 @@ function isFormCompletelyEmpty(formData: TResumeForm): boolean {
     );
 
   const skillsEmpty = !hasCategorizedSkills(formData.skills);
+  const customSectionsEmpty =
+    getVisibleCustomSections(formData.customSections).length === 0;
 
-  return personalEmpty && expEmpty && eduEmpty && skillsEmpty;
+  return personalEmpty && expEmpty && eduEmpty && skillsEmpty && customSectionsEmpty;
 }
 
 export function getPreviewData(formData: TResumeForm): TResumeForm {
@@ -55,7 +58,8 @@ export function getPreviewData(formData: TResumeForm): TResumeForm {
       personalInfo: mockPersonalInfo,
       experience: mockExperience,
       education: mockEducation,
-      skills: mockSkills
+      skills: mockSkills,
+      customSections: []
     };
   }
 

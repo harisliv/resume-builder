@@ -37,6 +37,18 @@ vi.mock('@/providers/WarningDialogProvider', () => ({
   useWarningDialog: () => mocks.confirm
 }));
 
+vi.mock('@/hooks/useBlockedActionGate', () => ({
+  useBlockedActionGate: () => ({
+    runOrExplain: async (
+      _action: string,
+      onAllowed: () => void | Promise<void>
+    ) => {
+      await onAllowed();
+    },
+    isUpgrading: false
+  })
+}));
+
 vi.mock('./ResumeOptionActions', () => ({
   ResumeOptionActions: () => <div>Option actions</div>
 }));

@@ -235,6 +235,37 @@ transition-colors duration-200
 </SectionCard>
 ```
 
+### Resume Form Custom Sections
+
+Custom sections are added from the Resume Form header, outside the tab list.
+Each custom section becomes its own dynamic tab so users can work with sections
+like Awards and Recommendations side by side with core resume tabs.
+
+- Use `New Custom Section` as the header action label.
+- Use the section title as the tab label, with `Custom Section N` fallback.
+- Inside a custom section tab, use item accordions like Skills/Experience.
+- Keep item fields in two-column rows: title/location, subtitle/URL, dates, then description.
+
+### Scroll Containers & Shadows
+
+Never place shadowed buttons/cards flush against an `overflow-*` container edge.
+Overflow clips shadows, even if the child has margin. Put padding on an inner
+content wrapper inside the scroll area.
+
+Pattern:
+
+```tsx
+<div className="min-h-0 flex-1 overflow-y-auto">
+  <div className="px-2 pb-12">
+    {/* shadowed controls/cards */}
+  </div>
+</div>
+```
+
+- Bottom actions need extra inner `pb-8`/`pb-12`.
+- Horizontal shadows need inner `px-2` or more.
+- Do not rely on padding on the overflow container itself to preserve shadows.
+
 ## Icons
 
 Use **Hugeicons** (`@hugeicons/react`) for all UI icons:
